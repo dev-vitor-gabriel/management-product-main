@@ -15,7 +15,6 @@ import UnidadeTable from "./unidadeTable";
 export default function Unidade() {
 
     const [regs, setRegs] = useState([]);
-
     const [regEdited, setRegEdited] = useState({});
     const [modalIsOpen, setModalIsOpen] = useState(false);
 

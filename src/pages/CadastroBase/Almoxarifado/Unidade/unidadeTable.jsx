@@ -47,7 +47,7 @@ export default function UnidadeTable({ data = [], handleEdit, refresh }) {
       name: "Data de Cadastro",
       selector: ({ created_at }) => `${created_at}`,
       sortable: true,
-      format: ({ created_at }) => formatDate(created_at),
+      format: ({ created_at }) => formatDate(created_at) ,
     },
   ];
   return (
