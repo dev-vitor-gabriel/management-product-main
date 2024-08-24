@@ -11,7 +11,9 @@ import {
 } from './style';
 
 import { MdOutlinePerson } from 'react-icons/md';
+import { baseUrlImg } from "../../utils/baseUrlImg";
 import imgAvatar from '../../assets/avatar.png';
+
 
 import { AuthContext } from "../../contexts/auth";
 import { PaginationContext } from "../../contexts/pagination";
@@ -23,6 +25,13 @@ export default function Topbar() {
     const { user, logout } = useContext(AuthContext);
     const { title, breadItens } = useContext(PaginationContext);
     const navigate = useNavigate();
+
+    const userStorage = localStorage.getItem('user');
+    if (userStorage) {
+    var userObj = JSON.parse(userStorage);
+    } else {
+    console.log('Usuário não encontrado no localStorage');
+    }
 
     const [showMenuProfile, setShowMenuProfile] = useState(false);
 
@@ -51,7 +60,7 @@ export default function Topbar() {
 
             <Menu>
                 <Profile onClick={handleShowMenuProfile}>
-                    <img src={imgAvatar} alt="imagem de perfil" />
+                    <img src={`${baseUrlImg}${userObj.url_img_user}`} alt="imagem de perfil" />
                 </Profile>
 
                 {showMenuProfile &&

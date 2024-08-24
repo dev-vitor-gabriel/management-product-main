@@ -4,6 +4,7 @@ import Table from "../../../../components/Table";
 import { deleteUsuario } from "../../../../services/usuario";
 import { confirmAlert } from "../../../../utils/alert";
 import { formatDate } from "../../../../utils/dateHelper";
+import { baseUrlImg } from "../../../../utils/baseUrlImg";
 import { Button } from './style';
 
 
@@ -17,6 +18,9 @@ export default function UsuarioTable({ data = [], handleEdit, refresh }) {
       handleFunction: async () => {await deleteUsuario(id); await refresh()}
     })
   }
+
+  console.log(user);
+  
 
   const columns = [
     {
@@ -35,7 +39,9 @@ export default function UsuarioTable({ data = [], handleEdit, refresh }) {
     },
     {
       name: "Imagem",
-      selector: ({ url_img_user }) => `${url_img_user}`,
+      cell: ({ url_img_user }) => (
+        <img src={`${baseUrlImg}${url_img_user}`} alt="Imagem do Usuário" style={{ width: '50px', height: '50px', borderRadius: '50%' }} />
+      ),
       sortable: true, 
     },
     {

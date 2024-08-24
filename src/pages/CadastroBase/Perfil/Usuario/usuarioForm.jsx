@@ -25,6 +25,7 @@ export default function UsuarioForm({ reg, onClose, visible, refresh }) {
   const handleChangeValue = (event) => {
     const inputName = event.target.name.replace(/\[|\]/g, '');
     const value = event.target.type === 'file' ? event.target.files[0] : event.target.value;
+
     setForm(prev => ({ ...prev, [inputName]: value }));
   };
 
