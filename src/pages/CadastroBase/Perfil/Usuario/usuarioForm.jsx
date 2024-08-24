@@ -1,7 +1,6 @@
 import { useState } from "react";
 import yup from "../../../../utils/yup";
 
-
 import Input from "../../../../components/Input";
 import Modal from "../../../../components/Modal";
 
@@ -17,33 +16,38 @@ const schema = yup.object().shape({
   password: yup.string().min(1).required(),
 });
 
-
 export default function UsuarioForm({ reg, onClose, visible, refresh }) {
 
   const [form, setForm] = useState(reg ?? {});
   const [error, setError] = useState({});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
-
   const handleChangeValue = (event) => {
     const inputName = event.target.name.replace(/\[|\]/g, '');
-    const value = event.target.value;
-    setForm(prev => ({ ...prev, [inputName]: value }))
-  }
+    const value = event.target.type === 'file' ? event.target.files[0] : event.target.value;
+    setForm(prev => ({ ...prev, [inputName]: value }));
+  };
 
   const handleSubmit = async (event) => {
+    event.preventDefault();
     setLoadingSubmit(true);
     setTimeout(async () => {
       try {
         await schema.validate(form);
-        console.log(JSON.stringify(form));
-        const success = await saveUsuario(form);
+
+        const formData = new FormData();
+        Object.keys(form).forEach(key => {
+          formData.append(key, form[key]);
+        });
+
+        console.log([...formData]); // Para verificar os dados antes de enviar
+
+        const success = await saveUsuario(formData); // Enviando como FormData
         if(success){
           await refresh();
           toast.success("Registro salvo!");
         } else {
-
-          toast.error("aaaa!");
+          toast.error("Erro ao salvar registro!");
         }
 
         setError({});
@@ -59,8 +63,7 @@ export default function UsuarioForm({ reg, onClose, visible, refresh }) {
         setLoadingSubmit(false);
       }
     }, 1000);
-  }
-
+  };
 
   return (
     <Modal title={form.id ? "Edição" : "Cadastro"} onClose={onClose} visible={visible} >
@@ -73,6 +76,8 @@ export default function UsuarioForm({ reg, onClose, visible, refresh }) {
           onChange={handleChangeValue}
           error={error?.name ?? false}
         />
+
+        <label>Email</label>
         <Input
           type={'email'}
           defaultValue={form?.email ?? ''}
@@ -80,12 +85,22 @@ export default function UsuarioForm({ reg, onClose, visible, refresh }) {
           onChange={handleChangeValue}
           error={error?.email ?? false}
         />
+
+        <label>Password</label>
         <Input
           type={'password'}
           defaultValue={form?.password ?? ''}
           name='password'
           onChange={handleChangeValue}
           error={error?.password ?? false}
+        />
+
+        <label>Imagem</label>
+        <Input
+          type={'file'}
+          name='url_img_user'
+          onChange={handleChangeValue}
+          error={error?.url_img_user ?? false}
         />
       </FormGroup>
       <ButtonSubmit handleSubmit={handleSubmit} loading={loadingSubmit} >Salvar</ButtonSubmit>

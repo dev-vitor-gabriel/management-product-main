@@ -4,28 +4,20 @@ import api from "./api";
 
 const getUsuario = async () => {
     try {
-        const response = await api.get("/auth");
-        // const response = [
-        //     {
-        //         id:1,
-        //         name:'User 1',
-        //         email: 'user@user.com',
-        //         password: '123123',
-        //         url_img_user: 'assets/images/file.png',
-        //         created_at:'2023-01-01',
-        //         updated_at:'2023-01-01'
-        //     },
-        //     {
-        //         id:2,
-        //         name:'User 2',
-        //         email: 'user2@user2.com',
-        //         password: '123123',
-        //         url_img_user: 'assets/images/file.png',
-        //         created_at:'2023-01-01',
-        //         updated_at:'2023-01-01'
-        //     },
-        // ];
-        return response.data;
+        const authorization = localStorage.getItem("authorization");
+
+        if (authorization) {
+            const parsedAuthorization = JSON.parse(authorization);
+            var token = parsedAuthorization.token;
+        }
+
+        const { data } = await api.get("/auth", {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        return data;
     } catch (error) {
         console.error("Erro ao buscar:", error);
     }
@@ -40,16 +32,25 @@ const deleteUsuario = async (id) => {
     }
 };
 const saveUsuario = async (obj) => {
+    const authorization = localStorage.getItem("authorization");
+
+    if (authorization) {
+        const parsedAuthorization = JSON.parse(authorization);
+        var token = parsedAuthorization.token;
+    }
+
     try {
         if(obj.id){
             await api.put(`/auth/${obj.id}`, obj, {
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
         }else{
             await api.post("/auth/register", obj, {
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });

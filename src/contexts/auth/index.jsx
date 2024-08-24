@@ -6,8 +6,7 @@ import { toast } from 'react-toastify';
 
 export const AuthContext = createContext({});
 
-function AuthProvider({children}) {
-
+function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [userAuthorization, setUserAuthorization] = useState(null);
     const [userMenu, setUserMenu] = useState([]);
@@ -21,8 +20,19 @@ function AuthProvider({children}) {
         async function loadUser() {
             const storageUser = localStorage.getItem('user');
 
-            if(storageUser) {
+            if (storageUser) {
                 setUser(JSON.parse(storageUser));
+                setLoading(false);
+            }
+
+            setLoading(false);
+        }
+
+        async function loadAuthorization() {
+            const storageAuthorization = localStorage.getItem('authorization');
+
+            if (storageAuthorization) {
+                setUserAuthorization(JSON.parse(storageAuthorization));
                 setLoading(false);
             }
 
@@ -32,11 +42,12 @@ function AuthProvider({children}) {
         async function loadUserMenu() {
             const storageMenu = localStorage.getItem('menu');
 
-            if(storageMenu) {
+            if (storageMenu) {
                 setUserMenu(JSON.parse(storageMenu));
             }
         }
 
+        loadAuthorization();
         loadUser();
         loadUserMenu();
     }, [])
@@ -59,28 +70,30 @@ function AuthProvider({children}) {
             "email": data.email,
             "password": data.password,
         })
-        .then((value) => {
-            setUser(value.data.user);
-            setUserAuthorization(value.data.authorization);
-            setUserMenu(value.data.menu);
-            
-            storageUser(value.data.user);
-            storageUserMenu(value.data.menu);
-            // console.log(value.data.menu);
-            
-            toast.success('Seja bem vindo, ' + value.data.user.name + "!");
-            setLoadingAuth(false);
-            navigate('/');
-        })
-        .catch((error) => {
-            toast.error('Email ou senha incorreto!');
-            setLoadingAuth(false);
-            return null;
-        })
+            .then((value) => {
+                setUser(value.data.user);
+                setUserAuthorization(value.data.authorization);
+                setUserMenu(value.data.menu);
+
+                storageUser(value.data.user);
+                storageUserMenu(value.data.menu);
+                storageAuthorization(value.data.authorization);
+
+                toast.success('Seja bem vindo, ' + value.data.user.name + "!");
+                setLoadingAuth(false);
+                navigate('/');
+            })
+            .catch((error) => {
+                toast.error('Email ou senha incorreto!');
+                setLoadingAuth(false);
+                return null;
+            })
     }
 
     function logout() {
         localStorage.removeItem('user');
+        localStorage.removeItem('authorization');
+        localStorage.removeItem('menu');
         navigate("/login");
     }
 
@@ -92,7 +105,11 @@ function AuthProvider({children}) {
         localStorage.setItem('menu', JSON.stringify(data));
     }
 
-    return(
+    function storageAuthorization(data) {
+        localStorage.setItem('authorization', JSON.stringify(data));
+    }
+
+    return (
         <AuthContext.Provider value={{
             signed: !!user,
             user,
@@ -102,7 +119,7 @@ function AuthProvider({children}) {
             signIn,
             signUp,
             logout,
-            userMenu, 
+            userMenu,
             setUserMenu
         }}>
             {children}
