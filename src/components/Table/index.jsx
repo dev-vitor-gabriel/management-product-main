@@ -17,20 +17,21 @@ export default function Table({ columns, data = [] }) {
   const results = filter == '' ? data : data.filter(e => {
     return Object.values(e).join('_').toLowerCase().search(filter.toLowerCase()) != -1;
   })
-  return (<StyledTable>
-    <FilterTable defaultValue={filter} onChange={({ target }) => setFilter(target.value)} />
-    <DataTable
-      columns={columns}
-      data={results}
-      pagination
-      paginationPerPage={10}
-      paginationRowsPerPageOptions={[10, 20, 30]}
-      searchable
-      sortable
-      paginationComponentOptions={paginationComponentOptions}
-      noDataComponent={<><PiBracketsSquareLight size={32} style={{ marginRight: 16 }} /> Nenhum registro encontrado.</>}
-
-    />
-  </StyledTable>
-  )
+  return (
+    <>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+        <FilterTable defaultValue={filter} onChange={({ target }) => setFilter(target.value)} />
+      </div>
+      <DataTable
+        columns={columns}
+        data={results}
+        pagination
+        paginationPerPage={10}
+        paginationRowsPerPageOptions={[10, 20, 30]}
+        searchable
+        paginationComponentOptions={paginationComponentOptions}
+        noDataComponent={<><PiBracketsSquareLight size={32} style={{ marginRight: 16 }} /> Nenhum registro encontrado.</>}
+      />
+    </>
+  );
 }
