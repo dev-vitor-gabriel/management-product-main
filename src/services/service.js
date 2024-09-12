@@ -4,28 +4,31 @@ import api from "./api";
 
 const getServices = async () => {
     try {
-        const response = await api.get("/servico");
-        // const response = [
-        //     {
-        //         id_servico_ser: 1,
-        //         des_servico_ser: 'teste 1',
-        //         txt_servico_ser: 'obs do servico',
-        //         vlr_servico_ser: 12.50,
-        //         created_at: '2023-09-28 20:50'
-        //     },
-        //     {
-        //         id_servico_ser: 2,
-        //         des_servico_ser: 'teste 2',
-        //         txt_servico_ser: 'obs do servico2',
-        //         vlr_servico_ser: 11.50,
-        //         created_at: '2023-09-28 21:50'
-        //     }
-        // ];
+        const response = await api.get("/servico/");
         return response.data;
     } catch (error) {
         console.error("Erro ao buscar:", error);
     }
 };
+
+const deleteService = async (id) => {
+    try {
+        await api.delete(`/servico/${id}`)
+        return true
+    } catch (error) {
+        console.error("Erro ao buscar:", error);
+    }
+};
+
+const finalizarService = async (id) => {
+    try {
+        await api.patch(`/servico/${id}`)
+        return true
+    } catch (error) {
+        console.error("Erro ao buscar:", error);
+    }
+};
+
 const saveServices = async (obj) => {
     try {
         // const response = await api.get("/service");
@@ -42,4 +45,4 @@ const saveServices = async (obj) => {
     }
 };
 
-export { getServices, saveServices };
+export { getServices, saveServices, deleteService, finalizarService };

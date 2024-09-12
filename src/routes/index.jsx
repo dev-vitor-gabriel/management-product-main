@@ -33,6 +33,7 @@ function RoutesApp() {
                 {/* <Route path="/cadastroMaterial" element={<RegisterMaterial />} /> */}
                 <Route path="/service" element={<Service />} />
                 <Route path="/servico/novo" element={<Service reg={{}} />} />
+                <Route path="/servico/finalizar" element={<Service tela='finalizar' />} />
                 <Route path="/almoxarifado/baixa/entrada" element={<Baixa tipoMovimentacao='entrada' />} />
                 <Route path="/almoxarifado/baixa/saida" element={<Baixa tipoMovimentacao='saida' />} />
                 <Route path="/cadastro-base/servico/tipo-servico" element={<TipoServico />} />

@@ -58,13 +58,18 @@ export const Input = styled.input`
 `;
 
 export const Button = styled.button`
-  background-color: var(--primary-bg-color);
+  background-color: ${(props) =>
+    props.finalizar ? 'green' : 'var(--primary-bg-color)'};
   margin: 10px;
   color: white;
   padding: 10px;
   border: none;
   border-radius: 3px;
   cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
 `;
 
 export const ButtonClose = styled.button`

@@ -100,7 +100,6 @@ export default function ServiceForm({ service, onClose, visible }) {
   const handleChangeValue = (event) => {
     const inputName = event.target.name.replace(/\[|\]/g, '');
     const value = event.target.value;
-    // console.log(value, inputName)
     setForm(prev => ({ ...prev, [inputName]: value }))
   }
 
@@ -110,7 +109,6 @@ export default function ServiceForm({ service, onClose, visible }) {
     setTimeout(async () => {
       try {
         await schema.validate(form);
-        // console.log(form);
         const formFactory = {
           txt_servico_ser: '.',
           id_funcionario_servico_ser: null,
@@ -132,27 +130,21 @@ export default function ServiceForm({ service, onClose, visible }) {
         });
 
         formData.tipos_servico = formData.tipos_servico.map(reg => {
-          // console.log(reg)
-          // console.log('reg',reg)
           const regVlr = parseInt(reg.custom[0].value); // [0]
-          // console.log('formData.materiais', regVlr)
           return {
             id_servico_tipo_stp: reg.value,
             vlr_tipo_servico_rst: regVlr ?? 0
           };
         })
 
-
-        // console.log('formData',formData,JSON.stringify(formData));
-
         const response = await saveServices(formData);
-        // console.log('submitting', response)
         if (!response.error) {
           console.log(response?.data, response?.data?.id)
           if (response?.data?.service?.id ?? false) {
             setForm(prev => ({ ...prev, id_servico_ser: response.data.service.id }));
           }
           toast.success("Serviço salvo!");
+          onClose();
         } else {
           toast.error(response?.message?.message ?? response.error);
         }

@@ -1,9 +1,4 @@
 import { useEffect, useState } from "react";
-
-
-
-
-
 import Content from "../../../../components/Content";
 import PageHeader from "../../../../components/PageHeader";
 
@@ -29,6 +24,7 @@ export default function Material() {
             console.error("Erro ao buscar:", error);
         }
     };
+
     useEffect(() => {
         fetchRegs();
     }, []);
