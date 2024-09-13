@@ -5,13 +5,14 @@ import withReactContent from 'sweetalert2-react-content';
 const MySwal = withReactContent(Swal)
 const confirmAlert = async ({title, text, icon='warning', handleFunction}) => {
     MySwal.fire({
-        title: 'Tem certeza disso?',
-        text: "O registro será inativado!",
-        icon: 'warning',
-        showCancelButton: true,
+        title: title,
+        text: text,
+        icon: icon,
+        showDenyButton: true,
         confirmButtonColor: 'var(--primary-bg-color)',
-        cancelButtonColor: '#666',
-        confirmButtonText: 'Sim'
+        cancelButtonColor: 'var(--danger)',
+        confirmButtonText: 'Sim',
+        denyButtonText: 'Não'
       }).then(async (result) => {
         if (result.isConfirmed) {
           handleFunction();
