@@ -24,7 +24,7 @@ const schema = yup.object().shape({
 export default function BaixaForm({ reg, onClose, visible, refresh, tipoMovimentacao }) {
 
   const [form, setForm] = useState(reg ?? {});
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState(reg ?? {});
   const [error, setError] = useState({});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
@@ -99,7 +99,6 @@ export default function BaixaForm({ reg, onClose, visible, refresh, tipoMoviment
         }
         const formData = { ...formFactory, ...form }
 
-        // console.log(formData)
         formData.materiais = formData.materiais.map(reg => {
           const regQtd = reg.custom.filter(({ column }) => column == "qtd_material_rsm");
           const regVlr = reg.custom.filter(({ column }) => ["vlr_material_mte","vlr_material_rsm"].includes(column));
@@ -110,23 +109,28 @@ export default function BaixaForm({ reg, onClose, visible, refresh, tipoMoviment
             qtd_material_mit: parseInt(regQtd?.[0].value) ?? 1
           }
         });
-        // console.log(JSON.stringify(formFactory));
-        const success = await saveBaixa(tipoMovimentacao, formData);
-        if(success){
-          await refresh();
-          toast.success("Registro salvo!");
-        } else {
 
-          toast.error("aaaa!");
+        const response = await saveBaixa(tipoMovimentacao, formData);
+        if (!response.error) {
+          console.log(response?.data, response?.data?.id)
+          if (response?.data?.service?.id ?? false) {
+            setForm(prev => ({ ...prev, id_servico_ser: response.data.service.id }));
+          }
+          toast.success("Baixa de Entrada Realizada!");
+          onClose();
+          } else {
+          toast.error(response?.message?.message ?? response.error);
         }
 
-        setError({});
       } catch (err) {
-        err.errors.forEach(e => {
-          const [inputError, ...error] = e.split(' ');
-          objError = { ...objError, [inputError]: error.join(' ') }
-        });
-
+        if (err?.errors) {
+          err.errors.forEach(e => {
+            const [inputError, ...error] = e.split(' ');
+            objError = { ...objError, [inputError]: error.join(' ') }
+          });
+        } else {
+          console.log(err)
+        }
       } finally {
         setError(objError);
         setLoadingSubmit(false);

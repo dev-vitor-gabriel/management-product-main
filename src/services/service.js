@@ -31,7 +31,6 @@ const finalizarService = async (id) => {
 
 const saveServices = async (obj) => {
     try {
-        // const response = await api.get("/service");
         if(obj.id_servico_ser){
             const response = await api.put(`/servico/${obj.id_servico_ser}`, obj);
             return response;

@@ -15,6 +15,8 @@ import BaixaTable from "./baixaTable";
 export default function Baixa({tipoMovimentacao}) {
 
     const [regs, setRegs] = useState([]);
+    const [shouldReload, setShouldReload] = useState(false);
+
 
     const [regEdited, setRegEdited] = useState({});
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -22,15 +24,21 @@ export default function Baixa({tipoMovimentacao}) {
     // Chamada da API - Lista todos os materiais
     const fetchRegs = async () => {
         try {
-            const response = await getBaixas(tipoMovimentacao);
+            const response = await getBaixas();
             setRegs(response);
         } catch (error) {
             console.error("Erro ao buscar:", error);
         }
     };
     useEffect(() => {
+
         fetchRegs();
-    }, []);
+
+        if (shouldReload) {
+            fetchRegs();
+            setShouldReload(false);
+        }
+    }, [shouldReload]);
 
     const handleEdit = (id_movimentacao_mov) => {
         const edit = regs.filter((reg) => reg.id_movimentacao_mov == id_movimentacao_mov)[0];
@@ -76,7 +84,7 @@ export default function Baixa({tipoMovimentacao}) {
                 dataset={regs.map(reg=>({'ID':reg.id_material_mte, 'Descrição': reg.des_material_mte, 'Unidade': reg.des_unidade, 'Valor': reg.vlr_material_mte, 'Data Criação': formatDate(reg.created_at)}))}
             />
             <BaixaTable data={regs} handleEdit={handleEdit} refresh={fetchRegs} />
-            {modalIsOpen && <BaixaForm reg={regEdited} onClose={() => { setModalIsOpen(false) }} visible={modalIsOpen} tipoMovimentacao={tipoMovimentacao}/>}
+            {modalIsOpen && <BaixaForm reg={regEdited} onClose={() => { setModalIsOpen(false); setShouldReload(true); }} visible={modalIsOpen} tipoMovimentacao={tipoMovimentacao}/>}
         </Content>
     )
 }
