@@ -1,14 +1,9 @@
 import React from "react";
-
 import * as XLSX from 'xlsx';
-
-
-
+import ButtonAdd from "../ButtonAdd";
 import { Container } from './style';
 
-import ButtonAdd from "../ButtonAdd";
-
-export default function PageHeader({ adicionar, exportar, onClick, exportFilename='export', dataset=[] }) {
+export default function PageHeader({ adicionar, exportar, onClick, exportFilename = 'export', dataset = [] }) {
 
     const exportToExcel = async () => {
         const dateNow = (new Date()).toLocaleString().split(',').join('');
@@ -21,7 +16,6 @@ export default function PageHeader({ adicionar, exportar, onClick, exportFilenam
         // Salvar o arquivo
         XLSX.writeFile(wb, `${exportFilename}_${dateNow}.xlsx`);
     }
-
 
     return (
         <Container>

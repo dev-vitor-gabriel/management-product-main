@@ -23,6 +23,7 @@ import Layout from '../pages/Layout';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Service from '../pages/Servico';
+import EstoqueMaterial from '../pages/Almoxarifado/EstoqueMaterial'
 
 function RoutesApp() {
     return (
@@ -34,6 +35,7 @@ function RoutesApp() {
                 <Route path="/service" element={<Service />} />
                 <Route path="/servico/novo" element={<Service reg={{}} />} />
                 <Route path="/servico/finalizar" element={<Service tela='finalizar' />} />
+                <Route path="/almoxarifado/consulta-estoque" element={<EstoqueMaterial />} />
                 <Route path="/almoxarifado/baixa/entrada" element={<Baixa tipoMovimentacao='entrada' />} />
                 <Route path="/almoxarifado/baixa/saida" element={<Baixa tipoMovimentacao='saida' />} />
                 <Route path="/cadastro-base/servico/tipo-servico" element={<TipoServico />} />
