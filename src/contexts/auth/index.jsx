@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 
+
 import { toast } from 'react-toastify';
 
 export const AuthContext = createContext({});
@@ -30,6 +31,22 @@ function AuthProvider({ children }) {
 
         async function loadAuthorization() {
             const storageAuthorization = localStorage.getItem('authorization');
+            const objAuthorization = JSON.parse(storageAuthorization);
+            if(!objAuthorization?.token){
+                logout();
+                return;
+            }
+            try{
+                const payload = JSON.parse(atob(objAuthorization.token.split('.')[1]));
+                const nowTime = (new Date()).getTime() / 1000;
+                if(payload.exp < nowTime){
+                    logout();
+                    return;
+                }
+            }catch(e){
+                logout();
+                return;
+            }
 
             if (storageAuthorization) {
                 setUserAuthorization(JSON.parse(storageAuthorization));
