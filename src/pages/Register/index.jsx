@@ -31,18 +31,13 @@ function Register() {
 
     function handleSignUp(event) {
         event.preventDefault();
-
+        
         if(password.length < 6) {
             toast.warning('A senha deve conter no mínimo 6 caracteres!')
             return
         }
-
+        
         signUp({name, email, password});
-
-        setName('');
-        setEmail('');
-        setPassword('');
-
     }
 
     return(

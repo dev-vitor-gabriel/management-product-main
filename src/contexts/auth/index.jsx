@@ -71,14 +71,20 @@ function AuthProvider({ children }) {
 
     async function signUp(data) {
         setLoadingAuth(true);
-        const response = await api.post('/auth/register', {
+        await api.post('/auth/register', {
             "name": data.name,
             "email": data.email,
             "password": data.password,
+        }).then(l => {
+            toast.success('Cadastro realizado com sucesso!');
+            setLoadingAuth(false);
+            navigate("/login");
+        }).catch(l => {
+            setLoadingAuth(false);
+            console.log(l)
+            toast.error(l.response.data.message);
         })
-        toast.success('Cadastro realizado com sucesso!');
-        setLoadingAuth(false);
-        navigate("/login");
+
     }
 
     async function signIn(data) {

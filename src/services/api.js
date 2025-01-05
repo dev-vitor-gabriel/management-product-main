@@ -11,6 +11,10 @@ api.interceptors.request.use(
             return config;
         }
 
+        if (config.url === '/auth/register') {
+            return config;
+        }
+
         
         const authData = JSON.parse(localStorage.getItem('authorization'));
 
