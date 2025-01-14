@@ -28,9 +28,8 @@ const getEstoque = async () => {
 
 const deleteEstoque = async (id) => {
     try {
-        // const response = await api.get("/service");
-        const response = {};
-        return response;
+        await api.delete(`/estoque/${id}`)
+        return true
     } catch (error) {
         console.error("Erro ao buscar:", error);
     }

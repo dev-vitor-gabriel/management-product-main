@@ -86,8 +86,6 @@ export default function EstoqueForm({ estoque, onClose, visible,refresh }) {
 
   return (
     <Modal title={form.id_estoque_est ? "Edição" : "Cadastro"} onClose={onClose} visible={visible} >
-
-
       <FormGroup>
         <label>Descrição</label>
         <Input

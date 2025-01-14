@@ -1,15 +1,20 @@
 import React from "react";
 
 import Table from "../../../../components/Table";
-import { deleteServiceType } from "../../../../services/serviceType";
+import { deleteEstoque } from "../../../../services/estoque";
+import { confirmAlert } from "../../../../utils/alert";
 import { formatDate } from "../../../../utils/dateHelper";
 import { Button } from './style';
 
 
-export default function EstoqueTable({ data = [], handleEdit }) {
+export default function EstoqueTable({ data = [], handleEdit, refresh }) {
 
   const handleDelete = async (id) => {
-    await deleteServiceType(id);
+    confirmAlert({
+      title: 'Tem certeza disso?',
+      text: "O registro será inativado!",
+      handleFunction: async () => {await deleteEstoque(id); await refresh();},
+    })
   }
 
   const columns = [
