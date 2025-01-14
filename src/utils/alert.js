@@ -1,6 +1,8 @@
 
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import { toast } from "react-toastify";
+
 
 const MySwal = withReactContent(Swal)
 const confirmAlert = async ({title, text, icon='warning', handleFunction}) => {
@@ -15,7 +17,12 @@ const confirmAlert = async ({title, text, icon='warning', handleFunction}) => {
         denyButtonText: 'Não'
       }).then(async (result) => {
         if (result.isConfirmed) {
-          handleFunction();
+          try {
+            await handleFunction();
+            toast.success("Registro inativado com sucesso!");
+          } catch (error) {
+            toast.error("Erro ao inativar!");
+          }
         }
       })
 }
