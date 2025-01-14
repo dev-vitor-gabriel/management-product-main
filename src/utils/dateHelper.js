@@ -1,23 +1,24 @@
 const formatDate = (dateString) => {
   let onlyDate = false;
-  if(!dateString){
+
+  if (!dateString) {
     return '-';
   }
-  dateString = dateString.split('.')[0]
-  // if (dateString.split(' ').length == 1){
-  //   dateString = dateString + ' 00:00';
-  //   onlyDate = true;
-  // }
+
+  dateString = dateString.split('.')[0];
+
   const date = new Date(dateString);
 
-  if(date == 'Invalid Date'){
+  if (date.toString() === 'Invalid Date') {
     return '-';
   }
 
-  const formattedDate = date.toLocaleString().replace(',','');
+  // Subtrair 3 horas
+  date.setHours(date.getHours() - 3);
+
+  const formattedDate = date.toLocaleString().replace(',', '');
 
   return onlyDate ? formattedDate.split(' ')[0] : formattedDate;
 };
-
 
 export { formatDate };
