@@ -6,7 +6,6 @@ import { formatDate } from "../../../../utils/dateHelper";
 import { Button } from './style';
 
 
-// eslint-disable-next-line react/prop-types
 export default function EstoqueTable({ data = [], handleEdit }) {
 
   const handleDelete = async (id) => {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import yup from "../../../../utils/yup";
 
 
@@ -8,19 +8,43 @@ import Modal from "../../../../components/Modal";
 import { toast } from "react-toastify";
 
 import ButtonSubmit from "../../../../components/Buttons/ButtonSubmit";
+import { getCentroCusto } from "../../../../services/centroCusto";
 import { saveEstoque } from "../../../../services/estoque";
 import { FormGroup } from "./style";
+import SelectBox from "../../../../components/Select";
 
 const schema = yup.object().shape({
   des_estoque_est: yup.string().min(1).required(),
+  id_centro_custo_est: yup.number().required().positive().integer(),
 });
 
 
-export default function EstoqueForm({ reg, onClose, visible }) {
+export default function EstoqueForm({ estoque, onClose, visible,refresh }) {
 
-  const [form, setForm] = useState(reg ?? {});
+  const [form, setForm] = useState(estoque ?? {});
   const [error, setError] = useState({});
+  const [formData, setFormData] = useState(estoque ?? {});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        Promise.all([getCentroCusto()])
+          .then(([centroCusto]) => {
+            const centroCustoTypeOptions = centroCusto.map(({ id_centro_custo_cco, des_centro_custo_cco }) => {
+              return ({
+                value: id_centro_custo_cco,
+                label: des_centro_custo_cco
+              });
+            })
+            setFormData({ centroCusto: centroCustoTypeOptions })
+          })
+      } catch (error) {
+        console.error("Erro ao buscar:", error);
+      }
+    };
+    fetchData();
+  }, [])
 
 
 
@@ -35,13 +59,13 @@ export default function EstoqueForm({ reg, onClose, visible }) {
     setTimeout(async () => {
       try {
         await schema.validate(form);
-        // console.log(JSON.stringify(form));
         const success = await saveEstoque(form);
+
         if(success){
+          await refresh();
           toast.success("Registro salvo!");
         } else {
-
-          toast.error("aaaa!");
+          toast.error("Ocorreu um erro ao salvar o registro!");
         }
 
         setError({});
@@ -62,6 +86,8 @@ export default function EstoqueForm({ reg, onClose, visible }) {
 
   return (
     <Modal title={form.id_estoque_est ? "Edição" : "Cadastro"} onClose={onClose} visible={visible} >
+
+
       <FormGroup>
         <label>Descrição</label>
         <Input
@@ -70,6 +96,18 @@ export default function EstoqueForm({ reg, onClose, visible }) {
           name='des_estoque_est'
           onChange={handleChangeValue}
           error={error?.des_estoque_est ?? false}
+        />
+      </FormGroup>
+
+      <FormGroup>
+        <label>Centro de Custo</label>
+        <SelectBox
+          options={formData?.centroCusto ?? []}
+          defaultValue={form?.id_centro_custo_est ?? []}
+          name='id_centro_custo_est'
+          onChange={handleChangeValue}
+          error={error?.id_centro_custo_est ?? false}
+          limit={1}
         />
       </FormGroup>
 

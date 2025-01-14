@@ -37,11 +37,23 @@ const deleteEstoque = async (id) => {
 };
 const saveEstoque = async (obj) => {
     try {
-        // const response = await api.get("/service");
-        const success = false;
-        return success;
+        if(obj.id_estoque_est){
+            await api.put(`/estoque/${obj.id_estoque_est}`, obj, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+        }else{
+            await api.post("/estoque", obj, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+        }
+        return true;
     } catch (error) {
         console.error("Erro ao buscar:", error);
+        return false;
     }
 };
 
