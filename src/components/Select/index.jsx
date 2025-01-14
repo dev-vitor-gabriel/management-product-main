@@ -14,7 +14,7 @@ import {
   VisibledPointer
 } from "./style";
 
-const SelectBox = ({ options, defaultValue, name, onChange, error, limit = 0 }) => {
+const SelectBox = ({ options, defaultValue, name, onChange, error, limit = 0, setDefaultValue = true }) => {
 
   // console.log(defaultValue)
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -23,7 +23,7 @@ const SelectBox = ({ options, defaultValue, name, onChange, error, limit = 0 }) 
   // console.log(selectedOptions)
   useEffect(() => {
     // preenche quando existir um unico registro
-    if(options?.length == 1){
+    if(options?.length == 1 && setDefaultValue){
       handleSelectChange(options);
       return;
     }
@@ -42,14 +42,21 @@ const SelectBox = ({ options, defaultValue, name, onChange, error, limit = 0 }) 
   }, [options])
 
   const handleSelectChange = (selected) => {
+    var event;
     if(limit == 1 && selected.length > 0){
       selected = [selected.at(-1)];
+
+      event = { target: { name: name, value: selected[0].value } };
+    }
+    if (selected.length == 0)
+    {
+      event = { target: name, value: null }
+    }
+    if (limit == 0)
+    {
+      event = { target: { name: name, value: selected } };
     }
     setSelectedOptions(selected);
-    if(limit == 1){
-      selected = selected[0].value
-    }
-    const event = { target: { name: name, value: selected } };
     onChange(event)
   };
   const handleChangeCustomValue = ({customValue, value, column}) => {

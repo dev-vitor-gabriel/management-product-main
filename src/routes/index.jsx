@@ -24,6 +24,7 @@ import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Service from '../pages/Servico';
 import EstoqueMaterial from '../pages/Almoxarifado/EstoqueMaterial'
+import Sale from '../pages/Venda/Vendas';
 
 function RoutesApp() {
     return (
@@ -50,6 +51,7 @@ function RoutesApp() {
                 <Route path="/cadastro-base/perfil/usuario" element={<Usuario />} />
                 <Route path="/cadastro-base/perfil/cliente" element={<Cliente />} />
                 <Route path="/listicons" element={<ListIcons />} />
+                <Route path="/vendas" element={<Sale />} />
             </Route>
 
             <Route path="/login" element={<Login />} />
