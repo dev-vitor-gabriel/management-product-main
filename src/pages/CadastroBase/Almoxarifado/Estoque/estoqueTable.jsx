@@ -33,6 +33,11 @@ export default function EstoqueTable({ data = [], handleEdit }) {
       sortable: true,
     },
     {
+      name: "Centro de Custo",
+      selector: ({ des_centro_custo_cco }) => `${des_centro_custo_cco}`,
+      sortable: true,
+    },
+    {
       name: "Data de Cadastro",
       selector: ({ created_at }) => `${created_at}`,
       sortable: true,
