@@ -7,7 +7,7 @@ import { Button } from './style';
 
 
 // eslint-disable-next-line react/prop-types
-export default function UnidadeTable({ data = [], handleEdit }) {
+export default function UnidadeTable({ data = [], handleEdit, refresh }) {
 
   const handleDelete = async (id) => {
     await deleteServiceType(id);
@@ -35,7 +35,7 @@ export default function UnidadeTable({ data = [], handleEdit }) {
     },
     {
       name: "Unidade",
-      selector: ({ des_unidade }) => `${des_unidade}`,
+      selector: ({ des_reduz_unidade_und }) => `${des_reduz_unidade_und}`,
       sortable: true,
     },
     {

@@ -50,7 +50,6 @@ export default function MaterialForm({ reg, onClose, visible, refresh }) {
 
   const handleChangeValue = (event) => {
     const inputName = event.target.name.replace(/\[|\]/g, '');
-    
     const value = event.target.value;
     setForm(prev => ({ ...prev, [inputName]: value }))
   }
@@ -60,14 +59,12 @@ export default function MaterialForm({ reg, onClose, visible, refresh }) {
     setTimeout(async () => {
       try {
         await schema.validate(form);
-        console.log(JSON.stringify(form));
         const success = await saveMaterial(form);
         if(success){
           await refresh();
           toast.success("Registro salvo!");
         } else {
-
-          toast.error("aaaa!");
+          toast.error("Ocorreu um erro ao salvar o registro!");
         }
 
         setError({});
