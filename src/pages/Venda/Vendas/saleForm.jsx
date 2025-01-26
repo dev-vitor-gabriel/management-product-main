@@ -9,37 +9,26 @@ import { toast } from "react-toastify";
 import ButtonSubmit from "../../../components/Buttons/ButtonSubmit";
 import SelectBox from "../../../components/Select";
 import { getEmployee } from "../../../services/employee";
-import { getSaleProducts, saveSales } from "../../../services/sale";
+import { getSale, getSaleProducts, saveSales } from "../../../services/sale";
 import { Expand, FormGroup } from "./style";
 import { getCentroCusto } from "../../../services/centroCusto";
 import { getCliente } from "../../../services/cliente";
 import { getMaterial } from "../../../services/material";
 import api from "../../../services/api";
 
-const schema = yup.object().shape({
-  id_cliente_ser: yup.number().required().positive().integer(),
-  id_funcionario_vda: yup.number().required().positive().integer(),
-  id_centro_custo_ser: yup.number().required().positive().integer()
-});
-
-export default function SaleForm({ sale, onClose, visible }) {
-  const [form, setForm] = useState(sale ?? {});
-  const [inputData, setInputData] = useState({});
-  const [formData, setFormData] = useState(sale ?? {});
+export default function SaleForm({ saleEditing, onClose, visible }) {
+  const [form, setForm] = useState(saleEditing);
+  const [inputData, setInputData] = useState(saleEditing ?? {});
+  const [formData, setFormData] = useState({});
+  const [materiaisOriginais, setMateriaisOriginais] = useState([]);
   const [error, setError] = useState({});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
-  const isEditing = sale.id_venda_vda ?? false;
+  const isEditing = saleEditing ?? false;
 
   useEffect(() => {
-    if (isEditing) {
-      getSaleData(sale);
-    } else {
-      getFormData();
-    }
+    getFormData();
   }, []);
-
-  const getSaleData = (sale) => {};
 
   const getFormData = () => {
     Promise.all([
@@ -48,36 +37,105 @@ export default function SaleForm({ sale, onClose, visible }) {
       getCliente(),
       getCentroCusto(),
     ]).then(([employees, materiais, clientes, centrosCusto]) => {
-      const funcionarioTypeOptions = employees.map(
-        ({ id_funcionario_tfu, desc_funcionario_tfu }) => {
-          return {
-            value: id_funcionario_tfu,
-            label: desc_funcionario_tfu,
-          };
+      setSaleFormInfos(employees, materiais, clientes, centrosCusto)
+    });
+  };
+
+  const setSaleFormInfos = async (employees, materiais, clientes, centrosCusto) => {
+    const funcionarioTypeOptions = employees.map(
+      ({ id_funcionario_tfu, desc_funcionario_tfu }) => {
+        return {
+          value: id_funcionario_tfu,
+          label: desc_funcionario_tfu,
+        };
+      }
+    );
+    const materialOptions = materiais.map(
+      item => {
+        return {
+          id_material_rvm: item.id_material_mte,
+          des_material_mte: item.des_material_mte,
+          des_reduz_unidade_und: item.des_reduz_unidade_und,
+          vlr_material_mte: item.vlr_material_mte ?? item.vlr_unit_material_mte
         }
-      );
-      const materialOptions = materiais.map(
-        ({
-          id_material_mte,
-          des_material_mte,
-          des_reduz_unidade_und,
-          vlr_material_mte,
-        }) => {
+      }).map(item => {
+        return {
+          value: { id_material_rvm: item.id_material_rvm},
+          label: `${item.des_material_mte} - ${item.des_reduz_unidade_und}`,
+          custom: [
+            {
+              prefixDefault: item.des_reduz_unidade_und,
+              label: "Quantidade",
+              column: "qtd_material_rvm",
+              value: 1,
+              type: "number",
+            },
+            {
+              label: "Valor Unitário",
+              column: "vlr_unit_material_rvm",
+              value: item.vlr_material_mte,
+              type: "number",
+              mask: "currency",
+            },
+          ],
+        };
+      }
+    );
+    const clienteOptions = clientes.map(
+      ({
+        id_cliente_cli,
+        des_cliente_cli,
+        documento_cliente_cli,
+        telefone_cliente_cli,
+      }) => {
+        return {
+          value: id_cliente_cli,
+          label: `${des_cliente_cli} - ${
+            !telefone_cliente_cli
+              ? documento_cliente_cli
+              : telefone_cliente_cli
+          }`,
+        };
+      }
+    );
+    const centroCustoTypeOptions = centrosCusto.map(
+      ({ id_centro_custo_cco, des_centro_custo_cco }) => {
+        return {
+          value: id_centro_custo_cco,
+          label: des_centro_custo_cco,
+        };
+      }
+    );
+    if(isEditing)
+    {
+      const materiais = await getSaleProducts(saleEditing.id_venda_vda);
+      setMateriaisOriginais(materiais);
+      form.materiais = materiais.map(
+        item => {
           return {
-            value: id_material_mte,
-            label: `${des_material_mte} - ${des_reduz_unidade_und}`,
+            id: item.id,
+            id_material_rvm: item.id_material_rvm,
+            des_material_mte: item.des_material_mte,
+            des_reduz_unidade_und: item.des_reduz_unidade_und,
+            vlr_material_rvm: item.vlr_material_mte ?? item.vlr_unit_material_rvm,
+            qtd_material_rvm: item.qtd_material_rvm,
+          }
+        }).map(item => {
+          return {
+            value: { id: item.id, id_material_rvm: item.id_material_rvm },
+            label: `${item.des_material_mte} - ${item.des_reduz_unidade_und}`,
             custom: [
               {
-                prefixDefault: des_reduz_unidade_und,
+                prefixDefault: item.des_reduz_unidade_und,
                 label: "Quantidade",
                 column: "qtd_material_rsm",
-                value: 1,
+                value: item.qtd_material_rvm,
                 type: "number",
               },
               {
                 label: "Valor Unitário",
-                column: "vlr_material_mte",
-                value: vlr_material_mte,
+                column: "vlr_unit_material_rvm",
+                value: item.vlr_material_rvm,
                 type: "number",
                 mask: "currency",
               },
@@ -85,74 +143,90 @@ export default function SaleForm({ sale, onClose, visible }) {
           };
         }
       );
-      const clienteOptions = clientes.map(
-        ({
-          id_cliente_cli,
-          des_cliente_cli,
-          documento_cliente_cli,
-          telefone_cliente_cli,
-        }) => {
-          return {
-            value: id_cliente_cli,
-            label: `${des_cliente_cli} - ${
-              telefone_cliente_cli == ""
-                ? documento_cliente_cli
-                : telefone_cliente_cli
-            }`,
-          };
-        }
-      );
-      const centroCustoTypeOptions = centrosCusto.map(
-        ({ id_centro_custo_cco, des_centro_custo_cco }) => {
-          return {
-            value: id_centro_custo_cco,
-            label: des_centro_custo_cco,
-          };
-        }
-      );
-      setFormData({
-        employees: funcionarioTypeOptions,
-        materiais: materialOptions,
-        clientes: clienteOptions,
-        centroCusto: centroCustoTypeOptions,
-      });
+      setForm(form)
+    }
+    setFormData({
+      employees: funcionarioTypeOptions,
+      materiais: materialOptions,
+      clientes: clienteOptions,
+      centroCusto: centroCustoTypeOptions,
     });
-  };
+  }
 
   const handleChangeValue = (event) => {
     if (!event.target)
     {
       return;
     }
-    inputData[event.target.name] = event.target.value
-    if (event.target.name == 'materiais'){
-      inputData[event.target.name] = event.target.value.map((material) => {
+    const eventName = event.target.name ?? event.target
+    let eventValue = event.target.value ?? null
+    inputData[eventName] = eventValue
+    if (eventName == 'materiais' && !isEditing) {
+      inputData[eventName] = eventValue.map((material) => {
         return {
-          id_material_rvm: material.value,
+          id_material_rvm: material.value.id_material_rvm,
           qtd_material_rvm: material.custom[0].value,
           vlr_unit_material_rvm: parseInt(material.custom[1].value)
         }  
       })
     }
+    
+    if (eventName == 'materiais' && isEditing) {
+      const materiaisSelecionados = eventValue.map((material) => {
+        return {
+          id: material.value.id,
+          id_material_rvm: material.value.id_material_rvm,
+          id_material_mte: material.value.id_material_mte,
+          qtd_material_rvm: material.custom[0].value,
+          vlr_unit_material_rvm: parseInt(material.custom[1].value)
+      }});
+      const materiaisInserir = materiaisSelecionados.filter(l => !l.id)
+      const materiaisAtualizar = materiaisSelecionados.filter(material => material.id).map(material => {
+        return {
+          id: material.id,
+          id_material_rvm: material.id_material_rvm,
+          qtd_material_rvm: Number(material.qtd_material_rvm),
+          vlr_unit_material_rvm: material.vlr_unit_material_rvm
+        }  
+      })
+      const idsMateriaisSelecionados = materiaisSelecionados.filter(material => material.id).map(material => material.id);
+      const materiaisExcluir = materiaisOriginais.filter(materialOriginal => !idsMateriaisSelecionados.includes(materialOriginal.id));
+      inputData.idsMateriaisExcluir = materiaisExcluir.map(material => material.id);
+      inputData.materiaisAtualizar = materiaisAtualizar;
+      inputData.materiaisInserir = materiaisInserir;
+    }
   };
 
   const handleSubmit = async () => {
     setLoadingSubmit(true);
-    await api.post("/venda", inputData)
-    .then((res) => {
-      toast.success(res.data.message)
-      setLoadingSubmit(false);
-      setInputData({})
-      onClose();
-    }).catch((res) => {
-      toast.error(res.data.message)
-      setLoadingSubmit(false);
-    })
+    if(!isEditing) {
+      await api.post("/venda", inputData)
+      .then((res) => {
+        toast.success(res.data.message)
+        setLoadingSubmit(false);
+        setInputData({})
+        onClose();
+      }).catch((res) => {
+        toast.error(res.data.message)
+        setLoadingSubmit(false);
+      })
+    } else {
+      await api.put(`/venda/${inputData.id_venda_vda}`, inputData)
+      .then((res) => {
+        toast.success(res.data.message)
+        setLoadingSubmit(false);
+        setInputData({})
+        onClose();
+      }).catch((res) => {
+        toast.error(res.response.data.error)
+        setLoadingSubmit(false);
+      })
+    }
   };
 
   return (
     <Modal
-      title={form.id_venda_vda ? "Edição" : "Cadastro"}
+      title={form ? "Edição" : "Cadastro"}
       onClose={onClose}
       visible={visible}
     >
@@ -160,7 +234,7 @@ export default function SaleForm({ sale, onClose, visible }) {
         <label>Centro de Custo</label>
         <SelectBox
           options={formData?.centroCusto ?? []}
-          defaultValue={form?.id_centro_custo_ser ?? []}
+          defaultValue={form?.id_centro_custo_vda ?? []}
           name="id_centro_custo_vda"
           onChange={handleChangeValue}
           error={""}
@@ -172,7 +246,7 @@ export default function SaleForm({ sale, onClose, visible }) {
         <label>Funcionário</label>
         <SelectBox
           options={formData?.employees ?? []}
-          defaultValue={form?.id_funcionario_servico_ser ?? []}
+          defaultValue={form?.id_funcionario_vda ?? []}
           name="id_funcionario_vda"
           onChange={handleChangeValue}
           error={""}
@@ -184,8 +258,8 @@ export default function SaleForm({ sale, onClose, visible }) {
         <label>Cliente</label>
         <SelectBox
           options={formData?.clientes ?? []}
-          defaultValue={form?.id_cliente_ser ?? []}
-          name="id_cliente_ser"
+          defaultValue={form?.id_cliente_vda ?? []}
+          name="id_cliente_vda"
           onChange={handleChangeValue}
           error={""}
           limit={1}
@@ -208,7 +282,7 @@ export default function SaleForm({ sale, onClose, visible }) {
         <label>Observação</label>
         <Input
           type={"text"}
-          defaultValue={form?.txt_servico_ser ?? ""}
+          defaultValue={form?.desc_venda_vda ?? ""}
           name="desc_venda_vda"
           onChange={handleChangeValue}
           error={""}

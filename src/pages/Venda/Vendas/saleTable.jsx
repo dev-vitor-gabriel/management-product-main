@@ -26,25 +26,16 @@ export default function SaleTable({ data = [], handleEdit, refresh, tela = ''}) 
   }
 
   const columns = [
-    // {
-    //   name: 'Ações',
-    //   cell: ({ id_venda_vda, desc_funcionario_tfu }) => (
-    //     <div>
-    //       {id_venda_vda == 1 && (
-    //       <>
-    //         <Button onClick={() => handleEdit(id_venda_vda)}>Editar</Button>
-    //         <Button onClick={() => handleDelete(id_venda_vda)}>Excluir</Button>
-    //         { tela == 'finalizar' && 
-    //           <Button
-    //           finalizar
-    //           onClick={() => handleFinalizar(id_venda_vda)}
-    //           >Finalizar</Button>
-    //         }
-    //       </>
-    //       )}
-    //     </div>
-    //   ),
-    // },
+    {
+      name: 'Ações',
+      cell: (sale) => (
+        <div>
+          <>
+            <Button onClick={() => handleEdit(sale)}>Editar</Button>
+          </>
+        </div>
+      ),
+    },
     {
       name: "Identificador",
       selector: ({ id_venda_vda }) => `${id_venda_vda}`,
