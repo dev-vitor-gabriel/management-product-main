@@ -31,7 +31,6 @@ function Login() {
 
         signIn({email, password})
 
-        setEmail('');
         setPassword('');
     }
 

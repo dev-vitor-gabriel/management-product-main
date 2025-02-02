@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from 'react-toastify';
 
 const api = axios.create({
-    baseURL: 'https://sistema-generico-api.vercel.app/api/api'
+    baseURL: 'http://localhost:8000/api'
 });
 
 api.interceptors.request.use(
