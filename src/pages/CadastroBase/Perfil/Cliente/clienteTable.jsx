@@ -50,7 +50,7 @@ export default function ClienteTable({ data = [], handleEdit, refresh }) {
     },
     {
       name: "Documento",
-      selector: ({ documento_cliente_cli }) => `${documento_cliente_cli}`,
+      selector: ({ documento_cliente_cli }) => `${documento_cliente_cli ?? '-'}`,
       sortable: true,
     },
     {
