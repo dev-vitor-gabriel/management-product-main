@@ -9,6 +9,7 @@ import { getSales } from "../../../services/sale";
 
 export default function Sale({ reg = null, tela }) {
     const [sales, setSales] = useState([]);
+    const [saleEditing, setSaleEditing] = useState(null);
     const [shouldReload, setShouldReload] = useState(false);
 
     const { title, breadItens } = useContext(PaginationContext);
@@ -45,51 +46,13 @@ export default function Sale({ reg = null, tela }) {
         }
     }, []);
 
-    const handleEdit = (id_venda_ser) => {
-        const edit = sales.filter((reg) => reg.id_venda_ser == id_venda_ser)[0];
-        const newEdit = {...edit};
-        newEdit.materiais = newEdit.materiais.map((reg) => {
-            return ({
-                value: reg.id_venda_vda,
-                label: `${reg.des_material_mte}`,
-                custom: [
-                    {
-                        prefixDefault: reg.des_reduz_unidade_und ?? '',
-                        label: 'Quantidade',
-                        column: 'qtd_material_rsm',
-                        value: reg.qtd_material_rsm,
-                        type: 'number'
-                    },
-                    {
-                        label: 'Valor Unitário',
-                        column: 'vlr_material_rsm',
-                        value: reg.vlr_material_rsm,
-                        type: 'number',
-                        mask: 'currency'
-                    }
-                ]
-            });
-        })
-        newEdit.tipos_venda = newEdit.tipos_venda.map((reg) => {
-            return ({
-                value: reg.id_venda_tipo_stp,
-                label: `${reg.des_venda_tipo_stp}`,
-                custom: [
-                    {
-                        label: 'Valor Unitário',
-                        column: 'vlr_tipo_venda_rst',
-                        value: reg.vlr_tipo_venda_rst,
-                        type: 'number',
-                        mask: 'currency'
-                    }
-                ]
-            });
-        })
-        setSaleEdited(newEdit)
+    const handleEdit = (sale) => {
         setModalIsOpen(true);
+        setSaleEditing(sale);
     }
 
     function getSalesDataSet() {
+        
         return sales.map(reg => ({ 'ID': reg.id_venda_ser, 'Funcionário': reg.desc_funcionario_tfu, 'Data Criação': formatDate(reg.created_at) }))
     }
 
@@ -97,7 +60,8 @@ export default function Sale({ reg = null, tela }) {
         <Content>
             <PageHeader
                 onClick={() => {
-                    setSaleEdited({});
+                    setSaleEdited(null);
+                    setSaleEditing(null);
                     setModalIsOpen(true)
                 }}
                 adicionar='Nova Venda'
@@ -106,7 +70,7 @@ export default function Sale({ reg = null, tela }) {
                 dataset={getSalesDataSet()}
             />
             <SaleTable data={sales} handleEdit={handleEdit} refresh={fetchSales} tela={tela}/>
-            {modalIsOpen && <SaleForm sale={saleEdited} onClose={() => { setModalIsOpen(false); setShouldReload(true); }} visible={modalIsOpen} />}
+            {modalIsOpen && <SaleForm saleEditing={saleEditing} onClose={() => { setModalIsOpen(false); setSaleEditing({}) ;setShouldReload(true); }} visible={modalIsOpen} />}
         </Content>
     )
 }

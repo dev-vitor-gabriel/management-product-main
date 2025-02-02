@@ -239,7 +239,7 @@ export default function ServiceForm({ service, onClose, visible }) {
       </FormGroup>
 
       <Expand>
-        <ButtonSubmit handleSubmit={handleSubmit} loading={loadingSubmit} >Salvar</ButtonSubmit>
+        <ButtonSubmit handleSubmit={handleSubmit} loading={loadingSubmit}>Salvar</ButtonSubmit>
       </Expand>
     </Modal>
   )
