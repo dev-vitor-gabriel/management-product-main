@@ -63,8 +63,6 @@ export default function Agendamento() {
         fetchData();
     }, []);
 
-    console.log('#######',form);
-
 
     if(!formData.entrepriseInfo){
         return <CenterFullScreen><Loading/></CenterFullScreen>;

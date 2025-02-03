@@ -58,10 +58,6 @@ export default function UnidadeForm({ reg, onClose, visible, refresh }) {
     }, 1000);
   }
 
-  console.log(form);
-  
-
-
   return (
     <Modal title={form.id_unidade_und ? "Edição" : "Cadastro"} onClose={onClose} visible={visible} >
       <FormGroup>

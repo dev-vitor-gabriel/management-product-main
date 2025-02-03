@@ -16,22 +16,21 @@ export default function Estoque() {
 
     const [regs, setRegs] = useState([]);
 
+    const [totalRows, setTotalRows] = useState(0);
     const [regEdited, setRegEdited] = useState({});
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
     // Chamada da API - Lista todos os materiais
-    const fetchServices = async () => {
+    const fetchServices = async (pageNumber, totalSize) => {
         try {
-            const response = await getEstoque();
-            setRegs(response);
+            const response = await getEstoque(pageNumber, totalSize);
+            setRegs(response.items);
+            setTotalRows(response.total)
             setModalIsOpen(false)
         } catch (error) {
             console.error("Erro ao buscar:", error);
         }
     };
-    useEffect(() => {
-        fetchServices();
-    }, []);
 
     const handleEdit = (id_estoque_est) => {
         const edit = regs.filter((reg) => reg.id_estoque_est == id_estoque_est)[0];
@@ -52,7 +51,7 @@ export default function Estoque() {
                 exportFilename='export_estoque'
                 dataset={regs.map(reg=>({'ID':reg.id_estoque_est, 'Descrição': reg.des_estoque_est,'Centro de Custo': reg.id_centro_custo_est,'Data Criação': formatDate(reg.created_at)}))}
             />
-            <EstoqueTable data={regs} handleEdit={handleEdit} refresh={fetchServices}/>
+            <EstoqueTable totalRows={totalRows} data={regs} handleEdit={handleEdit} refresh={fetchServices}/>
             {modalIsOpen && <EstoqueForm reg={regEdited} onClose={() => { setModalIsOpen(false) }} visible={modalIsOpen} refresh={fetchServices}/>}
         </Content>
     )

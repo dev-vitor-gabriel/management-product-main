@@ -1,11 +1,16 @@
 
 import api from "./api";
 
+let cachedPageNumber = 1;
+let cachedPerPage = 10;
 
-const getEstoque = async () => {
+const getEstoque = async (pageNumber, perPage) => {
+    cachedPageNumber = pageNumber ?? cachedPageNumber;
+    cachedPerPage = perPage ?? cachedPerPage;
+
     try {
-        const response = await api.get("/estoque");
-        return response.data.data;
+        const response = await api.get(`/estoque?per_page=${cachedPerPage}&page_number=${cachedPageNumber}`);
+        return response.data;
     } catch (error) {
         console.error("Erro ao buscar:", error);
     }

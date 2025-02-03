@@ -1,13 +1,13 @@
 import React from "react";
 
-import Table from "../../../../components/Table";
+import TableV2 from "../../../../components/TableV2";
 import { deleteEstoque } from "../../../../services/estoque";
 import { confirmAlert } from "../../../../utils/alert";
 import { formatDate } from "../../../../utils/dateHelper";
 import { Button } from './style';
 
 
-export default function EstoqueTable({ data = [], handleEdit, refresh }) {
+export default function EstoqueTable({ data = [], handleEdit, refresh, totalRows }) {
 
   const handleDelete = async (id) => {
     confirmAlert({
@@ -50,9 +50,11 @@ export default function EstoqueTable({ data = [], handleEdit, refresh }) {
     },
   ];
   return (
-    <Table
+    <TableV2
       columns={columns}
+      totalRows={totalRows}
       data={data}
+      fetchData={refresh}
     />
   )
 }

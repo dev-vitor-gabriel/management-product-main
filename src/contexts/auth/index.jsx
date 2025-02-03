@@ -81,7 +81,6 @@ function AuthProvider({ children }) {
             navigate("/login");
         }).catch(l => {
             setLoadingAuth(false);
-            console.log(l)
             toast.error(l.response.data.message);
         })
 
