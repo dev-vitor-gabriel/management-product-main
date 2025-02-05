@@ -49,7 +49,7 @@ export default function BaixaTable({ data = [], handleEdit, refresh }) {
     },
     {
       name: "Observação",
-      selector: ({ txt_movimentacao_mov }) => `${txt_movimentacao_mov}`,
+      selector: ({ txt_movimentacao_mov }) => `${txt_movimentacao_mov ?? '-'}`,
       sortable: true,
     },
     {

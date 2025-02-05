@@ -23,7 +23,7 @@ export default function Estoque() {
     // Chamada da API - Lista todos os materiais
     const fetchServices = async (pageNumber, totalSize) => {
         try {
-            const response = await getEstoque(pageNumber, totalSize);
+            const response = await getEstoque('', pageNumber, totalSize);
             setRegs(response.items);
             setTotalRows(response.total)
             setModalIsOpen(false)

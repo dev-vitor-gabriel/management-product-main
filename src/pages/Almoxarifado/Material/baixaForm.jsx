@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import ButtonSubmit from "../../../components/Buttons/ButtonSubmit";
 import Input from "../../../components/Input";
 import SelectBox from "../../../components/Select";
+import SelectBoxV2 from "../../../components/SelectV2";
 import { saveBaixa } from "../../../services/baixa";
 import { getCentroCusto } from "../../../services/centroCusto";
 import { getEstoque } from "../../../services/estoque";
@@ -20,27 +21,19 @@ const schema = yup.object().shape({
   id_centro_custo_mov: yup.number().required().positive().integer()
 });
 
-
 export default function BaixaForm({ reg, onClose, visible, refresh, tipoMovimentacao }) {
 
   const [form, setForm] = useState(reg ?? {});
   const [formData, setFormData] = useState(reg ?? {});
   const [error, setError] = useState({});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
-
+  const [estoques, setEstoques] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-          Promise.all([getEstoque(),getCentroCusto(), getMaterial()])
-          .then(([estoque, centroCusto, material])=>{
-            const estoqueOptions = estoque.map(({ id_estoque_est, des_estoque_est })=>{
-              return ({
-                value: id_estoque_est,
-                label: `${des_estoque_est}`
-              });
-            })
-
+          Promise.all([getCentroCusto(), getMaterial()])
+          .then(([centroCusto, material])=>{
             const centroCustoOptions = centroCusto.map(({ id_centro_custo_cco, des_centro_custo_cco }) => {
               return ({
                 value: id_centro_custo_cco,
@@ -68,7 +61,7 @@ export default function BaixaForm({ reg, onClose, visible, refresh, tipoMoviment
                 }]
               });
             })
-            setFormData({estoqueOptions, centroCustoOptions, materialOptions })
+            setFormData({ centroCustoOptions, materialOptions })
           })
       } catch (error) {
           console.error("Erro ao buscar:", error);
@@ -76,7 +69,6 @@ export default function BaixaForm({ reg, onClose, visible, refresh, tipoMoviment
     };
     fetchData();
   }, [])
-
 
   const handleChangeValue = (event) => {
     const inputName = event.target.name.replace(/\[|\]/g, '');
@@ -138,6 +130,11 @@ export default function BaixaForm({ reg, onClose, visible, refresh, tipoMoviment
     }, 1000);
   }
 
+  const getEstoqueSelect = async (filter) => {
+    return await getEstoque(filter).then((estoques) => {
+      return estoques.items.map(estoque => { return { value: estoque.id_estoque_est, label: estoque.des_estoque_est } })
+    })
+  }
 
   return (
     <Modal title={form.id_material_und ? "Edição" : "Cadastro"} onClose={onClose} visible={visible} >
@@ -154,11 +151,12 @@ export default function BaixaForm({ reg, onClose, visible, refresh, tipoMoviment
       </FormGroup>
       <FormGroup>
         <label>Estoque</label>
-        <SelectBox
-          options={formData.estoqueOptions ?? []}
-          defaultValue={form.id_estoque_entrada_mov ?? form.id_estoque_saida_mov ?? []}
+        <SelectBoxV2
+          options={estoques}
           name='id_estoque[]'
           onChange={handleChangeValue}
+          getOptions={getEstoqueSelect}
+          setOptions={setEstoques}
           error={error?.id_estoque ?? false}
           limit={1}
         />
