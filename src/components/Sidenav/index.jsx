@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 
 import { AuthContext } from "../../contexts/auth";
 
-import logo from '../../assets/logo-dark-zanex.png';
+import logo from '../../assets/logo-omnigest-light.png';
 
 import Menu from "../Menu";
 
@@ -20,7 +20,9 @@ export default function Sidenav() {
     return (
         <Aside>
             <Logo>
-                <img src={logo} alt="logo" />
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+                    <img src={logo} alt="logo" style={{ maxWidth: "100%", height: "auto" }} />
+                </div>
             </Logo>
             <Nav>
                 {userMenu.map((item, index) => (

@@ -17,7 +17,7 @@ import {
     Button
 } from './style';
 
-import logo from '../../assets/logo-zanex.png';
+import logo from '../../assets/logo-omnigest-dark.png';
 
 function Login() {
 
@@ -36,7 +36,7 @@ function Login() {
 
     return(
         <LoginPage>
-            <Logo src={logo} alt="logo"/>
+            <Logo src={logo} style={{ width: "360px", height: "60px", objectFit: "cover" }} alt="logo"/>
             <ContainerLogin>
                 <Form onSubmit={handleSignIn}>
                     <FormTitle>Entrar</FormTitle>

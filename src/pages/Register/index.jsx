@@ -19,7 +19,7 @@ import {
     Button
 } from './style';
 
-import logo from '../../assets/logo-zanex.png';
+import logo from '../../assets/logo-omnigest-dark.png';
 
 function Register() {
 
@@ -31,22 +31,22 @@ function Register() {
 
     function handleSignUp(event) {
         event.preventDefault();
-        
+
         if(password.length < 6) {
             toast.warning('A senha deve conter no mínimo 6 caracteres!')
             return
         }
-        
+
         signUp({name, email, password});
     }
 
     return(
         <LoginPage>
-            <Logo src={logo} alt="logo"/>
+            <Logo src={logo} style={{ width: "360px", height: "60px", objectFit: "cover" }} alt="logo"/>
             <ContainerLogin>
                 <Form onSubmit={handleSignUp}>
                     <FormTitle>Cadastro</FormTitle>
-                    
+
                     <Input type="text">
                         <MdPerson size={18} color="#6c757d"/>
                         <input 
