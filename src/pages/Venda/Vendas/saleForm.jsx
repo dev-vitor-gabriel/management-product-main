@@ -9,12 +9,13 @@ import { toast } from "react-toastify";
 import ButtonSubmit from "../../../components/Buttons/ButtonSubmit";
 import SelectBox from "../../../components/Select";
 import { getEmployee } from "../../../services/employee";
-import { getSale, getSaleProducts, saveSales } from "../../../services/sale";
+import { getSale, getSaleProducts } from "../../../services/sale";
 import { Expand, FormGroup } from "./style";
 import { getCentroCusto } from "../../../services/centroCusto";
 import { getCliente } from "../../../services/cliente";
 import { getMaterial } from "../../../services/material";
 import api from "../../../services/api";
+import { getStatusByOrigem, OrigemStatus } from "../../../services/status";
 
 export default function SaleForm({ saleEditing, onClose, visible }) {
   const [form, setForm] = useState(saleEditing);
@@ -36,12 +37,13 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
       getMaterial(),
       getCliente(),
       getCentroCusto(),
-    ]).then(([employees, materiais, clientes, centrosCusto]) => {
-      setSaleFormInfos(employees, materiais, clientes, centrosCusto)
+      getStatusByOrigem(OrigemStatus.Venda),
+    ]).then(([employees, materiais, clientes, centrosCusto, status]) => {
+      setSaleFormInfos(employees, materiais, clientes, centrosCusto, status)
     });
   };
 
-  const setSaleFormInfos = async (employees, materiais, clientes, centrosCusto) => {
+  const setSaleFormInfos = async (employees, materiais, clientes, centrosCusto, status) => {
     const funcionarioTypeOptions = employees.map(
       ({ id_funcionario_tfu, desc_funcionario_tfu }) => {
         return {
@@ -50,6 +52,7 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
         };
       }
     );
+  
     const materialOptions = materiais.map(
       item => {
         return {
@@ -81,6 +84,7 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
         };
       }
     );
+    
     const clienteOptions = clientes.map(
       ({
         id_cliente_cli,
@@ -106,6 +110,15 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
         };
       }
     );
+    const statusOption = status.map(
+      ({ id_status_sts, des_status_sts }) => {
+        return {
+          value: id_status_sts,
+          label: des_status_sts,
+        };
+      }
+    );
+  
     if(isEditing)
     {
       const materiais = await getSaleProducts(saleEditing.id_venda_vda);
@@ -150,6 +163,7 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
       materiais: materialOptions,
       clientes: clienteOptions,
       centroCusto: centroCustoTypeOptions,
+      status: statusOption,
     });
   }
 
@@ -275,6 +289,18 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
           name="materiais"
           onChange={handleChangeValue}
           error={""}
+        />
+      </FormGroup>
+
+      <FormGroup>
+        <label>Status</label>
+        <SelectBox
+          options={formData.status ?? []}
+          defaultValue={form?.id_status_vda ?? []}
+          name="id_status_vda"
+          onChange={handleChangeValue}
+          error={""}
+          limit={1}
         />
       </FormGroup>
 

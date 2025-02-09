@@ -13,6 +13,14 @@ export async function getSaleProducts(saleId) {
     return response.data;
 }
 
-export function saveSales() {
-    return;
+export async function finalizarSale(saleId) 
+{
+    const response = await api.patch(`/venda/${saleId}/finalizar`);
+    return response.data;
+}
+
+export async function cancelarSale(saleId) 
+{
+    const response = await api.patch(`/venda/${saleId}/cancelar`);
+    return response.data;
 }
