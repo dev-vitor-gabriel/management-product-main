@@ -1,9 +1,19 @@
 import api from "./api";
 
-export async function getSales() {
-    return await api.get("/venda");
-}
+let cachedPageNumber = 1;
+let cachedPerPage = 10;
 
+export async function getSales(pageNumber, perPage) {
+    cachedPageNumber = pageNumber ?? cachedPageNumber;
+    cachedPerPage = perPage ?? cachedPerPage;
+
+    try {
+        const response = await api.get(`/venda?&per_page=${cachedPerPage}&page_number=${cachedPageNumber}`);
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao buscar:", error);
+    }
+};
 export async function getSale(saleId) {
     return await api.get(`/venda/${saleId}`);
 }

@@ -8,7 +8,9 @@ import SaleTable from "./saleTable";
 import { getSales } from "../../../services/sale";
 
 export default function Sale({ reg = null, tela }) {
+
     const [sales, setSales] = useState([]);
+    const [totalRows, setTotalRows] = useState(0);
     const [saleEditing, setSaleEditing] = useState(null);
     const [shouldReload, setShouldReload] = useState(false);
 
@@ -19,10 +21,11 @@ export default function Sale({ reg = null, tela }) {
 
     // Chamada da API - Lista todos os materiais
     
-    const fetchSales = async () => {
+    const fetchSales = async (pageNumber, totalSize) => {
         try {
-            const response = await getSales();
-            setSales(response.data);
+            const response = await getSales(pageNumber, totalSize);
+            setSales(response.items);
+            setTotalRows(response.total);
         } catch (error) {
             console.error("Erro ao buscar:", error);
         }
@@ -69,7 +72,7 @@ export default function Sale({ reg = null, tela }) {
                 exportFilename='export_venda'
                 dataset={getSalesDataSet()}
             />
-            <SaleTable data={sales} handleEdit={handleEdit} refresh={fetchSales} tela={tela}/>
+            <SaleTable totalRows={totalRows} data={sales} handleEdit={handleEdit} refresh={fetchSales} tela={tela}/>
             {modalIsOpen && <SaleForm saleEditing={saleEditing} onClose={() => { setModalIsOpen(false); setSaleEditing({}) ;setShouldReload(true); }} visible={modalIsOpen} />}
         </Content>
     )

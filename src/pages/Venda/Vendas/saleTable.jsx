@@ -8,9 +8,10 @@ import { confirmAlert } from "../../../utils/alert";
 import { formatDate } from "../../../utils/dateHelper";
 import { StatusVenda } from "../../../services/status";
 import { cancelarSale, finalizarSale } from "../../../services/sale";
+import TableV2 from "../../../components/TableV2";
 
-export default function SaleTable({ data = [], handleEdit, refresh, tela = ''}) {
-  
+export default function SaleTable({ data = [], handleEdit, refresh, totalRows }) {
+
   const handleFinalizar = async (sale) => {
     confirmAlert({
       title: 'Tem certeza disso?',
@@ -72,9 +73,11 @@ export default function SaleTable({ data = [], handleEdit, refresh, tela = ''}) 
     },
   ];
   return (
-    <Table
+    <TableV2
       columns={columns}
+      totalRows={totalRows}
       data={data}
+      fetchData={refresh}
     />
   )
 }
