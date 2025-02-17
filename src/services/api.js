@@ -2,7 +2,8 @@ import axios from "axios";
 import { toast } from 'react-toastify';
 
 const api = axios.create({
-    baseURL: 'https://sistema-generico-api.vercel.app/api/api'
+    // baseURL: 'https://sistema-generico-api.vercel.app/api/api'
+    baseURL: 'http://localhost:8000/api'
 });
 
 api.interceptors.request.use(
@@ -33,5 +34,18 @@ api.interceptors.request.use(
         return Promise.reject(error);
     }
 );
+
+api.interceptors.response.use(
+    response => response, 
+    error => {
+        if (error.response && error.response.status === 401 && window.location.href != '/login')     {
+            localStorage.removeItem('authorization');
+            localStorage.removeItem('user');
+            localStorage.removeItem('menu');
+            window.location.href = '/login'; 
+        }
+        return Promise.reject(error);
+    }
+)
 
 export default api;

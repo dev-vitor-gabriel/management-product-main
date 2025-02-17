@@ -61,15 +61,11 @@ const SelectBox = ({ options, defaultValue, name, onChange, error, limit = 0, se
   };
   const handleChangeCustomValue = ({customValue, value, column}) => {
     customValue = parseCurrencyToInt(customValue);
-    // console.log(customValue, value, column)
     const newSelectedOptions = selectedOptions.map(reg => {
       if(reg.value === value){
-        // console.log('value', value)
         reg.custom = reg.custom.map(col => {
 
-        // console.log('col.column == column', col.column , column, col)
           if(col.column == column){
-            // console.log('col.column == column', col.column, column, col.value, customValue)
             col.value = customValue
           }
           return col;
@@ -78,7 +74,6 @@ const SelectBox = ({ options, defaultValue, name, onChange, error, limit = 0, se
       return reg;
     })
     
-    // console.log('newSelectedOptions',newSelectedOptions)
     setSelectedOptions(newSelectedOptions);
     const event = { target: { name: name, value: newSelectedOptions } };
     onChange(event)

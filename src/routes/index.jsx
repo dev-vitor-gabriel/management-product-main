@@ -25,6 +25,7 @@ import Register from '../pages/Register';
 import Service from '../pages/Servico';
 import EstoqueMaterial from '../pages/Almoxarifado/EstoqueMaterial'
 import Sale from '../pages/Venda/Vendas';
+import Company from '../pages/Empresa/Empresas';
 
 function RoutesApp() {
     return (
@@ -52,6 +53,7 @@ function RoutesApp() {
                 <Route path="/cadastro-base/perfil/cliente" element={<Cliente />} />
                 <Route path="/listicons" element={<ListIcons />} />
                 <Route path="/vendas" element={<Sale />} />
+                <Route path="/empresas" element={<Company />} />
             </Route>
 
             <Route path="/login" element={<Login />} />

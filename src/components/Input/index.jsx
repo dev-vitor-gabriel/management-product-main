@@ -5,7 +5,7 @@ import {
   InputForm
 } from "./style";
 
-import { formatCurrency } from "../../utils/format";
+import { formatCNPJ, formatCurrency } from "../../utils/format";
 import { cep, cpf, currency } from "./mask";
 
 
@@ -21,6 +21,7 @@ export default function Input({ type, mask, prefixDefault= '', defaultValue, onC
       return;
     }
   }, [])
+
   const handleKeyUp = useCallback(
     (e) => {
       if (mask === "cep") {
@@ -31,6 +32,9 @@ export default function Input({ type, mask, prefixDefault= '', defaultValue, onC
       }
       if (mask === "cpf") {
         cpf(e);
+      }
+      if (mask === "cnpj") {
+        e.target.value = formatCNPJ(e.target.value);
       }
     },
     [mask]

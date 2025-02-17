@@ -12,19 +12,32 @@ const paginationComponentOptions = {
   selectAllRowsItemText: 'Todos',
 };
 // eslint-disable-next-line react/prop-types
-export default function TableV2({ columns, fetchData, totalRows, data = [] }) {
-  const [filter, setFilter] = useState('');
+export default function TableV2({ columns, fetchData, totalRows, data = [], filter, setFilter }) {
+  if (!setFilter) {
+    [filter, setFilter] = useState('');
+  }
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
+  const [debouncedFilter, setDebouncedFilter] = useState(filter); 
+
   useEffect(() => {
-    fetchData(page, perPage);
-  }, [page, perPage]);
+    const handler = setTimeout(() => {
+      setFilter(debouncedFilter);
+    }, 500);
+
+    return () => clearTimeout(handler); 
+  }, [debouncedFilter]); 
+
+
+  useEffect(() => {
+    fetchData(filter, page, perPage);
+  }, [filter, page, perPage]);
 
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
-        <FilterTable defaultValue={filter} onChange={({ target }) => setFilter(target.value)} />
+        <FilterTable defaultValue={filter} onChange={({ target }) => setDebouncedFilter(target.value)} />
       </div>
       <DataTable
         columns={columns}
