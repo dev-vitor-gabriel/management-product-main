@@ -41,15 +41,20 @@ export default function UsuarioForm({ reg, onClose, visible, refresh }) {
           formData.append(key, form[key]);
         });
 
-        console.log([...formData]); // Para verificar os dados antes de enviar
+        const result = await saveUsuario(formData);
 
-        const success = await saveUsuario(formData); // Enviando como FormData
-        if(success){
-          await refresh();
-          toast.success("Registro salvo!");
+        if (result.success) {
+            toast.success("Registro salvo!");
         } else {
-          toast.error("Erro ao salvar registro!");
+            if (result.errors) {
+                Object.values(result.errors).forEach(errorMessages => {
+                    errorMessages.forEach(error => toast.error(error));
+                });
+            } else {
+                toast.error("Erro ao salvar registro!");
+            }
         }
+
 
         setError({});
       } catch (err) {

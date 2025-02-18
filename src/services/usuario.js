@@ -33,34 +33,41 @@ const deleteUsuario = async (id) => {
 };
 const saveUsuario = async (obj) => {
     const authorization = localStorage.getItem("authorization");
+    let token = "";
 
     if (authorization) {
         const parsedAuthorization = JSON.parse(authorization);
-        var token = parsedAuthorization.token;
+        token = parsedAuthorization.token;
     }
 
     try {
-        if(obj.id){
-            await api.put(`/auth/${obj.id}`, obj, {
+        let response;
+        if (obj.id) {
+            response = await api.put(`/auth/${obj.id}`, obj, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
-        }else{
-            await api.post("/auth/register", obj, {
+        } else {
+            response = await api.post("/auth/register", obj, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
                 }
             });
         }
-        return true;
+        return { success: true, data: response.data };
     } catch (error) {
-        console.error("Erro ao buscar:", error);
-        return false;
+        if (error.response) {
+            if (error.response.status === 422) {
+                return { success: false, errors: error.response.data.errors };
+            }
+        }
+        return { success: false, errors: { general: ["Erro ao conectar ao servidor."] } };
     }
 };
+
 
 
 export { deleteUsuario, getUsuario, saveUsuario };
