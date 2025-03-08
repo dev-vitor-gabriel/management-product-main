@@ -5,21 +5,7 @@ import api from "./api";
 const getMetodoPagamento = async () => {
     try {
         const response = await api.get("/metodoPagamento");
-        // const response = [
-        //     {
-        //         id_metodo_pagamento_tmp:1,
-        //         desc_metodo_pagamento_tmp:'Pix',
-        //         created_at:'2023-01-01',
-        //         updated_at:'2023-01-01'
-        //     },
-        //     {
-        //         id_metodo_pagamento_tmp:2,
-        //         desc_metodo_pagamento_tmp:'Dinheiro',
-        //         created_at:'2023-01-01',
-        //         updated_at:'2023-01-01'
-        //     },
-        // ];
-        return response.data;
+        return response.data.items;
     } catch (error) {
         console.error("Erro ao buscar:", error);
     }

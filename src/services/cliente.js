@@ -5,7 +5,9 @@ import api from "./api";
 const getCliente = async () => {
     try {
         const response = await api.get("/cliente");
-        return response.data;
+        console.log(response);
+
+        return response.data.items;
     } catch (error) {
         console.error("Erro ao buscar:", error);
     }

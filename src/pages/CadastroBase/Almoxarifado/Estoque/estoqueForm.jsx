@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import yup from "../../../../utils/yup";
-
-
 import Input from "../../../../components/Input";
 import Modal from "../../../../components/Modal";
-
 import { toast } from "react-toastify";
-
 import ButtonSubmit from "../../../../components/Buttons/ButtonSubmit";
 import { getCentroCusto } from "../../../../services/centroCusto";
 import { saveEstoque } from "../../../../services/estoque";
@@ -28,25 +24,19 @@ export default function EstoqueForm({ estoque, onClose, visible,refresh }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        Promise.all([getCentroCusto()])
-          .then(([centroCusto]) => {
-            const centroCustoTypeOptions = centroCusto.map(({ id_centro_custo_cco, des_centro_custo_cco }) => {
-              return ({
+        try {
+            const centroCusto = await getCentroCusto();
+            const centroCustoTypeOptions = centroCusto.map(({ id_centro_custo_cco, des_centro_custo_cco }) => ({
                 value: id_centro_custo_cco,
                 label: des_centro_custo_cco
-              });
-            })
-            setFormData({ centroCusto: centroCustoTypeOptions })
-          })
-      } catch (error) {
-        console.error("Erro ao buscar:", error);
-      }
+            }));
+            setFormData({ centroCusto: centroCustoTypeOptions });
+        } catch (error) {
+            console.error("Erro ao buscar:", error);
+        }
     };
     fetchData();
-  }, [])
-
-
+  }, []);
 
   const handleChangeValue = (event) => {
     const inputName = event.target.name.replace(/\[|\]/g, '');

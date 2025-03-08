@@ -12,6 +12,7 @@ import SelectBox from "../../../../components/Select";
 import { saveMaterial } from "../../../../services/material";
 import { getUnidade } from "../../../../services/unidade";
 import { FormGroup } from "./style";
+import { getCentroCusto } from "../../../../services/centroCusto";
 
 const schema = yup.object().shape({
   vlr_material_mte: yup.number().required().positive().integer(),
@@ -22,7 +23,7 @@ const schema = yup.object().shape({
 export default function MaterialForm({ reg, onClose, visible, refresh }) {
 
   const [form, setForm] = useState(reg ?? {});
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState(reg ??{});
   const [error, setError] = useState({});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
@@ -30,22 +31,28 @@ export default function MaterialForm({ reg, onClose, visible, refresh }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-          Promise.all([getUnidade()])
-          .then(([unidade])=>{
-            const unidadeOptions = unidade.map(({ id_unidade_und, des_unidade_und, des_reduz_unidade_und })=>{
-              return ({
-                value: id_unidade_und,
-                label: `${des_reduz_unidade_und} - ${des_unidade_und}`
-              });
-            })
-            setFormData({unidadeOptions})
-          })
+        const [unidade, centroCusto] = await Promise.all([getUnidade(), getCentroCusto()]);
+
+        const unidadeOptions = unidade.map(({ id_unidade_und, des_unidade_und, des_reduz_unidade_und }) => ({
+          value: id_unidade_und,
+          label: `${des_reduz_unidade_und} - ${des_unidade_und}`
+        }));
+
+        const centroCustoOptions = centroCusto.map(({ id_centro_custo_cco, des_centro_custo_cco }) => ({
+          value: id_centro_custo_cco,
+          label: des_centro_custo_cco
+        }));
+
+        // Atualiza o estado
+        setFormData({ unidades: unidadeOptions, centroCusto: centroCustoOptions });
       } catch (error) {
-          console.error("Erro ao buscar:", error);
+        console.error("Erro ao buscar:", error);
       }
     };
+
     fetchData();
-  }, [])
+  }, []);
+
 
 
   const handleChangeValue = (event) => {
@@ -63,6 +70,7 @@ export default function MaterialForm({ reg, onClose, visible, refresh }) {
         if(success){
           await refresh();
           toast.success("Registro salvo!");
+          onClose(); // Fecha a modal
         } else {
           toast.error("Ocorreu um erro ao salvar o registro!");
         }
@@ -84,7 +92,7 @@ export default function MaterialForm({ reg, onClose, visible, refresh }) {
 
 
   return (
-    <Modal title={form.id_material_und ? "Edição" : "Cadastro"} onClose={onClose} visible={visible} >
+    <Modal title={form.id_material_mte ? "Edição" : "Cadastro"} onClose={onClose} visible={visible} >
       <FormGroup>
         <label>Descrição</label>
         <Input
@@ -108,11 +116,22 @@ export default function MaterialForm({ reg, onClose, visible, refresh }) {
       <FormGroup>
         <label>Unidade</label>
         <SelectBox
-          options={formData.unidadeOptions ?? []}
+          options={formData.unidades ?? []}
           defaultValue={form?.id_unidade_mte ?? []}
           name='id_unidade_mte[]'
           onChange={handleChangeValue}
           error={error?.id_unidade_mte ?? false}
+          limit={1}
+        />
+      </FormGroup>
+      <FormGroup>
+        <label>Centro de Custo</label>
+        <SelectBox
+          options={formData.centroCusto ?? []}
+          defaultValue={form?.id_centro_custo_mte ?? []}
+          name='id_centro_custo_mte[]'
+          onChange={handleChangeValue}
+          error={error?.id_centro_custo_mte ?? false}
           limit={1}
         />
       </FormGroup>

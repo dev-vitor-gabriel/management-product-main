@@ -4,13 +4,18 @@ import Table from "../../../../components/Table";
 import { deleteServiceType } from "../../../../services/serviceType";
 import { formatDate } from "../../../../utils/dateHelper";
 import { Button } from './style';
+import { deleteMaterial } from "../../../../services/material";
+import { confirmAlert } from "../../../../utils/alert";
 
 
-// eslint-disable-next-line react/prop-types
 export default function UnidadeTable({ data = [], handleEdit, refresh }) {
 
   const handleDelete = async (id) => {
-    await deleteServiceType(id);
+    confirmAlert({
+      title: 'Tem certeza disso?',
+      text: "O registro será inativado!",
+      handleFunction: async () => {await deleteMaterial(id); await refresh()}
+    })
   }
 
   const columns = [

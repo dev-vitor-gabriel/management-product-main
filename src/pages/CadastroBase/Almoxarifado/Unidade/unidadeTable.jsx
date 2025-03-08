@@ -7,7 +7,6 @@ import { formatDate } from "../../../../utils/dateHelper";
 import { Button } from './style';
 
 
-// eslint-disable-next-line react/prop-types
 export default function UnidadeTable({ data = [], handleEdit, refresh }) {
 
   const handleDelete = async (id) => {
