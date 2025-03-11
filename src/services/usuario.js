@@ -68,7 +68,10 @@ const saveUsuario = async (obj) => {
     }
 };
 
-
+export async function getUsers() {
+    const response = await api.get('/user');
+    return response.data;
+}
 
 export { deleteUsuario, getUsuario, saveUsuario };
 

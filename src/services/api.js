@@ -38,11 +38,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     response => response, 
     error => {
-        if (error.response && error.response.status === 401 && window.location.href != '/login')     {
+        if (error.response && error.response.status === 401 && window.location.pathname != '/login')     {
             localStorage.removeItem('authorization');
             localStorage.removeItem('user');
             localStorage.removeItem('menu');
             window.location.href = '/login'; 
+            return;
         }
         return Promise.reject(error);
     }

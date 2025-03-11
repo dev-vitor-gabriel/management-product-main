@@ -26,6 +26,7 @@ import Service from '../pages/Servico';
 import EstoqueMaterial from '../pages/Almoxarifado/EstoqueMaterial'
 import Sale from '../pages/Venda/Vendas';
 import Company from '../pages/Empresa/Empresas';
+import UserPermissions from '../pages/Permissoes/PermissoesUsuario';
 
 function RoutesApp() {
     return (
@@ -54,6 +55,7 @@ function RoutesApp() {
                 <Route path="/listicons" element={<ListIcons />} />
                 <Route path="/vendas" element={<Sale />} />
                 <Route path="/empresas" element={<Company />} />
+                <Route path="/permissoes/permissoes-usuario" element={<UserPermissions />} />
             </Route>
 
             <Route path="/login" element={<Login />} />
