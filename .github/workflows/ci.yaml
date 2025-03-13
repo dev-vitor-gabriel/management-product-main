@@ -29,7 +29,6 @@ jobs:
   
     - name: Deploy
       run: |
-        echo $ACTIONS_DEPLOY_ACCESS_TOKEN
         git config --global user.name $user_name
         git config --global user.email $user_email
         git remote set-url origin https://${github_token}@github.com/${repository}
