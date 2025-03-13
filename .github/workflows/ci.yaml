@@ -30,17 +30,13 @@ jobs:
   
     - name: Build project
       run: npm run build
-      
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: github-pages
-        path: ./dist
   
     - name: Deploy GitHub Pages site
-      uses: actions/deploy-pages@v4.0.5
-      with:
-        token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
+      run: |
+        git config --global user.name $user_name
+        git config --global user.email $user_email
+        git remote set-url origin https://${github_token}@github.com/${repository}
+        npm run deploy
       env:
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
