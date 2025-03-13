@@ -27,7 +27,7 @@ jobs:
     - name: Build project
       run: npm run build
   
-    - name: Deploy
+    - name: Deploy - Token:${{ ACTIONS_DEPLOY_ACCESS_TOKEN }}
       run: |
         git config --global user.name $user_name
         git config --global user.email $user_email
