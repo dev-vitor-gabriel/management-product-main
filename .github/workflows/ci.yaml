@@ -27,13 +27,10 @@ jobs:
     - name: Build project
       run: npm run build
   
-    - name: Deploy
-      run: |
-        echo Deploying to: ${repository}
-        git config --global user.name $user_name
-        git config --global user.email $user_email
-        git remote set-url origin https://${github_token}@github.com/${repository}
-        npm run deploy
+    - name: Deploy GitHub Pages site
+      uses: actions/deploy-pages@v4.0.5
+      with:
+        token: ${github_token}
       env:
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
