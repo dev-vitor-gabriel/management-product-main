@@ -9,10 +9,13 @@ import {
   Header,
   SidebarContainer,
   Button,
-  Checkbox
+  Checkbox,
+  IconSeparator
 } from "./style.js";
 import { getCompanies } from "../../../services/empresa";
 import { getMenus, getEmpresaMenu, salvarEmpresaMenu } from "../../../services/menu.js";
+import Icon from '../../../components/Icons.jsx'
+import { FloppyDisk } from "@phosphor-icons/react";
 
 export default function PermissoesEmpresa() {
   const [empresas, setEmpresa] = useState([]);
@@ -107,7 +110,13 @@ export default function PermissoesEmpresa() {
   return (
     <Container>
       <Header>
-        <Button onClick={savePermissions}>Salvar</Button>
+        <Button onClick={savePermissions}>
+          <h4>Salvar</h4>
+          <IconSeparator>
+            <span style={ { fontSize: '18px' } }>|</span>
+            <FloppyDisk size={25} />
+          </IconSeparator>
+        </Button>
       </Header>
       <SidebarContainer>
         <Sidebar>
