@@ -27,6 +27,7 @@ import EstoqueMaterial from '../pages/Almoxarifado/EstoqueMaterial'
 import Sale from '../pages/Venda/Vendas';
 import Company from '../pages/Empresa/Empresas';
 import UserPermissions from '../pages/Permissoes/PermissoesUsuario';
+import CompanyPermissions from '../pages/Permissoes/PermissoesEmpresa';
 
 function RoutesApp() {
     return (
@@ -56,6 +57,7 @@ function RoutesApp() {
                 <Route path="/vendas" element={<Sale />} />
                 <Route path="/empresas" element={<Company />} />
                 <Route path="/permissoes/permissoes-usuario" element={<UserPermissions />} />
+                <Route path="/permissoes/permissoes-empresa" element={<CompanyPermissions />} />
             </Route>
 
             <Route path="/login" element={<Login />} />
