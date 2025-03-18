@@ -10,7 +10,8 @@ import {
   SidebarContainer,
   Button,
   Checkbox,
-  IconSeparator
+  IconSeparator,
+  ListContainer
 } from "./style.js";
 import { getCompanies } from "../../../services/empresa";
 import { getMenus, getEmpresaMenu, salvarEmpresaMenu } from "../../../services/menu.js";
@@ -111,7 +112,7 @@ export default function PermissoesEmpresa() {
     <Container>
       <Header>
         <Button onClick={savePermissions}>
-          <h4>Salvar</h4>
+          <h4 style={{ fontWeight: "600" }}>Salvar</h4>
           <IconSeparator>
             <span style={ { fontSize: '18px' } }>|</span>
             <FloppyDisk size={25} />
@@ -120,23 +121,27 @@ export default function PermissoesEmpresa() {
       </Header>
       <SidebarContainer>
         <Sidebar>
-          <h1>Empresas</h1>
+        <h1>Empresas</h1>
+        <ListContainer>
           {empresas.map((company) => (
-            <CompanyItem
-              key={company.id_empresa_emp}
-              active={
-                empresaSelecionada?.id_empresa_emp === company.id_empresa_emp
-              }
-              onClick={() => handleCompanyClick(company)}
-            >
-              {company.des_empresa_emp}
-            </CompanyItem>
-          ))}
+              <CompanyItem
+                key={company.id_empresa_emp}
+                active={
+                  empresaSelecionada?.id_empresa_emp === company.id_empresa_emp
+                }
+                onClick={() => handleCompanyClick(company)}
+              >
+                {company.des_empresa_emp}
+              </CompanyItem>
+            ))}
+          </ListContainer>
         </Sidebar>
         {empresaSelecionada ? (
           <Content>
             <h1>Permissões</h1>
-            {renderTree(menus)}
+            <ListContainer>
+              {renderTree(menus)}
+            </ListContainer>
           </Content>
         ) : null}
       </SidebarContainer>

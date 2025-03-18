@@ -20,7 +20,7 @@ export const Button = styled.div`
     padding-block: 7.5px;
     padding-inline: 15px;
     width: 145px;
-    background-color:rgb(15, 149, 0);
+    background-color:rgb(40, 188, 24);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -71,5 +71,12 @@ export const IconSeparator = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 40px;
+    width: 45px;
+`
+
+export const ListContainer = styled.div`
+    background-color: white;
+    border-radius: 15px;
+    border: 1px solid #B9B9B9;
+    min-height: 80%;
 `
