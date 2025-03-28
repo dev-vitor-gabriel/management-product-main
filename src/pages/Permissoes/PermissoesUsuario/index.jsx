@@ -1,174 +1,188 @@
 import { useState, useEffect } from "react";
 import TreeView from "react-treeview";
 import "react-treeview/react-treeview.css";
-import { Card, CardHeader, CardContent } from "../../../components/Cards/Card"
-import ButtonSubmit from "../../../components/Buttons/ButtonSubmit"
-import { getUsers } from "../../../services/usuario"
- 
-// Simulação da API para buscar permissões de um usuário (estrutura de árvore)
-const getUserPermissions = async (userId) => {
-  return [
-    {
-      id: 1,
-      name: "Relatórios",
-      checked: false,
-      children: [
-        { id: 4, name: "Visualizar Relatórios", checked: false },
-        { id: 5, name: "Exportar Relatórios", checked: false },
-      ],
-    },
-    {
-      id: 2,
-      name: "Configurações",
-      checked: false,
-      children: [
-        { id: 6, name: "Editar Configurações", checked: false },
-        { id: 7, name: "Gerenciar Sistema", checked: false },
-      ],
-    },
-    {
-      id: 3,
-      name: "Usuários",
-      checked: false,
-      children: [
-        { id: 8, name: "Criar Usuários", checked: false },
-        { id: 9, name: "Excluir Usuários", checked: false },
-      ],
-    },
-  ];
-};
+import {
+  Container,
+  Sidebar,
+  Content,
+  CompanyItem,
+  Header,
+  SidebarContainer,
+  Button,
+  Checkbox,
+  IconSeparator,
+  ListContainer,
+  FormGroup
+} from "./style.js";
+import { getCompanies } from "../../../services/empresa.js";
+import { getMenus, getUsuarioMenu, salvarUsuarioMenu, getMenusEmpresa } from "../../../services/menu.js";
+import { getCompanyUsers } from "../../../services/usuario.js";
+import Icon from '../../../components/Icons.jsx'
+import { FloppyDisk } from "@phosphor-icons/react";
+import './style.css'
+import Input from "../../../components/Input/index.jsx";
+import { useDebounce } from '../../../utils/customHooks.js';
 
 export default function PermissoesUsuario() {
-  const [usuarios, setUsuarios] = useState([]);
-  const [permissoes, setPermissoes] = useState({});
-  const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
-  const [expanded, setExpanded] = useState({}); 
+  const [empresas, setUsuario] = useState([]);
+  const [menus, setMenus] = useState();
+  const [usuarioSelecionado, setUsuarioSelecionada] = useState(null);
+  const [permissoesUsuario, setPermissoesUsuario] = useState([]);
+  const [cachedMenuUsuarios, setCachedMenuUsuarios] = useState({});
+  const [filtroUsuario, setFiltroUsuario] = useState("");  
+  const debouncedSearch = useDebounce(filtroUsuario, 500);
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      const data = await getUsers();
-      console.log(data)
-      setUsuarios(data);
+    const fetchCompanies = async () => {
+      const empresas = await getCompanyUsers(filtroUsuario, 1, 5);
+      setUsuario(empresas.items);
+
+      if (menus) {
+        return;
+      }
+      const response = await getMenusEmpresa();
+      setMenus(response);
+
     };
-    fetchUsers();
-  }, []);
+    fetchCompanies();
+  }, [debouncedSearch]);
 
-  const handleUserClick = async (userId) => {
-    setUsuarioSelecionado(userId);
+  const handleUserClick = async (user) => {
+    if (user.id == usuarioSelecionado?.id) return;
 
-    if (!permissoes[userId]) {
-      const data = await getUserPermissions(userId);
-      setPermissoes((prev) => ({ ...prev, [userId]: data }));
+    setUsuarioSelecionada(user);
+    let menusUsuario = []
+    if (cachedMenuUsuarios[user.id]) 
+    {
+      menusUsuario = cachedMenuUsuarios[user.id]
+    } else {
+      menusUsuario = await getUsuarioMenu(user.id);
+      setCachedMenuUsuarios((prev) => {
+        let newCachedMenuUsuarios = {...prev}
+  
+        newCachedMenuUsuarios[user.id] = menusUsuario;
+
+        return newCachedMenuUsuarios;
+      })
     }
+    setPermissoesUsuario([])
+    menusUsuario.forEach(menu => {
+      togglePermission(menu, false)
+    })
   };
 
-  const handleCheckboxChange = (userId, permId, parentId = null) => {
-    setPermissoes((prev) => {
-      const updatePermissions = (permissions) => {
-        return permissions.map((perm) => {
-          if (perm.id === permId) {
-            const newChecked = !perm.checked;
-            return {
-              ...perm,
-              checked: newChecked,
-              children: perm.children ? perm.children.map((child) => ({ ...child, checked: newChecked })) : [],
-            };
-          } else if (perm.children) {
-            return { ...perm, children: updatePermissions(perm.children) };
-          }
-          return perm;
-        });
-      };
+  const togglePermission = (menu, removeMenu) => {
+    setPermissoesUsuario((permissoesUsuario) => {
+      let updatedPermissions = [...permissoesUsuario]; 
 
-      return { ...prev, [userId]: updatePermissions(prev[userId]) };
+      const menusToModify = getAllMenuIds(menu);
+      if (menu.id_father_mnu && !removeMenu) {
+        menusToModify.push(menu.id_father_mnu)
+      }
+      if (removeMenu) {
+        updatedPermissions = updatedPermissions.filter(l => !menusToModify.includes(l));
+      } else {
+        updatedPermissions.push(...menusToModify);
+      }
+  
+      return updatedPermissions;
     });
   };
 
-  const toggleExpand = (permId) => {
-    setExpanded((prev) => ({ ...prev, [permId]: !prev[permId] }));
+  const getAllMenuIds = (menu) => {
+    const ids = [menu.id_menu_mnu]
+    if (menu.children) 
+    {
+      menu.children.forEach(children => {
+        ids.push(...getAllMenuIds(children))
+      });
+    }
+    return ids;
+  }
+
+  const renderTree = (menus) => {
+    return menus.map((menu) => (
+      <TreeView treeViewClassName={menu.children ? "" : "hide-arrow"} key={menu.id_menu_mnu} nodeLabel={
+        <label>
+          <Checkbox
+            checked={ permissoesUsuario.includes(menu.id_menu_mnu) }
+            onChange={() => togglePermission(menu, permissoesUsuario.includes(menu.id_menu_mnu))}
+          />
+          {menu.des_menu_mnu}
+        </label>
+      } 
+      defaultCollapsed={true}
+      >
+        {menu.children ? renderTree(menu.children, menu.id_menu_mnu) : null}
+      </TreeView>
+    ));
+  };
+
+  const savePermissions = async () => {
+    const usuario = {
+      id_user: usuarioSelecionado.id,
+      id_menu_usm: permissoesUsuario ?? []
+    }
+    
+    await salvarUsuarioMenu(usuario)
+  }
+
+  const handleCompanyNameChanged = (event) => {
+    if (!event.target)
+    {
+      return;
+    }
+
+    setFiltroUsuario(event.target.value)
   };
 
   return (
-    <div className="flex gap-4 p-4">
-      <Card className="w-1/3">
-        <CardHeader title="Usuários" />
-        <CardContent>
-          <ul>
-            {usuarios.map((user) => (
-              <li
-                key={user.id}
-                className={`p-2 cursor-pointer ${
-                  usuarioSelecionado === user.id ? "bg-gray-200" : ""
-                }`}
-                onClick={() => handleUserClick(user.id)}
-              >
-                {user.name}
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-
-      {/* Permissões em formato de árvore */}
-      {usuarioSelecionado && (
-        <Card className="w-2/3">
-          <CardHeader title={`Permissões de ${usuarios.find((u) => u.id === usuarioSelecionado)?.name}`} />
-          <CardContent>
-            {permissoes[usuarioSelecionado] ? (
-              <ul>
-                {permissoes[usuarioSelecionado].map((perm) => (
-                  <TreeNode
-                    key={perm.id}
-                    perm={perm}
-                    userId={usuarioSelecionado}
-                    expanded={expanded}
-                    toggleExpand={toggleExpand}
-                    handleCheckboxChange={handleCheckboxChange}
-                  />
+    <Container>
+      <Header>
+        <Button onClick={savePermissions}>
+          <h4 style={{ fontWeight: "600" }}>Salvar</h4>
+          <IconSeparator>
+            <span style={ { fontSize: '18px', fontWeight: 'lighter' } }>|</span>
+            <FloppyDisk size={25} />
+          </IconSeparator>
+        </Button>
+      </Header>
+      <SidebarContainer>
+        <Sidebar>
+          <h1>Usuarios</h1>
+          <ListContainer>
+            <FormGroup>
+              <Input
+                className
+                type={"text"}
+                placeholder={"Comece a digitar..."}
+                name="empresa_name"
+                onChange={handleCompanyNameChanged}
+                error={""}
+              />
+            </FormGroup>
+              {empresas.map((company) => (
+                  <CompanyItem
+                    key={company.id}
+                    active={
+                      usuarioSelecionado?.id === company.id
+                    }
+                    onClick={() => handleUserClick(company)}
+                  >
+                    {company.name}
+                  </CompanyItem>
                 ))}
-              </ul>
-            ) : (
-              <p>Carregando permissões...</p>
-            )}
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  );
-}
-
-// Componente Recursivo para Renderizar a Árvore de Permissões
-function TreeNode({ perm, userId, expanded, toggleExpand, handleCheckboxChange }) {
-  return (
-    <li className="ml-4">
-      <div className="flex items-center gap-2">
-        {perm.children && (
-          <button onClick={() => toggleExpand(perm.id)} className="text-blue-500">
-            {expanded[perm.id] ? "▼" : "▶"}
-          </button>
-        )}
-        <input
-          type="checkbox"
-          checked={perm.checked}
-          onChange={() => handleCheckboxChange(userId, perm.id)}
-        />
-        <span>{perm.name}</span>
-      </div>
-
-      {/* Renderiza os filhos caso esteja expandido */}
-      {perm.children && expanded[perm.id] && (
-        <ul>
-          {perm.children.map((child) => (
-            <TreeNode
-              key={child.id}
-              perm={child}
-              userId={userId}
-              expanded={expanded}
-              toggleExpand={toggleExpand}
-              handleCheckboxChange={handleCheckboxChange}
-            />
-          ))}
-        </ul>
-      )}
-    </li>
+          </ListContainer>
+        </Sidebar>
+        {usuarioSelecionado ? (
+          <Content>
+            <h1>Permissões</h1>
+            <ListContainer>
+              {renderTree(menus)}
+            </ListContainer>
+          </Content>
+        ) : null}
+      </SidebarContainer>
+    </Container>
   );
 }

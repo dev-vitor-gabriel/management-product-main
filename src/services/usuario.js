@@ -73,5 +73,18 @@ export async function getUsers() {
     return response.data;
 }
 
+let cachedPageNumber = 1;
+let cachedPerPage = 10;
+let cachedFilter = '';
+
+export async function getCompanyUsers(filter, perPage, pageNumber) {
+    cachedFilter = filter ?? cachedFilter
+    cachedPageNumber = pageNumber ?? cachedPageNumber;
+    cachedPerPage = perPage ?? cachedPerPage;
+
+    const response = await api.get('/empresa/usuarios');
+    return response.data;
+}
+
 export { deleteUsuario, getUsuario, saveUsuario };
 

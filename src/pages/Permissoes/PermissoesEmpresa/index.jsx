@@ -47,7 +47,7 @@ export default function PermissoesEmpresa() {
   }, [debouncedSearch]);
 
   const handleCompanyClick = async (company) => {
-    if (company.id_empresa_emp == empresaSelecionada.id_empresa_emp) return;
+    if (company.id_empresa_emp == empresaSelecionada?.id_empresa_emp) return;
 
     setEmpresaSelecionada(company);
     let menusEmpresa = []
@@ -124,6 +124,13 @@ export default function PermissoesEmpresa() {
     }]
     
     await salvarEmpresaMenu(empresas)
+    setCachedMenuEmpresas((prev) => {
+      let newCachedMenuEmpresas = {...prev}
+  
+      newCachedMenuEmpresas[empresaSelecionada.id_empresa_emp] = null;
+
+      return newCachedMenuEmpresas;
+    })
   }
 
   const handleCompanyNameChanged = (event) => {

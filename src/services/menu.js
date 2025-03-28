@@ -28,3 +28,31 @@ export async function salvarEmpresaMenu(empresas) {
     }
 
 }
+export async function getUsuarioMenu(id) {
+    try {
+        const response = await api.get(`/usuario-menu/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao buscar:", error);
+    }
+}
+
+export async function salvarUsuarioMenu(usuario) {
+    try {
+        const response = await api.post(`/usuario-menu`, usuario);
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao buscar:", error);
+    }
+
+}
+
+export async function getMenusEmpresa()
+{
+    try {
+        const response = await api.get(`/empresa-menu`);
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao buscar:", error);
+    }
+}

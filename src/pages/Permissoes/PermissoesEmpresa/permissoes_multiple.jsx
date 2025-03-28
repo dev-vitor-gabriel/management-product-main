@@ -48,7 +48,6 @@ export default function PermissoesEmpresa() {
     fetchCompanies();
   }, [debouncedSearch]);
 
-
   const handleCompanyClick = async (company) => {
     setEmpresaSelecionada(company);
     if (!permissoesEmpresaMap[company.id_empresa_emp]) {
