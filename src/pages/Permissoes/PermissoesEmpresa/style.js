@@ -19,13 +19,13 @@ export const Header = styled.div`
 export const Button = styled.div`
     padding-block: 7.5px;
     padding-inline: 15px;
-    width: 145px;
+    width: 130px;
     background-color:rgb(40, 188, 24);
     display: flex;
     align-items: center;
     justify-content: space-between;
     color: white;
-    border-radius: 8px;
+    border-radius: 4px;
     text-align: center;
     cursor: pointer;
 `
@@ -53,11 +53,12 @@ export const Content = styled.div`
 
 export const CompanyItem = styled.div`
     padding: 10px;
-    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    height: 32px;
     cursor: pointer;
     background: ${(props) => (props.active ? "var(--primary-bg-color)" : "transparent")};
     color: ${(props) => (props.active ? "white" : "black")};
-    border-radius: 5px;
     &:hover {
         background: ${(props) => (props.active ? "var(--primary-bg-color)" : "rgb(232, 232, 232)")};
     }
@@ -71,12 +72,21 @@ export const IconSeparator = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 45px;
+    width: 40px;
 `
 
 export const ListContainer = styled.div`
     background-color: white;
-    border-radius: 15px;
+    border-radius: 5px;
     border: 1px solid #B9B9B9;
     min-height: 80%;
+`
+
+export const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  & label {
+    color: #666;
+    font-size: 0.9rem;
+  }
 `

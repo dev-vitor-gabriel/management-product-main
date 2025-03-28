@@ -44,10 +44,6 @@ export default function Company({ reg = null, tela }) {
         setSaleEditing(sale);
     }
 
-    function getCompanyDataSet() {
-        
-        return company.map(reg => ({ 'ID': reg.id_venda_emp, 'CNPJ': reg.desc_funcionario_tfu, 'Data Criação': formatDate(reg.created_at) }))
-    }
 
     return (
         <Content>
@@ -57,10 +53,9 @@ export default function Company({ reg = null, tela }) {
                     setSaleEditing(null);
                     setModalIsOpen(true)
                 }}
-                adicionar='Nova Venda'
+                adicionar='Cadastrar Empresa'
                 exportar='Exportar'
                 exportFilename='export_venda'
-                dataset={getCompanyDataSet()}
             />
             <EmpresaTable 
                 totalRows={totalRows} 
