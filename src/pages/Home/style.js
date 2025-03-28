@@ -13,4 +13,3 @@ export const WelcomeTitle = styled.h1`
     color:var(--primary);
     font-size: 3rem;
 `;
-
