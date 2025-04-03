@@ -8,16 +8,18 @@ import {
   CategoryScale,
   LinearScale,
   Tooltip,
-  Legend
+  Legend,
+  Title
 } from 'chart.js'
 import { ChartWrapper } from './style'
 
-ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend)
+ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend, Title)
 
 const LineChart = ({
   labels,
   dataset1,
-  dataset2
+  dataset2,
+  title
 }) => {
   const data = {
     labels,
@@ -48,6 +50,13 @@ const LineChart = ({
       tooltip: {
         mode: 'index',
         intersect: false
+      },
+      title: {
+        display: true,
+        text: title,
+        font: {
+          size: 20
+        }
       }
     },
     interaction: {

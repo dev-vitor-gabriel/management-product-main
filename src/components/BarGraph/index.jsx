@@ -7,17 +7,19 @@ import {
   CategoryScale,
   LinearScale,
   Tooltip,
-  Legend
+  Legend,
+  Title
 } from 'chart.js'
 import { ChartWrapper } from './style'
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend)
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, Title)
 
 const BarChart = ({
   labels,
   values,
   label = 'Data',
-  backgroundColor = '#4F46E5'
+  backgroundColor = '#4F46E5',
+  title
 }) => {
   const data = {
     labels,
@@ -35,8 +37,15 @@ const BarChart = ({
     plugins: {
       legend: {
         position: 'top'
+      },
+      title: {
+        display: true,
+        text: title,
+        font: {
+          size: 20
+        }
       }
-    }
+    },
   }
 
   return (
