@@ -34,9 +34,10 @@ export default function ServiceForm({ service, onClose, visible }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        
         Promise.all([getEmployee(), getServiceType(), getMaterial(), getCliente(), getCentroCusto()])
           .then(([employees, servicesType, material, cliente, centroCusto]) => {
-            const funcionarioTypeOptions = employees.map(({ id_funcionario_tfu, desc_funcionario_tfu }) => {
+            const funcionarioTypeOptions = employees.items.map(({ id_funcionario_tfu, desc_funcionario_tfu }) => {
               return ({
                 value: id_funcionario_tfu,
                 label: desc_funcionario_tfu

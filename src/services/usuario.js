@@ -11,7 +11,7 @@ const getUsuario = async () => {
             var token = parsedAuthorization.token;
         }
 
-        const { data } = await api.get("/auth", {
+        const { data } = await api.get("/user", {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
@@ -25,7 +25,7 @@ const getUsuario = async () => {
 
 const deleteUsuario = async (id) => {
     try {
-        await api.delete(`/auth/${id}`)
+        await api.delete(`/user/${id}`)
         return true
     } catch (error) {
         console.error("Erro ao buscar:", error);

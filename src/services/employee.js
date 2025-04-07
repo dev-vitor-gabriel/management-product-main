@@ -5,7 +5,8 @@ import api from "./api";
 const getEmployee = async () => {
     try {
         const response = await api.get("/funcionario");
-
+        console.log(response);
+        
         return response.data;
     } catch (error) {
         console.error("Erro ao buscar:", error);

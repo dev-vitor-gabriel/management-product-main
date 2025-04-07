@@ -67,11 +67,6 @@ function Login() {
                     </BoxLink>
                     
                     <Button>{loadingAuth? <span>Carregando...</span> : <span>Entrar</span>}</Button>
-                    
-                    <BoxLink textalign="center">
-                        <span>Não é um membro? </span>
-                        <Link to="/register">Criar uma conta</Link>
-                    </BoxLink>
                 </Form>
             </ContainerLogin>
         </LoginPage>
