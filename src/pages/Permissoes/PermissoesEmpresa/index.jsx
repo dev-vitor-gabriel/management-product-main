@@ -14,66 +14,65 @@ import {
   ListContainer,
   FormGroup
 } from "./style.js";
-import { getCompanies } from "../../../services/empresa.js";
-import { getMenus, getUsuarioMenu, salvarUsuarioMenu, getMenusEmpresa } from "../../../services/menu.js";
-import { getCompanyUsers } from "../../../services/usuario.js";
+import { getCompanies } from "../../../services/empresa";
+import { getMenus, getEmpresaMenu, salvarEmpresaMenu } from "../../../services/menu.js";
 import Icon from '../../../components/Icons.jsx'
 import { FloppyDisk } from "@phosphor-icons/react";
 import './style.css'
-import Input from "../../../components/Input/index.jsx";
+import Input from "../../../components/Input";
 import { useDebounce } from '../../../utils/customHooks.js';
 
-export default function PermissoesUsuario() {
-  const [empresas, setUsuario] = useState([]);
+export default function PermissoesEmpresa() {
+  const [empresas, setEmpresa] = useState([]);
   const [menus, setMenus] = useState();
-  const [usuarioSelecionado, setUsuarioSelecionada] = useState(null);
-  const [permissoesUsuario, setPermissoesUsuario] = useState([]);
-  const [cachedMenuUsuarios, setCachedMenuUsuarios] = useState({});
-  const [filtroUsuario, setFiltroUsuario] = useState("");  
-  const debouncedSearch = useDebounce(filtroUsuario, 500);
+  const [empresaSelecionada, setEmpresaSelecionada] = useState(null);
+  const [permissoesEmpresa, setPermissoesEmpresa] = useState([]);
+  const [cachedMenuEmpresas, setCachedMenuEmpresas] = useState({});
+  const [filtroEmpresa, setFiltroEmpresa] = useState("");  
+  const debouncedSearch = useDebounce(filtroEmpresa, 500);
 
   useEffect(() => {
     const fetchCompanies = async () => {
-      const empresas = await getCompanyUsers(filtroUsuario, 1, 5);
-      setUsuario(empresas.items);
+      const empresas = await getCompanies(filtroEmpresa, 1, 5);
+      setEmpresa(empresas.items);
 
       if (menus) {
         return;
       }
-      const response = await getMenusEmpresa();
+      const response = await getMenus();
       setMenus(response);
 
     };
     fetchCompanies();
   }, [debouncedSearch]);
 
-  const handleUserClick = async (user) => {
-    if (user.id == usuarioSelecionado?.id) return;
+  const handleCompanyClick = async (company) => {
+    if (company.id_empresa_emp == empresaSelecionada?.id_empresa_emp) return;
 
-    setUsuarioSelecionada(user);
-    let menusUsuario = []
-    if (cachedMenuUsuarios[user.id]) 
+    setEmpresaSelecionada(company);
+    let menusEmpresa = []
+    if (cachedMenuEmpresas[company.id_empresa_emp]) 
     {
-      menusUsuario = cachedMenuUsuarios[user.id]
+      menusEmpresa = cachedMenuEmpresas[company.id_empresa_emp]
     } else {
-      menusUsuario = await getUsuarioMenu(user.id);
-      setCachedMenuUsuarios((prev) => {
-        let newCachedMenuUsuarios = {...prev}
+      menusEmpresa = await getEmpresaMenu(company.id_empresa_emp);
+      setCachedMenuEmpresas((prev) => {
+        let newCachedMenuEmpresas = {...prev}
   
-        newCachedMenuUsuarios[user.id] = menusUsuario;
+        newCachedMenuEmpresas[company.id_empresa_emp] = menusEmpresa;
 
-        return newCachedMenuUsuarios;
+        return newCachedMenuEmpresas;
       })
     }
-    setPermissoesUsuario([])
-    menusUsuario.forEach(menu => {
+    setPermissoesEmpresa([])
+    menusEmpresa.forEach(menu => {
       togglePermission(menu, false)
     })
   };
 
   const togglePermission = (menu, removeMenu) => {
-    setPermissoesUsuario((permissoesUsuario) => {
-      let updatedPermissions = [...permissoesUsuario]; 
+    setPermissoesEmpresa((permissoesEmpresa) => {
+      let updatedPermissions = [...permissoesEmpresa]; 
 
       const menusToModify = getAllMenuIds(menu);
       if (menu.id_father_mnu && !removeMenu) {
@@ -105,8 +104,8 @@ export default function PermissoesUsuario() {
       <TreeView treeViewClassName={menu.children ? "" : "hide-arrow"} key={menu.id_menu_mnu} nodeLabel={
         <label>
           <Checkbox
-            checked={ permissoesUsuario.includes(menu.id_menu_mnu) }
-            onChange={() => togglePermission(menu, permissoesUsuario.includes(menu.id_menu_mnu))}
+            checked={ permissoesEmpresa.includes(menu.id_menu_mnu) }
+            onChange={() => togglePermission(menu, permissoesEmpresa.includes(menu.id_menu_mnu))}
           />
           {menu.des_menu_mnu}
         </label>
@@ -119,12 +118,19 @@ export default function PermissoesUsuario() {
   };
 
   const savePermissions = async () => {
-    const usuario = {
-      id_user: usuarioSelecionado.id,
-      id_menu_usm: permissoesUsuario ?? []
-    }
+    const empresas = [{
+      id_empresa_emn: empresaSelecionada.id_empresa_emp,
+      id_menu_emn: permissoesEmpresa
+    }]
     
-    await salvarUsuarioMenu(usuario)
+    await salvarEmpresaMenu(empresas)
+    setCachedMenuEmpresas((prev) => {
+      let newCachedMenuEmpresas = {...prev}
+  
+      newCachedMenuEmpresas[empresaSelecionada.id_empresa_emp] = null;
+
+      return newCachedMenuEmpresas;
+    })
   }
 
   const handleCompanyNameChanged = (event) => {
@@ -133,7 +139,7 @@ export default function PermissoesUsuario() {
       return;
     }
 
-    setFiltroUsuario(event.target.value)
+    setFiltroEmpresa(event.target.value)
   };
 
   return (
@@ -149,7 +155,7 @@ export default function PermissoesUsuario() {
       </Header>
       <SidebarContainer>
         <Sidebar>
-          <h1>Usuarios</h1>
+          <h1>Empresas</h1>
           <ListContainer>
             <FormGroup>
               <Input
@@ -163,18 +169,18 @@ export default function PermissoesUsuario() {
             </FormGroup>
               {empresas.map((company) => (
                   <CompanyItem
-                    key={company.id}
+                    key={company.id_empresa_emp}
                     active={
-                      usuarioSelecionado?.id === company.id
+                      empresaSelecionada?.id_empresa_emp === company.id_empresa_emp
                     }
-                    onClick={() => handleUserClick(company)}
+                    onClick={() => handleCompanyClick(company)}
                   >
-                    {company.name}
+                    {company.des_empresa_emp}
                   </CompanyItem>
                 ))}
           </ListContainer>
         </Sidebar>
-        {usuarioSelecionado ? (
+        {empresaSelecionada ? (
           <Content>
             <h1>Permissões</h1>
             <ListContainer>

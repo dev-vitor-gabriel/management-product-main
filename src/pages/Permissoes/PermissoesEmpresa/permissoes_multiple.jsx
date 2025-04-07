@@ -15,77 +15,67 @@ import {
   FormGroup
 } from "./style.js";
 import { getCompanies } from "../../../services/empresa.js";
-import { getMenus, getUsuarioMenu, salvarUsuarioMenu, getMenusEmpresa } from "../../../services/menu.js";
-import { getCompanyUsers } from "../../../services/usuario.js";
+import { getMenus, getEmpresaMenu, salvarEmpresaMenu } from "../../../services/menu.js";
 import Icon from '../../../components/Icons.jsx'
 import { FloppyDisk } from "@phosphor-icons/react";
 import './style.css'
 import Input from "../../../components/Input/index.jsx";
 import { useDebounce } from '../../../utils/customHooks.js';
 
-export default function PermissoesUsuario() {
-  const [empresas, setUsuario] = useState([]);
+export default function PermissoesEmpresa() {
+  const [empresas, setEmpresa] = useState([]);
   const [menus, setMenus] = useState();
-  const [usuarioSelecionado, setUsuarioSelecionada] = useState(null);
-  const [permissoesUsuario, setPermissoesUsuario] = useState([]);
-  const [cachedMenuUsuarios, setCachedMenuUsuarios] = useState({});
-  const [filtroUsuario, setFiltroUsuario] = useState("");  
-  const debouncedSearch = useDebounce(filtroUsuario, 500);
+  const [empresaSelecionada, setEmpresaSelecionada] = useState(null);
+  const [permissoesEmpresaMap, setPermissoesEmpresaMap] = useState({});
+  const [filtroEmpresa, setFiltroEmpresa] = useState("");  
+  const debouncedSearch = useDebounce(filtroEmpresa, 500);
 
   useEffect(() => {
     const fetchCompanies = async () => {
-      const empresas = await getCompanyUsers(filtroUsuario, 1, 5);
-      setUsuario(empresas.items);
+      if (!debouncedSearch) {
+        return;
+      }
+      const empresas = await getCompanies(filtroEmpresa, 1, 999);
+      setEmpresa(empresas.items);
 
       if (menus) {
         return;
       }
-      const response = await getMenusEmpresa();
+      const response = await getMenus();
       setMenus(response);
 
     };
     fetchCompanies();
   }, [debouncedSearch]);
 
-  const handleUserClick = async (user) => {
-    if (user.id == usuarioSelecionado?.id) return;
-
-    setUsuarioSelecionada(user);
-    let menusUsuario = []
-    if (cachedMenuUsuarios[user.id]) 
-    {
-      menusUsuario = cachedMenuUsuarios[user.id]
-    } else {
-      menusUsuario = await getUsuarioMenu(user.id);
-      setCachedMenuUsuarios((prev) => {
-        let newCachedMenuUsuarios = {...prev}
-  
-        newCachedMenuUsuarios[user.id] = menusUsuario;
-
-        return newCachedMenuUsuarios;
+  const handleCompanyClick = async (company) => {
+    setEmpresaSelecionada(company);
+    if (!permissoesEmpresaMap[company.id_empresa_emp]) {
+      const menusEmpresa = await getEmpresaMenu(company.id_empresa_emp);
+      menusEmpresa.forEach(menu => {
+        togglePermission(menu, false, company)
       })
     }
-    setPermissoesUsuario([])
-    menusUsuario.forEach(menu => {
-      togglePermission(menu, false)
-    })
   };
 
-  const togglePermission = (menu, removeMenu) => {
-    setPermissoesUsuario((permissoesUsuario) => {
-      let updatedPermissions = [...permissoesUsuario]; 
+  const togglePermission = (menu, removeMenu, empresa) => {
+    setPermissoesEmpresaMap((prev) => {
+      const updatedPermissoesEmpresaMap = { ...prev };
 
+      if (!updatedPermissoesEmpresaMap[empresa.id_empresa_emp]) {
+        updatedPermissoesEmpresaMap[empresa.id_empresa_emp] = [];
+      }
       const menusToModify = getAllMenuIds(menu);
       if (menu.id_father_mnu && !removeMenu) {
         menusToModify.push(menu.id_father_mnu)
       }
       if (removeMenu) {
-        updatedPermissions = updatedPermissions.filter(l => !menusToModify.includes(l));
+        updatedPermissoesEmpresaMap[empresa.id_empresa_emp] = updatedPermissoesEmpresaMap[empresa.id_empresa_emp].filter(l => !menusToModify.includes(l));
       } else {
-        updatedPermissions.push(...menusToModify);
+        updatedPermissoesEmpresaMap[empresa.id_empresa_emp].push(...menusToModify);
       }
   
-      return updatedPermissions;
+      return updatedPermissoesEmpresaMap;
     });
   };
 
@@ -101,17 +91,19 @@ export default function PermissoesUsuario() {
   }
 
   const renderTree = (menus) => {
+    const permissoesEmpresaSelecionadaMap = permissoesEmpresaMap[empresaSelecionada.id_empresa_emp] || [];
     return menus.map((menu) => (
       <TreeView treeViewClassName={menu.children ? "" : "hide-arrow"} key={menu.id_menu_mnu} nodeLabel={
         <label>
           <Checkbox
-            checked={ permissoesUsuario.includes(menu.id_menu_mnu) }
-            onChange={() => togglePermission(menu, permissoesUsuario.includes(menu.id_menu_mnu))}
+            checked={ permissoesEmpresaSelecionadaMap.includes(menu.id_menu_mnu) || false }
+            onChange={() => togglePermission(menu, permissoesEmpresaSelecionadaMap.includes(menu.id_menu_mnu), empresaSelecionada)}
           />
           {menu.des_menu_mnu}
         </label>
       } 
       defaultCollapsed={true}
+
       >
         {menu.children ? renderTree(menu.children, menu.id_menu_mnu) : null}
       </TreeView>
@@ -119,12 +111,15 @@ export default function PermissoesUsuario() {
   };
 
   const savePermissions = async () => {
-    const usuario = {
-      id_user: usuarioSelecionado.id,
-      id_menu_usm: permissoesUsuario ?? []
-    }
+    const empresas = []
+    Object.keys(permissoesEmpresaMap).map(key => {
+      empresas.push({
+        id_empresa_emn: key,
+        id_menu_emn: permissoesEmpresaMap[key]
+      })
+    })
     
-    await salvarUsuarioMenu(usuario)
+    await salvarEmpresaMenu(empresas)
   }
 
   const handleCompanyNameChanged = (event) => {
@@ -133,7 +128,7 @@ export default function PermissoesUsuario() {
       return;
     }
 
-    setFiltroUsuario(event.target.value)
+    setFiltroEmpresa(event.target.value)
   };
 
   return (
@@ -149,7 +144,7 @@ export default function PermissoesUsuario() {
       </Header>
       <SidebarContainer>
         <Sidebar>
-          <h1>Usuarios</h1>
+          <h1>Empresas</h1>
           <ListContainer>
             <FormGroup>
               <Input
@@ -163,18 +158,18 @@ export default function PermissoesUsuario() {
             </FormGroup>
               {empresas.map((company) => (
                   <CompanyItem
-                    key={company.id}
+                    key={company.id_empresa_emp}
                     active={
-                      usuarioSelecionado?.id === company.id
+                      empresaSelecionada?.id_empresa_emp === company.id_empresa_emp
                     }
-                    onClick={() => handleUserClick(company)}
+                    onClick={() => handleCompanyClick(company)}
                   >
-                    {company.name}
+                    {company.des_empresa_emp}
                   </CompanyItem>
                 ))}
           </ListContainer>
         </Sidebar>
-        {usuarioSelecionado ? (
+        {empresaSelecionada ? (
           <Content>
             <h1>Permissões</h1>
             <ListContainer>
