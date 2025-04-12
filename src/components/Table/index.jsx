@@ -12,16 +12,16 @@ const paginationComponentOptions = {
   selectAllRowsItemText: 'Todos',
 };
 // eslint-disable-next-line react/prop-types
-export default function Table({ columns, data = [] }) {
+export default function Table({ columns, data = [], inputFilter = true }) {
   const [filter, setFilter] = useState('');
   const results = filter == '' ? data : data.filter(e => {
     return Object.values(e).join('_').toLowerCase().search(filter.toLowerCase()) != -1;
   })
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+      {inputFilter &&  (<div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
         <FilterTable defaultValue={filter} onChange={({ target }) => setFilter(target.value)} />
-      </div>
+      </div>)}
       <DataTable
         columns={columns}
         data={results}

@@ -7,7 +7,7 @@ const getEmployee = async () => {
         const response = await api.get("/funcionario");
         console.log(response);
         
-        return response.data;
+        return response.data.items;
     } catch (error) {
         console.error("Erro ao buscar:", error);
     }

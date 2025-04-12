@@ -88,6 +88,7 @@ const SelectBoxV2 = ({ options, setOptions, name, onChange, error, limit = 0, se
         />
       </Box>
       {error && <InputError>{`${error[0].toUpperCase()}${error.substring(1)}`}</InputError>}
+      {limit != 1 && ( 
       <SelectedBox>
         <Label>
           <label>Selecionado(s):</label>
@@ -116,7 +117,7 @@ const SelectBoxV2 = ({ options, setOptions, name, onChange, error, limit = 0, se
             )})}
           </ul>
         }
-      </SelectedBox>
+      </SelectedBox>)}
     </>
   );
 };

@@ -14,7 +14,7 @@ import {
   ListContainer,
   FormGroup
 } from "./style.js";
-import { getCompanies } from "../../../services/empresa";
+import { getCompanies } from "../../../services/empresa.js";
 import { getMenus, getEmpresaMenu, salvarEmpresaMenu } from "../../../services/menu.js";
 import Icon from '../../../components/Icons.jsx'
 import { FloppyDisk } from "@phosphor-icons/react";
