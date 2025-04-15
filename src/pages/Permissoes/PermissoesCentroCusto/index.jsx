@@ -3,12 +3,9 @@ import SelectBoxV2 from "../../../components/SelectV2";
 import { SaveButton, FormGroup } from "./style";
 import { getCompanyUsers, getUsers } from "../../../services/usuario.js";
 import { getCentroCusto } from "../../../services/centroCusto.js";
+import { getCentroCustoUsuario, createCentroCustoUsuario } from "../../../services/centroCustoUsuario.js";
 import { useDebounce } from "../../../utils/customHooks.js";
 import CentroCustoTable from "./centroCustoTable.jsx";
-
-function getCentroCustoUsuario() {
-  return [];
-}
 
 export default function PermissoesCentroCusto() {
   const [usuarios, setUsuarios] = useState(null);
@@ -48,7 +45,7 @@ export default function PermissoesCentroCusto() {
   }, [debouncedSearch]);
 
   const handleUserChange = async (event) => {
-    if (!event) {
+    if (!event.target.value) {
       setGrantedPermissions([]);
       setSelectedUserId(null);
       return;
@@ -61,10 +58,11 @@ export default function PermissoesCentroCusto() {
     }
     try {
       const response = await getCentroCustoUsuario(userId);
-      setGrantedPermissions(response);
+      const ids = response.map((item) => item.id_centro_custo_cco);
+      setGrantedPermissions(ids);
       setCache((prevCache) => ({
         ...prevCache,
-        [userId]: response,
+        [userId]: ids,
       }));
     } catch (error) {
       console.error(
@@ -94,12 +92,17 @@ export default function PermissoesCentroCusto() {
     });
   };
 
-  const handleSave = () => {
-    const data = {
-      id_usuario: selectedUserId,
-      id_centro_custo_cco: grantedPermissions,
+  const handleSave = async () => {
+    if (!selectedUserId) {
+      return
+    }
+    const createCentroCustoUsuarioRequest = {
+      id_user: selectedUserId,
+      id_centro_custo_ccu: grantedPermissions,
     };
-    console.log("Dados a serem salvos:", data);
+    
+    await createCentroCustoUsuario(createCentroCustoUsuarioRequest)
+    setCache({});
   }
 
   return (
