@@ -31,10 +31,12 @@ export default function ServiceForm({ service, onClose, visible }) {
   const [formData, setFormData] = useState(service ?? {});
   const [error, setError] = useState({});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
+
+  console.log(formData);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
-        
         Promise.all([getEmployee(), getServiceType(), getMaterial(), getCliente(), getCentroCusto()])
           .then(([employees, servicesType, material, cliente, centroCusto]) => {
             const funcionarioTypeOptions = employees.items.map(({ id_funcionario_tfu, desc_funcionario_tfu }) => {
@@ -77,13 +79,13 @@ export default function ServiceForm({ service, onClose, visible }) {
                 }]
               });
             })
-            const clienteOptions = cliente.map(({ id_cliente_cli, des_cliente_cli, documento_cliente_cli, telefone_cliente_cli }) => {
+            const clienteOptions = cliente.items.map(({ id_cliente_cli, des_cliente_cli, documento_cliente_cli, telefone_cliente_cli }) => {
               return ({
                 value: id_cliente_cli,
                 label: `${des_cliente_cli} - ${telefone_cliente_cli == '' ? documento_cliente_cli : telefone_cliente_cli}`
               });
             });
-            const centroCustoTypeOptions = centroCusto.map(({ id_centro_custo_cco, des_centro_custo_cco }) => {
+            const centroCustoTypeOptions = centroCusto.items.map(({ id_centro_custo_cco, des_centro_custo_cco }) => {
               return ({
                 value: id_centro_custo_cco,
                 label: des_centro_custo_cco

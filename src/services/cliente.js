@@ -7,7 +7,7 @@ const getCliente = async () => {
         const response = await api.get("/cliente");
         console.log(response);
 
-        return response.data.items;
+        return response.data;
     } catch (error) {
         console.error("Erro ao buscar:", error);
     }

@@ -5,24 +5,7 @@ import api from "./api";
 const getMaterial = async () => {
     try {
         const response = await api.get("/material");
-        // const response = [
-        //     {
-        //         id_material_mte: 1,
-        //         des_material_mte: 'Lamina de barbear',
-        //         id_unidade_mte: '1',
-        //         des_unidade: 'UN',
-        //         vlr_material_mte:'1.00',
-        //         created_at: '2023-01-01'
-        //     },
-        //     {
-        //         id_material_mte: 2,
-        //         des_material_mte: 'Giz Preto',
-        //         id_unidade_mte: '2',
-        //         des_unidade: 'UN',
-        //         vlr_material_mte:'5.00',
-        //         created_at: '2023-01-01'
-        //     },
-        // ];
+
         return response.data;
     } catch (error) {
         console.error("Erro ao buscar:", error);

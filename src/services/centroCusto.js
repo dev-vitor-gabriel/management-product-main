@@ -5,7 +5,8 @@ import api from "./api";
 const getCentroCusto = async () => {
     try {
         const response = await api.get("/centroCusto");
-        return response.data.items;
+
+        return response.data;
     } catch (error) {
         console.error("Erro ao buscar:", error);
     }
