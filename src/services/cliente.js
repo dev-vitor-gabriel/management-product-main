@@ -5,7 +5,6 @@ import api from "./api";
 const getCliente = async () => {
     try {
         const response = await api.get("/cliente");
-        console.log(response);
 
         return response.data;
     } catch (error) {
