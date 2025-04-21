@@ -29,6 +29,7 @@ import Company from '../pages/Empresa/Empresas';
 import UserPermissions from '../pages/Permissoes/PermissoesUsuario';
 import CompanyPermissions from '../pages/Permissoes/PermissoesEmpresa';
 import PermissoesCentroCusto from '../pages/Permissoes/PermissoesCentroCusto';
+import ServiceDashboard from '../pages/Servico/serviceDashboard';
 
 function RoutesApp() {
     return (
@@ -40,6 +41,7 @@ function RoutesApp() {
                 <Route path="/service" element={<Service />} />
                 <Route path="/servico/novo" element={<Service reg={{}} />} />
                 <Route path="/servico/finalizar" element={<Service tela='finalizar' />} />
+                <Route path="/servico/dashboard" element={<ServiceDashboard />} />
                 <Route path="/almoxarifado/consulta-estoque" element={<EstoqueMaterial />} />
                 <Route path="/almoxarifado/baixa/entrada" element={<Baixa tipoMovimentacao='entrada' />} />
                 <Route path="/almoxarifado/baixa/saida" element={<Baixa tipoMovimentacao='saida' />} />
