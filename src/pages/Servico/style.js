@@ -109,8 +109,6 @@ export const FilterTable = styled.input`
   padding: 0 10px;
 `
 
-
-
 export const FormGroup = styled.div`
   margin: 4px 0px;
   display: flex;
@@ -126,3 +124,53 @@ export const Expand = styled.div`
   display: flex;
   flex-direction: column;
 `
+
+export const DashboardContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+`;
+
+export const CardsContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+`;
+
+export const Card = styled.div`
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+`;
+
+export const ChartContainer = styled.div`
+  display: flex;
+  gap: 20px;
+`;
+
+export const ChartWrapper = styled.div`
+  flex: 1;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+`;
+
+export const FilterContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 16px;
+`;
+
+export const SelectWrapper = styled.div`
+    width: 20%;
+`;
+
+export const CheckboxGroup = styled.div`
+    display: flex;
+    gap: 8px;
+`;
