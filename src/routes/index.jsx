@@ -30,7 +30,7 @@ import UserPermissions from '../pages/Permissoes/PermissoesUsuario';
 import CompanyPermissions from '../pages/Permissoes/PermissoesEmpresa';
 import PermissoesCentroCusto from '../pages/Permissoes/PermissoesCentroCusto';
 import ServiceDashboard from '../pages/Servico/serviceDashboard';
-
+ 
 function RoutesApp() {
     return (
         <Routes>
@@ -70,7 +70,6 @@ function RoutesApp() {
             <Route path="/agendamento" >
                 <Route path="/agendamento/:empresa" element={<Agendamento />} />
                 <Route path="/agendamento/:empresa/calendario" element={<AgendamentoCalendario />} />
-                
                 <Route path="/agendamento" element={<Page404 />} />
                 <Route path="*" element={<Page404 />} />
             </Route>
