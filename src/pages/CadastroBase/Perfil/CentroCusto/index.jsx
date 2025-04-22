@@ -23,7 +23,7 @@ export default function CentroCusto() {
     const fetchRegs = async () => {
         try {
             const response = await getCentroCusto();
-            setRegs(response);
+            setRegs(response.items);
             setModalIsOpen(false)
         } catch (error) {
             console.error("Erro ao buscar:", error);

@@ -8,7 +8,6 @@ import { formatDate } from "../../../utils/dateHelper";
 
 // eslint-disable-next-line react/prop-types
 export default function CentroCustoTable({ data = [], handleEdit, refresh, granted = [], onCheckboxChange }) {
-
   const columns = [
     {
       name: 'Permissão',
