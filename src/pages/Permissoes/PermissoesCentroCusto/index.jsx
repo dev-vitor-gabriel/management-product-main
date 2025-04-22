@@ -41,7 +41,7 @@ export default function PermissoesCentroCusto() {
 
   useEffect(() => {
     getUsers();
-    getCentroCustos();
+    getCentroCustos(true);
   }, [debouncedSearch]);
 
   const handleUserChange = async (event) => {

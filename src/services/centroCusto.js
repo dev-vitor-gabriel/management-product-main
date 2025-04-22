@@ -2,9 +2,9 @@
 import api from "./api";
 
 
-const getCentroCusto = async () => {
+const getCentroCusto = async (getByCompany = false) => {
     try {
-        const response = await api.get("/centroCusto");
+        const response = await api.get(`/centroCusto?getByCompany=${getByCompany}`, );
 
         return response.data;
     } catch (error) {

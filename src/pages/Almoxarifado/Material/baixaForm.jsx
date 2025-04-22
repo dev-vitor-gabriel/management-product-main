@@ -34,7 +34,7 @@ export default function BaixaForm({ reg, onClose, visible, refresh, tipoMoviment
       try {
           Promise.all([getCentroCusto(), getMaterial()])
           .then(([centroCusto, material])=>{
-            const centroCustoOptions = centroCusto.map(({ id_centro_custo_cco, des_centro_custo_cco }) => {
+            const centroCustoOptions = centroCusto.items.map(({ id_centro_custo_cco, des_centro_custo_cco }) => {
               return ({
                 value: id_centro_custo_cco,
                 label: des_centro_custo_cco

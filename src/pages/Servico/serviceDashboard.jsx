@@ -57,9 +57,12 @@ export default function ServiceDashboard() {
 
     useEffect(() => {
         fetchCostCenters();
+    }, [selectedCostCenters]);
+
+    useEffect(() => {
         fetchServiceDashboard();
         fetchTopSevenServicesTypes();
-    }, [selectedCostCenters, dateFilter]);
+    }, [dateFilter]);
 
     return (
         <Content>
