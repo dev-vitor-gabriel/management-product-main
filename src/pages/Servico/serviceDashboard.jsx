@@ -73,7 +73,7 @@ export default function ServiceDashboard() {
 
     const getServicesByEmployeeValues = () => {
         const values = []
-        servicesByEmployeeGraphData.map((data) => values.push(data.total_tipo_servico));
+        servicesByEmployeeGraphData.map((data) => values.push(data.total_tipos_servico));
         return values;
     };
 
