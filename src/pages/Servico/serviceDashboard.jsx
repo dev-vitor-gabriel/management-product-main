@@ -40,7 +40,6 @@ export default function ServiceDashboard() {
 
     const formatCostCenters = async () => {
         const userData = JSON.parse(localStorage.getItem('user'))
-        console.log(userData);
 
         const costCenters = userData.centro_custo_permission.map(({ id_centro_custo_cco, des_centro_custo_cco }) => ({
             value: id_centro_custo_cco,
@@ -79,8 +78,6 @@ export default function ServiceDashboard() {
     };
 
     const handleChangeValue = (e) => {
-        console.log(e.target.value);
-
         const selectedValues = e.target.value.map((option) => option.value);
         setSelectedCostCenters(selectedValues);
     }
