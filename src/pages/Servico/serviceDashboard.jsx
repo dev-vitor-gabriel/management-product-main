@@ -5,6 +5,8 @@ import Content from "../../components/Content";
 import BarChart from '../../components/BarGraph';
 import SelectBox from "../../components/Select";
 import Checkbox from "../../components/Checkbox/Checkbox";
+import TriggerButton from "../../components/TriggerButton";
+
 import { format } from "date-fns";
 
 export default function ServiceDashboard() {
@@ -107,6 +109,23 @@ export default function ServiceDashboard() {
                             error={null}
                         />
                     </SelectWrapper>
+                    <CheckboxGroup>
+                        <TriggerButton
+                            label="1 dia"
+                            active={dateFilter === 1}
+                            onClick={() => setDateFilter(1)}
+                        />
+                        <TriggerButton
+                            label="7 dias"
+                            active={dateFilter === 7}
+                            onClick={() => setDateFilter(7)}
+                        />
+                        <TriggerButton
+                            label="30 dias"
+                            active={dateFilter === 30}
+                            onClick={() => setDateFilter(30)}
+                        />
+                    </CheckboxGroup>
                     <CheckboxGroup>
                         <Checkbox
                             label="1 dia"
