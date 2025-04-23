@@ -167,7 +167,7 @@ export const FilterContainer = styled.div`
 `;
 
 export const SelectWrapper = styled.div`
-    width: 20%;
+    width: 40%;
 `;
 
 export const CheckboxGroup = styled.div`
