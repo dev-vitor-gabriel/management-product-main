@@ -93,6 +93,7 @@ function AuthProvider({ children }) {
             "password": data.password,
         })
             .then((value) => {
+                console.log(value);
                 setUser(value.data.user);
                 setUserAuthorization(value.data.authorization);
                 setUserMenu(value.data.menu);

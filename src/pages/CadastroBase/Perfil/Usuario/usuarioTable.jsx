@@ -19,8 +19,6 @@ export default function UsuarioTable({ data = [], handleEdit, refresh }) {
     })
   }
 
-  console.log();
-  
 
   const columns = [
     {

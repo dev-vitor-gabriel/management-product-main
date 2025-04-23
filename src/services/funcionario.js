@@ -5,19 +5,7 @@ import api from "./api";
 const getFuncionario = async () => {
     try {
         const response = await api.get("/funcionario");
-        // const response = [
-        //     {
-        //          // id_funcionario_tfu: ''
-                    // id_funcionario_cargo_tfu: ''
-                    // desc_funcionario_tfu: ''
-                    // telefone_funcionario_tfu: ''
-                    // documento_funcionario_tfu: ''
-                    // endereco_funcionario_tfu: ''
-                    // is_ativo_tfu: ''
-                    // created_at:  ''
-                    // updated_at: ''
-        //     },
-        // ];
+
         return response.data;
     } catch (error) {
         console.error("Erro ao buscar:", error);
