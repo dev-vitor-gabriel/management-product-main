@@ -20,7 +20,7 @@ const getTopSevenServicesTypes = async (cost_center, initial_date, final_date) =
 
 const getServicesByEmployee = async (cost_center, initial_date, final_date) => {
     try {
-        const response = await api.get(`/servico/servicesByEmployee?centros_custo=${cost_center}&data_inicio=${initial_date}&data_fim=${final_date}`);
+        const response = await api.get(`/servico/topThreeEmployees?centros_custo=${cost_center}&data_inicio=${initial_date}&data_fim=${final_date}`);
         return response.data;
     } catch (error) {
         console.error("Erro ao buscar:", error);
