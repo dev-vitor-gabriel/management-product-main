@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { getServiceDashboard, getTopSevenServicesTypes } from "../../services/graphs";
-import { getCentroCusto } from "../../services/centroCusto";
 import { DashboardContainer, CardsContainer, Card, ChartContainer, ChartWrapper, FilterContainer, CheckboxGroup, SelectWrapper } from "./style";
 import Content from "../../components/Content";
 import BarChart from '../../components/BarGraph';
@@ -29,13 +28,20 @@ export default function ServiceDashboard() {
         setGraphData(response);
     };
 
-    const fetchCostCenters = async () => {
-        const response = await getCentroCusto();
-        const costCenters = response.map(({ id_centro_custo_cco, des_centro_custo_cco }) => ({
+    const formatCostCenters = async () => {
+        const userData = JSON.parse(localStorage.getItem('user'))
+        console.log(userData);
+
+        const costCenters = userData.centro_custo_permission.map(({ id_centro_custo_cco, des_centro_custo_cco }) => ({
             value: id_centro_custo_cco,
             label: des_centro_custo_cco
         }));
+        const selectedCostCenters = userData.centro_custo_permission.map(({ id_centro_custo_cco }) => (
+            id_centro_custo_cco
+        ));
+
         setCostCenters(costCenters);
+        setSelectedCostCenters(selectedCostCenters);
     };
 
     const getLabels = () => {
@@ -51,12 +57,17 @@ export default function ServiceDashboard() {
     };
 
     const handleChangeValue = (e) => {
+        console.log(e.target.value);
+
         const selectedValues = e.target.value.map((option) => option.value);
         setSelectedCostCenters(selectedValues);
     }
 
     useEffect(() => {
-        fetchCostCenters();
+        formatCostCenters();
+    }, []);
+
+    useEffect(() => {
         fetchServiceDashboard();
         fetchTopSevenServicesTypes();
     }, [selectedCostCenters, dateFilter]);
@@ -69,7 +80,7 @@ export default function ServiceDashboard() {
                         <label>Centro de Custo</label>
                         <SelectBox
                             options={costCenters ?? []}
-                            defaultValue={costCenters[0]?.id_centro_custo_und ?? []}
+                            defaultValue={selectedCostCenters}
                             name='id_centro_custo_und'
                             onChange={handleChangeValue}
                             error={null}
@@ -97,19 +108,19 @@ export default function ServiceDashboard() {
                 <CardsContainer>
                     <Card>
                         <h3>Total Ativos</h3>
-                        <p>{cardData?.total_ativos ? cardData?.total_ativos : '-'}</p>
+                        <p>{cardData?.total_ativos !== null ? cardData?.total_ativos : '-'}</p>
                     </Card>
                     <Card>
                         <h3>Total Finalizados</h3>
-                        <p>{cardData?.total_finalizados ? cardData?.total_finalizados : '-'}</p>
+                        <p>{cardData?.total_finalizados !== null ? cardData?.total_finalizados : '-'}</p>
                     </Card>
                     <Card>
                         <h3>Total Inativos</h3>
-                        <p>{cardData?.total_inativos ? cardData?.total_inativos : '-'}</p>
+                        <p>{cardData?.total_inativos !== null ? cardData?.total_inativos : '-'}</p>
                     </Card>
                     <Card>
                         <h3>Média de Tempo</h3>
-                        <p>{cardData?.media_tempo_atendimento ? cardData?.media_tempo_atendimento : '-'}</p>
+                        <p>{cardData?.media_tempo_atendimento !== null ? cardData?.media_tempo_atendimento : '-'}</p>
                     </Card>
                 </CardsContainer>
 
