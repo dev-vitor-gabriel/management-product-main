@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
-import { getServiceDashboard, getTopSevenServicesTypes } from "../../services/graphs";
+import { getServiceDashboard, getTopSevenServicesTypes, getServicesByEmployee } from "../../services/graphs";
 import { DashboardContainer, CardsContainer, Card, ChartContainer, ChartWrapper, FilterContainer, CheckboxGroup, SelectWrapper } from "./style";
 import Content from "../../components/Content";
 import BarChart from '../../components/BarGraph';
 import SelectBox from "../../components/Select";
 import Checkbox from "../../components/Checkbox/Checkbox";
+import TriggerButton from "../../components/TriggerButton";
+
 import { format } from "date-fns";
 
 export default function ServiceDashboard() {
     const [cardData, setCardData] = useState([]);
-    const [graphData, setGraphData] = useState([]);
+    const [topSevenServicesGraphData, setTopSevenServicesGraphData] = useState([]);
+    const [servicesByEmployeeGraphData, setServicesByEmployeeGraphData] = useState([]);
     const [costCenters, setCostCenters] = useState([]);
     const [selectedCostCenters, setSelectedCostCenters] = useState([]);
     const [dateFilter, setDateFilter] = useState(1);
@@ -25,12 +28,18 @@ export default function ServiceDashboard() {
         const pastDate = new Date();
         pastDate.setDate(pastDate.getDate() - dateFilter);
         const response = await getTopSevenServicesTypes(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 00:00:00`);
-        setGraphData(response);
+        setTopSevenServicesGraphData(response);
+    };
+
+    const fetchServicesByEmployee = async () => {
+        const pastDate = new Date();
+        pastDate.setDate(pastDate.getDate() - dateFilter);
+        const response = await getServicesByEmployee(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 00:00:00`);
+        setServicesByEmployeeGraphData(response);
     };
 
     const formatCostCenters = async () => {
         const userData = JSON.parse(localStorage.getItem('user'))
-        console.log(userData);
 
         const costCenters = userData.centro_custo_permission.map(({ id_centro_custo_cco, des_centro_custo_cco }) => ({
             value: id_centro_custo_cco,
@@ -44,21 +53,31 @@ export default function ServiceDashboard() {
         setSelectedCostCenters(selectedCostCenters);
     };
 
-    const getLabels = () => {
+    const getTopSevenServicesLabels = () => {
         const labels = []
-        graphData.map((data) => labels.push(data.tipo_servico));
+        topSevenServicesGraphData.map((data) => labels.push(data.tipo_servico));
         return labels;
     };
 
-    const getValues = () => {
+    const getTopSevenServicesValues = () => {
         const values = []
-        graphData.map((data) => values.push(data.total_tipo_servico));
+        topSevenServicesGraphData.map((data) => values.push(data.total_tipo_servico));
+        return values;
+    };
+
+    const getServicesByEmployeeLabels = () => {
+        const labels = []
+        servicesByEmployeeGraphData.map((data) => labels.push(data.nome));
+        return labels;
+    };
+
+    const getServicesByEmployeeValues = () => {
+        const values = []
+        servicesByEmployeeGraphData.map((data) => values.push(data.total_tipo_servico));
         return values;
     };
 
     const handleChangeValue = (e) => {
-        console.log(e.target.value);
-
         const selectedValues = e.target.value.map((option) => option.value);
         setSelectedCostCenters(selectedValues);
     }
@@ -70,7 +89,8 @@ export default function ServiceDashboard() {
     useEffect(() => {
         fetchServiceDashboard();
         fetchTopSevenServicesTypes();
-    }, [dateFilter]);
+        fetchServicesByEmployee();
+    }, [selectedCostCenters, dateFilter]);
 
     return (
         <Content>
@@ -86,6 +106,23 @@ export default function ServiceDashboard() {
                             error={null}
                         />
                     </SelectWrapper>
+                    <CheckboxGroup>
+                        <TriggerButton
+                            label="1 dia"
+                            active={dateFilter === 1}
+                            onClick={() => setDateFilter(1)}
+                        />
+                        <TriggerButton
+                            label="7 dias"
+                            active={dateFilter === 7}
+                            onClick={() => setDateFilter(7)}
+                        />
+                        <TriggerButton
+                            label="30 dias"
+                            active={dateFilter === 30}
+                            onClick={() => setDateFilter(30)}
+                        />
+                    </CheckboxGroup>
                     <CheckboxGroup>
                         <Checkbox
                             label="1 dia"
@@ -127,21 +164,21 @@ export default function ServiceDashboard() {
                 <ChartContainer>
                     <ChartWrapper>
                         <BarChart
-                            labels={getLabels()}
-                            values={getValues()}
+                            labels={getTopSevenServicesLabels()}
+                            values={getTopSevenServicesValues()}
                             label="Total de serviços"
                             backgroundColor="#9052F9"
                             title="Top 7 tipos de serviços"
                         />
                     </ChartWrapper>
                     <ChartWrapper>
-                        {/* <BarChart
-                            labels={['Jan', 'Fev', 'Mar', 'Abr', 'Maio', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']}
-                            values={[400, 300, 500, 700, 200, 600, 800, 900, 1000, 1100, 1200, 1300]}
-                            label="Sales"
+                        <BarChart
+                            labels={getServicesByEmployeeLabels()}
+                            values={getServicesByEmployeeValues()}
+                            label="Qtde de serviços"
                             backgroundColor="#9052F9"
-                            title="Sales Breakdown"
-                        /> */}
+                            title="Top 3 Colaboradores"
+                        />
                     </ChartWrapper>
                 </ChartContainer>
             </DashboardContainer>
