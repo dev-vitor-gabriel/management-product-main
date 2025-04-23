@@ -102,7 +102,7 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
         };
       }
     );
-    const centroCustoTypeOptions = centrosCusto.map(
+    const centroCustoTypeOptions = centrosCusto.items.map(
       ({ id_centro_custo_cco, des_centro_custo_cco }) => {
         return {
           value: id_centro_custo_cco,

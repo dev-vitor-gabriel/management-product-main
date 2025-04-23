@@ -125,6 +125,11 @@ export default function PermissoesUsuario() {
     }
     
     await salvarUsuarioMenu(usuario)
+    setCachedMenuUsuarios((prev) => {
+      const newCache = { ...prev };
+      delete newCache[usuarioSelecionado.id];
+      return newCache;
+    });
   }
 
   const handleCompanyNameChanged = (event) => {

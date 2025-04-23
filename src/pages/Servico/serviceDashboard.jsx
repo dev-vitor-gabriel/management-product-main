@@ -31,7 +31,7 @@ export default function ServiceDashboard() {
 
     const fetchCostCenters = async () => {
         const response = await getCentroCusto();
-        const costCenters = response.map(({ id_centro_custo_cco, des_centro_custo_cco }) => ({
+        const costCenters = response.items.map(({ id_centro_custo_cco, des_centro_custo_cco }) => ({
             value: id_centro_custo_cco,
             label: des_centro_custo_cco
         }));
@@ -57,9 +57,12 @@ export default function ServiceDashboard() {
 
     useEffect(() => {
         fetchCostCenters();
+    }, []);
+
+    useEffect(() => {
         fetchServiceDashboard();
         fetchTopSevenServicesTypes();
-    }, [selectedCostCenters, dateFilter]);
+    }, [dateFilter]);
 
     return (
         <Content>

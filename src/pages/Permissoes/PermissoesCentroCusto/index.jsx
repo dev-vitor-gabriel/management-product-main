@@ -8,7 +8,7 @@ import { useDebounce } from "../../../utils/customHooks.js";
 import CentroCustoTable from "./centroCustoTable.jsx";
 
 export default function PermissoesCentroCusto() {
-  const [usuarios, setUsuarios] = useState(null);
+  const [usuarios, setUsuarios] = useState([]);
   const [centroCustos, setCentroCustos] = useState([]);
   const [filtroUsuario, setFiltroUsuario] = useState("");
   const [cache, setCache] = useState({});
@@ -19,7 +19,7 @@ export default function PermissoesCentroCusto() {
   const getCentroCustos = async () => {
     try {
       const response = await getCentroCusto();
-      setCentroCustos(response);
+      setCentroCustos(response.items);
     } catch (error) {
       console.error("Erro ao buscar:", error);
     }
@@ -36,12 +36,12 @@ export default function PermissoesCentroCusto() {
       return;
     }
     const response = await getCentroCusto();
-    setCentroCustos(response);
+    setCentroCustos(response.items);
   };
 
   useEffect(() => {
     getUsers();
-    getCentroCustos();
+    getCentroCustos(true);
   }, [debouncedSearch]);
 
   const handleUserChange = async (event) => {
@@ -112,7 +112,7 @@ export default function PermissoesCentroCusto() {
         <FormGroup>
           <SelectBoxV2
             options={usuarios}
-            name="id_estoque[]"
+            name="usuarios[]"
             onChange={handleUserChange}
             getOptions={getUsersSelect}
             setOptions={setUsuarios}

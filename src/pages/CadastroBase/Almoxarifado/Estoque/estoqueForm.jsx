@@ -26,7 +26,7 @@ export default function EstoqueForm({ estoque, onClose, visible,refresh }) {
     const fetchData = async () => {
         try {
             const centroCusto = await getCentroCusto();
-            const centroCustoTypeOptions = centroCusto.map(({ id_centro_custo_cco, des_centro_custo_cco }) => ({
+            const centroCustoTypeOptions = centroCusto.items.map(({ id_centro_custo_cco, des_centro_custo_cco }) => ({
                 value: id_centro_custo_cco,
                 label: des_centro_custo_cco
             }));
