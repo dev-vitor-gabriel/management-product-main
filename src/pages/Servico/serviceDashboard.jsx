@@ -20,21 +20,21 @@ export default function ServiceDashboard() {
     const fetchServiceDashboard = async () => {
         const pastDate = new Date();
         pastDate.setDate(pastDate.getDate() - dateFilter);
-        const response = await getServiceDashboard(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 00:00:00`);
+        const response = await getServiceDashboard(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 23:59:59`);
         setCardData(response);
     };
 
     const fetchTopSevenServicesTypes = async () => {
         const pastDate = new Date();
         pastDate.setDate(pastDate.getDate() - dateFilter);
-        const response = await getTopSevenServicesTypes(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 00:00:00`);
+        const response = await getTopSevenServicesTypes(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 23:59:59`);
         setTopSevenServicesGraphData(response);
     };
 
     const fetchServicesByEmployee = async () => {
         const pastDate = new Date();
         pastDate.setDate(pastDate.getDate() - dateFilter);
-        const response = await getServicesByEmployee(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 00:00:00`);
+        const response = await getServicesByEmployee(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 23:59:59`);
         setServicesByEmployeeGraphData(response);
     };
 
