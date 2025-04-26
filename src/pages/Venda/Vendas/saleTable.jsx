@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Button } from './style';
-
+import { toast } from "react-toastify";
 
 import Table from "../../../components/Table";
 import { confirmAlert } from "../../../utils/alert";
@@ -16,7 +16,7 @@ export default function SaleTable({ data = [], handleEdit, refresh, totalRows })
     confirmAlert({
       title: 'Tem certeza disso?',
       text: "A venda será finalizada!",
-      handleFunction: async () => {await finalizarSale(sale.id_venda_vda); await refresh()}
+      handleFunction: async () => {await finalizarVenda(sale.id_venda_vda)}
     })
   }
 
@@ -24,8 +24,26 @@ export default function SaleTable({ data = [], handleEdit, refresh, totalRows })
     confirmAlert({
       title: 'Tem certeza disso?',
       text: "A venda será cancelada!",
-      handleFunction: async () => {await cancelarSale(sale.id_venda_vda); await refresh()}
+      handleFunction: async () => {await cancelarVenda(sale.id_venda_vda)}
     })
+  }
+
+  async function cancelarVenda(id_venda_vda) {
+    try {
+      await cancelarSale(id_venda_vda); 
+      await refresh()
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  }
+
+  async function finalizarVenda(id_venda_vda) {
+    try {
+      await finalizarSale(id_venda_vda); 
+      await refresh()
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
   }
 
   const columns = [

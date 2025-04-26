@@ -2,11 +2,13 @@ import api from "./api";
 
 let cachedPageNumber = 1;
 let cachedPerPage = 10;
+let cachedFilter = 10;
 
-export async function getSales(pageNumber, perPage) {
-    cachedPageNumber = pageNumber ?? cachedPageNumber;
-    cachedPerPage = perPage ?? cachedPerPage;
-
+export async function getSales(filter, pageNumber, perPage) {
+    cachedFilter = filter || cachedFilter;
+    cachedPageNumber = pageNumber || cachedPageNumber;
+    cachedPerPage = perPage || cachedPerPage;
+    
     try {
         const response = await api.get(`/venda?&per_page=${cachedPerPage}&page_number=${cachedPageNumber}`);
         return response.data;
