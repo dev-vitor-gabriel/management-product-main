@@ -22,7 +22,6 @@ const deleteMaterial = async (id) => {
 };
 const saveMaterial = async (obj) => {
     try {
-        console.log(obj)
         const response = await api.post("/material", obj, {
             headers: {
               'Content-Type': 'application/json'

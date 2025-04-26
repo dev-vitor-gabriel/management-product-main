@@ -2,9 +2,13 @@
 import api from "./api";
 
 
-const getBaixas = async () => {
+const getBaixas = async (tipoMovimentacao) => {
     try {
-        const response = await api.get(`/movimentacao`);
+        const response = await api.get(`/movimentacao`, {
+            params: {
+                tipoMovimentacao
+            }
+        });
 
         return response.data;
     } catch (error) {

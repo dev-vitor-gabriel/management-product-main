@@ -39,7 +39,7 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
       getCentroCusto(),
       getStatusByOrigem(OrigemStatus.Venda),
     ]).then(([employees, materiais, clientes, centrosCusto, status]) => {
-      setSaleFormInfos(employees, materiais, clientes, centrosCusto, status)
+      setSaleFormInfos(employees.items, materiais, clientes.items, centrosCusto, status)
     });
   };
 
@@ -52,7 +52,6 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
         };
       }
     );
-  
     const materialOptions = materiais.map(
       item => {
         return {

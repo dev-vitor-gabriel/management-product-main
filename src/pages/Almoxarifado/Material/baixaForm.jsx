@@ -17,7 +17,6 @@ import { getMaterial } from "../../../services/material";
 import { FormGroup } from "./style";
 
 const schema = yup.object().shape({
-  id_estoque: yup.number().required().positive().integer(),
   id_centro_custo_mov: yup.number().required().positive().integer()
 });
 
@@ -27,7 +26,7 @@ export default function BaixaForm({ reg, onClose, visible, refresh, tipoMoviment
   const [formData, setFormData] = useState(reg ?? {});
   const [error, setError] = useState({});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
-  const [estoques, setEstoques] = useState([]);
+  const [produtos, setProdutos] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,19 +47,13 @@ export default function BaixaForm({ reg, onClose, visible, refresh, tipoMoviment
                 custom: [{
                   prefixDefault: des_reduz_unidade_und,
                   label: 'Quantidade',
-                  column: 'qtd_material_rsm',
+                  column: 'qtd_material_eti',
                   value: 1,
                   type: 'number'
-                },
-                {
-                  label: 'Valor Unitário',
-                  column: 'vlr_material_mte',
-                  value: vlr_material_mte,
-                  type: 'number',
-                  mask: 'currency'
                 }]
               });
             })
+
             setFormData({ centroCustoOptions, materialOptions })
           })
       } catch (error) {
@@ -77,34 +70,29 @@ export default function BaixaForm({ reg, onClose, visible, refresh, tipoMoviment
     setForm(prev => ({ ...prev, [inputName]: value }))
   }
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async () => {
     setLoadingSubmit(true);
     let objError = {};
     setTimeout(async () => {
       try {
         await schema.validate(form);
         const formFactory = {
-          txt_movimentacao_mov:'',
-          id_estoque:null,
-          id_centro_custo_mov:null,
+          id_centro_custo_mov: null,
+          des_estoque_item_eti: '',
           materiais: [],
         }
         const formData = { ...formFactory, ...form }
-
+        
         formData.materiais = formData.materiais.map(reg => {
-          const regQtd = reg.custom.filter(({ column }) => column == "qtd_material_rsm");
-          const regVlr = reg.custom.filter(({ column }) => ["vlr_material_mte","vlr_material_rsm"].includes(column));
+          const regQtd = reg.custom.filter(({ column }) => column == "qtd_material_eti");
 
           return {
             id_material_mte: reg.value,
-            vlr_material_mit: parseInt(regVlr?.[0].value) ?? 0,
             qtd_material_mit: parseInt(regQtd?.[0].value) ?? 1
           }
         });
-
         const response = await saveBaixa(tipoMovimentacao, formData);
         if (!response.error) {
-          console.log(response?.data, response?.data?.id)
           if (response?.data?.service?.id ?? false) {
             setForm(prev => ({ ...prev, id_servico_ser: response.data.service.id }));
           }
@@ -130,12 +118,6 @@ export default function BaixaForm({ reg, onClose, visible, refresh, tipoMoviment
     }, 1000);
   }
 
-  const getEstoqueSelect = async (filter) => {
-    return await getEstoque(filter).then((estoques) => {
-      return estoques.items.map(estoque => { return { value: estoque.id_estoque_est, label: estoque.des_estoque_est } })
-    })
-  }
-
   return (
     <Modal title={form.id_material_und ? "Edição" : "Cadastro"} onClose={onClose} visible={visible} >
       <FormGroup>
@@ -150,28 +132,6 @@ export default function BaixaForm({ reg, onClose, visible, refresh, tipoMoviment
         />
       </FormGroup>
       <FormGroup>
-        <label>Estoque</label>
-        <SelectBoxV2
-          options={estoques}
-          name='id_estoque[]'
-          onChange={handleChangeValue}
-          getOptions={getEstoqueSelect}
-          setOptions={setEstoques}
-          error={error?.id_estoque ?? false}
-          limit={1}
-        />
-      </FormGroup>
-      <FormGroup>
-        <label>Observação</label>
-        <Input
-          type={'text'}
-          defaultValue={form?.txt_movimentacao_mov ?? ''}
-          name='txt_movimentacao_mov'
-          onChange={handleChangeValue}
-          error={error?.txt_movimentacao_mov ?? false}
-        />
-      </FormGroup>
-      <FormGroup>
         <label>Materiais</label>
         <SelectBox
           options={formData.materialOptions ?? []}
@@ -181,7 +141,16 @@ export default function BaixaForm({ reg, onClose, visible, refresh, tipoMoviment
           error={error?.materiais ?? false}
         />
       </FormGroup>
-
+      <FormGroup>
+        <label>Observação</label>
+        <Input
+          type={'text'}
+          defaultValue={form?.txt_movimentacao_mov ?? ''}
+          name='des_estoque_item_eti'
+          onChange={handleChangeValue}
+          error={error?.txt_movimentacao_mov ?? false}
+        />
+      </FormGroup>
 
       <ButtonSubmit handleSubmit={handleSubmit} loading={loadingSubmit} >Salvar</ButtonSubmit>
     </Modal>

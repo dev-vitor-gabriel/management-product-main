@@ -12,8 +12,7 @@ import { formatDate } from "../../../utils/dateHelper";
 import BaixaForm from "./baixaForm";
 import BaixaTable from "./baixaTable";
 
-export default function Baixa({tipoMovimentacao}) {
-
+export default function Baixa( { tipoMovimentacao } ) {
     const [regs, setRegs] = useState([]);
     const [shouldReload, setShouldReload] = useState(false);
 
@@ -24,12 +23,18 @@ export default function Baixa({tipoMovimentacao}) {
     // Chamada da API - Lista todos os materiais
     const fetchRegs = async () => {
         try {
-            const response = await getBaixas();
+            console.log("tipoMovimentacao", tipoMovimentacao);
+            const response = await getBaixas(tipoMovimentacao);
             setRegs(response);
         } catch (error) {
             console.error("Erro ao buscar:", error);
         }
     };
+    
+    useEffect(() => {
+        fetchRegs();
+    }, [tipoMovimentacao]);
+
     useEffect(() => {
 
         fetchRegs();

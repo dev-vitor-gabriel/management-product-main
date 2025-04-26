@@ -32,8 +32,6 @@ export default function PagarForm({ service, onClose, visible }) {
   const [error, setError] = useState({});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
-  console.log(formData);
-  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -103,7 +101,6 @@ export default function PagarForm({ service, onClose, visible }) {
 
         const response = await saveServices(formData);
         if (!response.error) {
-          console.log(response?.data, response?.data?.id)
           if (response?.data?.service?.id ?? false) {
             setForm(prev => ({ ...prev, id_servico_ser: response.data.service.id }));
           }

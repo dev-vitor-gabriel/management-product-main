@@ -18,7 +18,7 @@ export default function PermissoesCentroCusto() {
 
   const getCentroCustos = async () => {
     try {
-      const response = await getCentroCusto();
+      const response = await getCentroCusto(true);
       setCentroCustos(response.items);
     } catch (error) {
       console.error("Erro ao buscar:", error);
@@ -35,7 +35,7 @@ export default function PermissoesCentroCusto() {
     if (centroCustos) {
       return;
     }
-    const response = await getCentroCusto();
+    const response = await getCentroCusto(true);
     setCentroCustos(response.items);
   };
 
