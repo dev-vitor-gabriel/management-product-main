@@ -53,8 +53,8 @@ export default function BaixaTable({ data = [], handleEdit, refresh }) {
       sortable: true,
     },
     {
-      name: "Estoque",
-      selector: ({ des_estoque_entrada, des_estoque_saida }) => `${des_estoque_entrada ? des_estoque_entrada : des_estoque_saida}`,
+      name: "Centro de Custo",
+      selector: ({ des_centro_custo_cco }) => `${des_centro_custo_cco}`,
       sortable: true,
     },
     {
@@ -64,21 +64,6 @@ export default function BaixaTable({ data = [], handleEdit, refresh }) {
           Ver Materiais
         </Button>
       ),
-    },
-    {
-      name: "Valor Total",
-      sortable: true,
-      cell: (row) => {
-        if (Array.isArray(row.materiais) && row.materiais.length > 0) {
-          const total = row.materiais.reduce((accumulator, currentValue) => {
-            const valorUnitario = typeof currentValue.vlr_material_mit === 'number' ? currentValue.vlr_material_mit : 0;
-            const quantidade = typeof currentValue.qtd_material_mit === 'number' ? currentValue.qtd_material_mit : 0;
-            return accumulator + (valorUnitario * quantidade);
-          }, 0);
-          return `R$ ${(total / 100).toFixed(2)}`;
-        }
-        return `R$ 0.00`;
-      },
     },
     {
       name: "Data de Cadastro",
@@ -97,13 +82,6 @@ export default function BaixaTable({ data = [], handleEdit, refresh }) {
           visible={modalVisible}
           onClose={closeModal}
         >
-          <div>
-            {selectedRow.materiais.map(({ des_material_mte, qtd_material_mit, vlr_material_mit }, index) => (
-              <div key={index}>
-                {`${qtd_material_mit}x R$ ${parseFloat(vlr_material_mit / 100).toFixed(2)} - ${des_material_mte}`}
-              </div>
-            ))}
-          </div>
         </Modal>
       )}
     </>

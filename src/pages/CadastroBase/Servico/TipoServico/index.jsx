@@ -25,8 +25,6 @@ export default function TipoServico() {
         return "Loading";
     }
 
-    console.log('data',regs, isLoading);
-
     // const {data, isLoading} = useQuery({
     //         queryKey: ['getServiceType'],
     //         queryFn: getServiceType

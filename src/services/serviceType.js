@@ -30,7 +30,6 @@ const deleteServiceType = async (id) => {
 };
 const saveServiceType = async (obj) => {
     try {
-        console.log(obj)
         const response = await api.post("/servicoTipo", obj, {
             headers: {
               'Content-Type': 'application/json'

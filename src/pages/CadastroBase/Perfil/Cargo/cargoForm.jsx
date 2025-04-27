@@ -34,7 +34,6 @@ export default function CargoForm({ reg, onClose, visible, refresh }) {
     setTimeout(async () => {
       try {
         await schema.validate(form);
-        console.log(JSON.stringify(form));
         const success = await saveCargo(form);
         if(success){
           await refresh();

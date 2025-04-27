@@ -34,7 +34,6 @@ export default function InstituicaoPagamentoForm({ reg, onClose, visible, refres
     setTimeout(async () => {
       try {
         await schema.validate(form);
-        console.log(JSON.stringify(form));
         const success = await saveInstituicaoPagamento(form);
         if(success){
           await refresh();

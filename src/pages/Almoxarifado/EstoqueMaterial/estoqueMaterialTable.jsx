@@ -20,21 +20,28 @@ export default function EstoqueMaterialTable({ data = [] }) {
 
   const columns = [
     {
-      name: "Ações",
-      cell: (row) => (
-        <Button onClick={() => showMaterials(row)}>
-          Ver Materiais
-        </Button>
-      ),
+      name: "ID do Estoque",
+      selector: ({ id_estoque_item_eti }) => `${id_estoque_item_eti}`,
+      sortable: true,
     },
     {
-      name: "ID do Estoque",
-      selector: ({ estoque_id }) => `${estoque_id}`,
+      name: "Produto",
+      selector: ({ des_material_mte }) => `${des_material_mte}`,
+      sortable: true,
+    },
+    {
+      name: "Saldo",
+      selector: ({ qtd_estoque_item_eti }) => `${qtd_estoque_item_eti}`,
+      sortable: true,
+    },
+    {
+      name: "Centro de Custo",
+      selector: ({ des_centro_custo_cco }) => `${des_centro_custo_cco}`,
       sortable: true,
     },
     {
       name: "Descrição do Estoque",
-      selector: ({ estoque_descricao }) => `${estoque_descricao}`,
+      selector: ({ des_estoque_item_eti }) => `${des_estoque_item_eti}`,
       sortable: true,
     },
   ];

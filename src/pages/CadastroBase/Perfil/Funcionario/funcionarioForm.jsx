@@ -59,7 +59,6 @@ export default function FuncionarioForm({ reg, onClose, visible, refresh }) {
     setTimeout(async () => {
       try {
         await schema.validate(form);
-        console.log(JSON.stringify(form));
         const success = await saveFuncionario(form);
         if(success){
           await refresh();

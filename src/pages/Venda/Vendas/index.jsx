@@ -21,9 +21,9 @@ export default function Sale({ reg = null, tela }) {
 
     // Chamada da API - Lista todos os materiais
     
-    const fetchSales = async (pageNumber, totalSize) => {
+    const fetchSales = async (filter, pageNumber, totalSize) => {
         try {
-            const response = await getSales(pageNumber, totalSize);
+            const response = await getSales(filter, pageNumber, totalSize);
             setSales(response.items);
             setTotalRows(response.total);
         } catch (error) {

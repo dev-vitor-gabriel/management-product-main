@@ -16,7 +16,6 @@ export default function Material() {
 
     // Chamada da API - Lista todos os materiais
     const fetchRegs = async () => {
-        console.log("fetching")
         try {
             const response = await getMaterial();
             setRegs(response);

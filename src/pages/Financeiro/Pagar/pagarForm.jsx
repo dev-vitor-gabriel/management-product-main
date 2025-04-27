@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import yup from "../../utils/yup";
+import yup from "../../../utils/yup";
 
 
 
-import Input from "../../components/Input";
-import Modal from "../../components/Modal";
+import Input from "../../../components/Input";
+import Modal from "../../../components/Modal";
 
 import { toast } from "react-toastify";
 
-import ButtonSubmit from "../../components/Buttons/ButtonSubmit";
-import SelectBox from "../../components/Select";
-import { getCentroCusto } from "../../services/centroCusto";
-import { getCliente } from "../../services/cliente";
-import { getEmployee } from "../../services/employee";
-import { getMaterial } from "../../services/material";
-import { saveServices } from "../../services/service";
-import { getServiceType } from "../../services/serviceType";
+import ButtonSubmit from "../../../components/Buttons/ButtonSubmit";
+import SelectBox from "../../../components/Select";
+import { getCentroCusto } from "../../../services/centroCusto";
+import { getCliente } from "../../../services/cliente";
+import { getEmployee } from "../../../services/employee";
+import { getMaterial } from "../../../services/material";
+import { saveServices } from "../../../services/service";
+import { getServiceType } from "../../../services/serviceType";
 import { Expand, FormGroup } from "./style";
 
 const schema = yup.object().shape({
@@ -25,7 +25,7 @@ const schema = yup.object().shape({
 });
 
 
-export default function ServiceForm({ service, onClose, visible }) {
+export default function PagarForm({ service, onClose, visible }) {
 
   const [form, setForm] = useState(service ?? {});
   const [formData, setFormData] = useState(service ?? {});
@@ -35,61 +35,22 @@ export default function ServiceForm({ service, onClose, visible }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        Promise.all([getEmployee(), getServiceType(), getMaterial(), getCliente(), getCentroCusto()])
-          .then(([employees, servicesType, material, cliente, centroCusto]) => {
+        Promise.all([getEmployee(), getCentroCusto()])
+          .then(([employees, centroCusto]) => {
             const funcionarioTypeOptions = employees.items.map(({ id_funcionario_tfu, desc_funcionario_tfu }) => {
               return ({
                 value: id_funcionario_tfu,
                 label: desc_funcionario_tfu
               });
             })
-            const serviceTypeOptions = servicesType.map(({ id_servico_tipo_stp, des_servico_tipo_stp, vlr_servico_tipo_stp }) => {
-              return ({
-                value: id_servico_tipo_stp,
-                label: des_servico_tipo_stp,
-                custom: [{
-                  label: 'Valor',
-                  column: 'vlr_servico_tipo_stp',
-                  value: vlr_servico_tipo_stp,
-                  type: 'number',
-                  mask: 'currency'
-                }]
-              });
-            })
 
-            const materialOptions = material.map(({ id_material_mte, des_material_mte, des_reduz_unidade_und, vlr_material_mte }) => {
-              return ({
-                value: id_material_mte,
-                label: `${des_material_mte} - ${des_reduz_unidade_und}`,
-                custom: [{
-                  prefixDefault: des_reduz_unidade_und,
-                  label: 'Quantidade',
-                  column: 'qtd_material_rsm',
-                  value: 1,
-                  type: 'number'
-                },
-                {
-                  label: 'Valor Unitário',
-                  column: 'vlr_material_mte',
-                  value: vlr_material_mte,
-                  type: 'number',
-                  mask: 'currency'
-                }]
-              });
-            })
-            const clienteOptions = cliente.items.map(({ id_cliente_cli, des_cliente_cli, documento_cliente_cli, telefone_cliente_cli }) => {
-              return ({
-                value: id_cliente_cli,
-                label: `${des_cliente_cli} - ${telefone_cliente_cli == '' ? documento_cliente_cli : telefone_cliente_cli}`
-              });
-            });
             const centroCustoTypeOptions = centroCusto.items.map(({ id_centro_custo_cco, des_centro_custo_cco }) => {
               return ({
                 value: id_centro_custo_cco,
                 label: des_centro_custo_cco
               });
             })
-            setFormData({ employees: funcionarioTypeOptions, servicesType: serviceTypeOptions, materiais: materialOptions, clientes: clienteOptions, centroCusto: centroCustoTypeOptions })
+            setFormData({ employees: funcionarioTypeOptions, centroCusto: centroCustoTypeOptions })
           })
       } catch (error) {
         console.error("Erro ao buscar:", error);
@@ -191,51 +152,15 @@ export default function ServiceForm({ service, onClose, visible }) {
           limit={1}
         />
       </FormGroup>
-
       <FormGroup>
-        <label>Cliente</label>
-        <SelectBox
-          options={formData?.clientes ?? []}
-          defaultValue={form?.id_cliente_ser ?? []}
-          name='id_cliente_ser'
-          onChange={handleChangeValue}
-          error={error?.id_cliente_ser ?? false}
-          limit={1}
-        />
-      </FormGroup>
-
-      <FormGroup>
-        <label>Observação</label>
-        <Input
-          type={'text'}
-          defaultValue={form?.txt_servico_ser ?? ''}
-          name='txt_servico_ser'
-          onChange={handleChangeValue}
-          error={error?.txt_servico_ser ?? false}
-        />
-      </FormGroup>
-
-
-      <FormGroup>
-        <label>Serviços</label>
-        <SelectBox
-          options={formData.servicesType ?? []}
-          defaultValue={form?.tipos_servico ?? []}
-          name='tipos_servico[]'
-          onChange={handleChangeValue}
-          error={error?.tipo_servico ?? false}
-        />
-      </FormGroup>
-
-      <FormGroup>
-        <label>Materiais</label>
-        <SelectBox
-          options={formData.materiais ?? []}
-          defaultValue={form?.materiais ?? []}
-          name='materiais[]'
-          onChange={handleChangeValue}
-          error={error?.materiais ?? false}
-        />
+          <label>Valor</label>
+          <Input
+            type={'number'}
+            defaultValue={form?.vlr_servico_tipo_stp ?? ''}
+            name='vlr_servico_tipo_stp'
+            onChange={handleChangeValue}
+            error={error?.vlr_servico_tipo_stp ?? false}
+          />
       </FormGroup>
 
       <Expand>

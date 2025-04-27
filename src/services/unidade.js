@@ -5,7 +5,6 @@ import api from "./api";
 const getUnidade = async () => {
     try {
         const response = await api.get("/unidade");
-        console.log(response);
         
         return response.data;
     } catch (error) {
@@ -24,8 +23,6 @@ const deleteUnidade = async (id) => {
 };
 const saveUnidade = async (obj) => {
     try {
-        console.log(obj);
-        
         if(obj.id_unidade_und){
             await api.put(`/unidade/${obj.id_unidade_und}`, obj, {
                 headers: {
