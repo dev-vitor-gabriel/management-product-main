@@ -16,11 +16,10 @@ export default function Cliente() {
     const [regEdited, setRegEdited] = useState({});
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
-    // Chamada da API - Lista todos os materiais
     const fetchRegs = async () => {
         try {
             const response = await getCliente();
-            setRegs(response);
+            setRegs(response.items);
             setModalIsOpen(false)
         } catch (error) {
             console.error("Erro ao buscar:", error);
