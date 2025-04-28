@@ -215,28 +215,12 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
     try {
       if(!isEditing) {
         await api.post("/venda", inputData)
-        .then((res) => {
-          toast.success(res.data.message)
-          setLoadingSubmit(false);
-          setInputData({})
-          onClose();
-        }).catch((res) => {
-          toast.error(res.data.message)
-          setLoadingSubmit(false);
-        })
       } else {
         await api.put(`/venda/${inputData.id_venda_vda}`, inputData)
-        .then((res) => {
-          toast.success(res.data.message)
-          setLoadingSubmit(false);
-          setInputData({})
-          onClose();
-        }).catch((res) => {
-          console.log(res)
-          toast.error(res.response.data.error)
-          setLoadingSubmit(false);
-        })
       }
+      setLoadingSubmit(false);
+      setInputData({});
+      onClose();
     } catch (e) {
       setLoadingSubmit(false);
       toast.error(e.response.data.message);
