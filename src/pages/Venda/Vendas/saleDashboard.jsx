@@ -1,25 +1,32 @@
 import { useEffect, useState } from "react";
-import { getSaleDashboard} from "../../../services/graphs";
-import { DashboardContainer, CardsContainer, Card, ChartContainer, ChartWrapper, FilterContainer, CheckboxGroup, SelectWrapper } from "./style";
-import Content from "../../../components/Content";
 import BarChart from '../../../components/BarGraph';
+import Content from "../../../components/Content";
 import SelectBox from "../../../components/Select";
-import Checkbox from "../../../components/Checkbox/Checkbox";
 import TriggerButton from "../../../components/TriggerButton";
+import { getTopTenSaleMaterialsDashboard, getTopTenSaleValueDashboard } from "../../../services/graphs";
+import { ChartContainer, ChartWrapper, CheckboxGroup, DashboardContainer, FilterContainer, SelectWrapper } from "./style";
 
 import { format } from "date-fns";
 
 export default function SaleDashboard() {
-    const [saleData, setSaleData] = useState([]);
     const [costCenters, setCostCenters] = useState([]);
+    const [topTenSalesGraphData, setTopTenSalesGraphData] = useState([]);
+    const [topTenSalesValueGraphData, setTopTenSalesValueGraphData] = useState([]);
     const [selectedCostCenters, setSelectedCostCenters] = useState([]);
-    const [dateFilter, setDateFilter] = useState(1);
+    const [dateFilter, setDateFilter] = useState(30);
 
     const fetchSaleDashboard = async () => {
         const pastDate = new Date();
         pastDate.setDate(pastDate.getDate() - dateFilter);
-        const response = await getSaleDashboard(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 23:59:59`);
-        setSaleData(response);
+        const response = await getTopTenSaleMaterialsDashboard(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 23:59:59`);
+        setTopTenSalesGraphData(response);
+    };
+
+    const fetchSaleValueDashboard = async () => {
+        const pastDate = new Date();
+        pastDate.setDate(pastDate.getDate() - dateFilter);
+        const response = await getTopTenSaleValueDashboard(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 23:59:59`);
+        setTopTenSalesValueGraphData(response);
     };
 
 
@@ -41,13 +48,25 @@ export default function SaleDashboard() {
 
     const getTopTenSalesLabels = () => {
         const labels = []
-        topTenSalesGraphData.map((data) => labels.push(data.tipo_servico));
+        topTenSalesGraphData.map((data) => labels.push(data.nome_material));
         return labels;
     };
 
     const getTopTenSalesValues = () => {
         const values = []
-        topTenSalesGraphData.map((data) => values.push(data.total_tipo_servico));
+        topTenSalesGraphData.map((data) => values.push(data.quantidade_vendida));
+        return values;
+    };
+
+    const getTopTenSalesValueLabels = () => {
+        const labels = []
+        topTenSalesValueGraphData.map((data) => labels.push(data.nome_material));
+        return labels;
+    };
+
+    const getTopTenSalesValueValues = () => {
+        const values = []
+        topTenSalesValueGraphData.map((data) => values.push(data.valor_total_vendido));
         return values;
     };
 
@@ -63,6 +82,7 @@ export default function SaleDashboard() {
 
     useEffect(() => {
         fetchSaleDashboard();
+        fetchSaleValueDashboard();
     }, [selectedCostCenters, dateFilter]);
 
     return (
@@ -81,76 +101,39 @@ export default function SaleDashboard() {
                     </SelectWrapper>
                     <CheckboxGroup>
                         <TriggerButton
-                            label="1 dia"
+                            label="Hoje"
                             active={dateFilter === 1}
                             onClick={() => setDateFilter(1)}
                         />
                         <TriggerButton
-                            label="7 dias"
+                            label="Última Semana"
                             active={dateFilter === 7}
                             onClick={() => setDateFilter(7)}
                         />
                         <TriggerButton
-                            label="30 dias"
+                            label="Último Mês"
                             active={dateFilter === 30}
                             onClick={() => setDateFilter(30)}
                         />
                     </CheckboxGroup>
-                    <CheckboxGroup>
-                        <Checkbox
-                            label="1 dia"
-                            checked={dateFilter === 1}
-                            onChange={() => setDateFilter(1)}
-                        />
-                        <Checkbox
-                            label="7 dias"
-                            checked={dateFilter === 7}
-                            onChange={() => setDateFilter(7)}
-                        />
-                        <Checkbox
-                            label="30 dias"
-                            checked={dateFilter === 30}
-                            onChange={() => setDateFilter(30)}
-                        />
-                    </CheckboxGroup>
                 </FilterContainer>
-
-                <CardsContainer>
-                    <Card>
-                        <h3>Total Ativos</h3>
-                        <p>{saleData?.total_ativos !== null ? saleData?.total_ativos : '-'}</p>
-                    </Card>
-                    <Card>
-                        <h3>Total Finalizados</h3>
-                        <p>{saleData?.total_finalizados !== null ? saleData?.total_finalizados : '-'}</p>
-                    </Card>
-                    <Card>
-                        <h3>Total Inativos</h3>
-                        <p>{saleData?.total_inativos !== null ? saleData?.total_inativos : '-'}</p>
-                    </Card>
-                    <Card>
-                        <h3>Média de Tempo</h3>
-                        <p>{saleData?.media_tempo_atendimento !== null ? saleData?.media_tempo_atendimento : '-'}</p>
-                    </Card>
-                </CardsContainer>
-
                 <ChartContainer>
                     <ChartWrapper>
                         <BarChart
                             labels={getTopTenSalesLabels()}
                             values={getTopTenSalesValues()}
-                            label="Total de serviços"
+                            label="Materiais mais vendidos" 
                             backgroundColor="#9052F9"
-                            title="Top 7 tipos de serviços"
+                            title="Top 10 Materiais Vendidos"
                         />
                     </ChartWrapper>
                     <ChartWrapper>
                         <BarChart
-                            labels={getSalesByEmployeeLabels()}
-                            values={getSalesByEmployeeValues()}
-                            label="Qtde de serviços"
+                            labels={getTopTenSalesValueLabels()}
+                            values={getTopTenSalesValueValues()}
+                            label="Valores das vendas"
                             backgroundColor="#9052F9"
-                            title="Top 3 Colaboradores"
+                            title="Top 10 Valores por Venda"
                         />
                     </ChartWrapper>
                 </ChartContainer>

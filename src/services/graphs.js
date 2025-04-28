@@ -26,9 +26,17 @@ const getServicesByEmployee = async (cost_center, initial_date, final_date) => {
         console.error("Erro ao buscar:", error);
     }
 };
-const getSaleDashboard = async (cost_center, initial_date, final_date) => {
+const getTopTenSaleMaterialsDashboard = async (cost_center, initial_date, final_date) => {
     try {
-        const response = await api.get(`/servico/dashboard?centros_custo=${cost_center}&data_inicio=${initial_date}&data_fim=${final_date}`);
+        const response = await api.get(`/venda/topMateriaisVendidos?centros_custo=${cost_center}&data_inicio=${initial_date}&data_fim=${final_date}`);
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao buscar:", error);
+    }
+};
+const getTopTenSaleValueDashboard = async (cost_center, initial_date, final_date) => {
+    try {
+        const response = await api.get(`/venda/topValorMateriaisVendidos?centros_custo=${cost_center}&data_inicio=${initial_date}&data_fim=${final_date}`);
         return response.data;
     } catch (error) {
         console.error("Erro ao buscar:", error);
@@ -37,4 +45,4 @@ const getSaleDashboard = async (cost_center, initial_date, final_date) => {
 
 
 
-export { getServiceDashboard, getTopSevenServicesTypes, getServicesByEmployee, getSaleDashboard };
+export { getServiceDashboard, getTopSevenServicesTypes, getServicesByEmployee, getTopTenSaleMaterialsDashboard, getTopTenSaleValueDashboard };
