@@ -58,7 +58,7 @@ function RoutesApp() {
                 <Route path="/cadastro-base/perfil/usuario" element={<Usuario />} />
                 <Route path="/cadastro-base/perfil/cliente" element={<Cliente />} />
                 <Route path="/listicons" element={<ListIcons />} />
-                <Route path="/vendas" element={<Sale />} />
+                <Route path="/venda" element={<Sale />} />
                 <Route path="/empresas" element={<Company />} />
                 <Route path="/cadastro-base/permissoes/permissoes-usuario" element={<UserPermissions />} />
                 <Route path="/cadastro-base/permissoes/permissoes-empresa" element={<CompanyPermissions />} />
