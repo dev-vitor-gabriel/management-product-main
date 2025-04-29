@@ -33,12 +33,12 @@ export default function MaterialForm({ reg, onClose, visible, refresh }) {
       try {
         const [unidade, centroCusto] = await Promise.all([getUnidade(), getCentroCusto()]);
 
-        const unidadeOptions = unidade.map(({ id_unidade_und, des_unidade_und, des_reduz_unidade_und }) => ({
+        const unidadeOptions = unidade.items.map(({ id_unidade_und, des_unidade_und, des_reduz_unidade_und }) => ({
           value: id_unidade_und,
           label: `${des_reduz_unidade_und} - ${des_unidade_und}`
         }));
 
-        const centroCustoOptions = centroCusto.map(({ id_centro_custo_cco, des_centro_custo_cco }) => ({
+        const centroCustoOptions = centroCusto.items.map(({ id_centro_custo_cco, des_centro_custo_cco }) => ({
           value: id_centro_custo_cco,
           label: des_centro_custo_cco
         }));

@@ -76,7 +76,7 @@ export default function ClienteForm({ reg, onClose, visible, refresh }) {
           toast.success("Registro salvo!");
         } else {
 
-          toast.error("aaaa!");
+          toast.error("Houve um erro ao salvar o registro!");
         }
 
         setError({});
