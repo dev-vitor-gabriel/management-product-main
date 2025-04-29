@@ -33,7 +33,7 @@ export default function MaterialForm({ reg, onClose, visible, refresh }) {
       try {
         const [unidade, centroCusto] = await Promise.all([getUnidade(), getCentroCusto()]);
 
-        const unidadeOptions = unidade.items.map(({ id_unidade_und, des_unidade_und, des_reduz_unidade_und }) => ({
+        const unidadeOptions = unidade.map(({ id_unidade_und, des_unidade_und, des_reduz_unidade_und }) => ({
           value: id_unidade_und,
           label: `${des_reduz_unidade_und} - ${des_unidade_und}`
         }));
