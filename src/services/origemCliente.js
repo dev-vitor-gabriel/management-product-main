@@ -2,9 +2,9 @@
 import api from "./api";
 
 
-const getCliente = async () => {
+const getOrigemCliente = async () => {
     try {
-        const response = await api.get("/cliente");
+        const response = await api.get("/origemCliente");
 
         return response.data;
     } catch (error) {
@@ -12,26 +12,26 @@ const getCliente = async () => {
     }
 };
 
-const deleteCliente = async (id) => {
+const deleteOrigemCliente = async (id) => {
     try {
-        await api.delete(`/cliente/${id}`)
+        await api.delete(`/origemCliente/${id}`)
         return true
     } catch (error) {
         console.error("Erro ao buscar:", error);
     }
 };
-const saveCliente = async (obj) => {
+const saveOrigemCliente = async (obj) => {
     console.log(obj,'obj');
     
     try {
-        if(obj.id_cliente_cli){
-            await api.put(`/cliente/${obj.id_cliente_cli}`, obj, {
+        if(obj.id_origem_cliente_orc){
+            await api.put(`/origemCliente/${obj.id_origem_cliente_orc}`, obj, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
         }else{
-            await api.post("/cliente", obj, {
+            await api.post("/origemCliente", obj, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -45,5 +45,5 @@ const saveCliente = async (obj) => {
 };
 
 
-export { deleteCliente, getCliente, saveCliente };
+export { deleteOrigemCliente, getOrigemCliente, saveOrigemCliente };
 

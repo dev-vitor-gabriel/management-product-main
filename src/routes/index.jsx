@@ -33,7 +33,7 @@ import PermissoesCentroCusto from '../pages/Permissoes/PermissoesCentroCusto';
 import ServiceDashboard from '../pages/Servico/serviceDashboard';
 import FinanceiroPagar from '../pages/Financeiro/Pagar';
 import SaleDashboard from '../pages/Venda/Vendas/saleDashboard';
- 
+
 function RoutesApp() {
     return (
         <Routes>

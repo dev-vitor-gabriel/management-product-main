@@ -45,7 +45,7 @@ export default function Cliente() {
                 adicionar='Novo Cliente'
                 exportar='Exportar'
                 exportFilename='export_cliente'
-                dataset={regs.map(reg=>({'ID':reg.id_cliente_cli, 'Nome': reg.des_cliente_cli,'Telefone': reg.telefone_cliente_cli,'Email': reg.email_cliente_cli,'Documento': reg.documento_cliente_cli,'Endereço': reg.endereco_cliente_cli, 'Data Criação': formatDate(reg.created_at)}))}
+                dataset={regs.map(reg=>({'ID':reg.id_cliente_cli, 'Nome': reg.des_cliente_cli,'Telefone': reg.telefone_cliente_cli,'Email': reg.email_cliente_cli, 'Centro de Custo': reg.des_centro_custo_cco, 'Origem Cliente': reg.desc_origem_cliente_orc, 'Data Criação': formatDate(reg.created_at)}))}
             />
             <ClienteTable data={regs} handleEdit={handleEdit} refresh={fetchRegs} />
             {modalIsOpen && <ClienteForm reg={regEdited} onClose={() => { setModalIsOpen(false) }} visible={modalIsOpen} refresh={fetchRegs} />}

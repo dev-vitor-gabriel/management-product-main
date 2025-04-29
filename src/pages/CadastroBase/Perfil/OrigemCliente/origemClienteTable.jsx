@@ -4,41 +4,37 @@ import Table from "../../../../components/Table";
 import { confirmAlert } from "../../../../utils/alert";
 import { formatDate } from "../../../../utils/dateHelper";
 import { Button } from './style';
+import { deleteOrigemCliente } from "../../../../services/origemCliente";
 
-// eslint-disable-next-line react/prop-types
+
 export default function OrigemClienteTable({ data = [], handleEdit, refresh }) {
 
   const handleDelete = async (id) => {
     confirmAlert({
       title: 'Tem certeza disso?',
       text: "O registro será inativado!",
-      handleFunction: async () => { }
+      handleFunction: async () => {await deleteOrigemCliente(id); await refresh()}
     })
   }
 
   const columns = [
     {
       name: 'Ações',
-      cell: ({ id_origem_cliente }) => (
+      cell: ({ id_origem_cliente_orc }) => (
         <div>
-          <Button onClick={() => handleEdit(id_origem_cliente)}>Editar</Button>
-          <Button onClick={() => handleDelete(id_origem_cliente)}>Excluir</Button>
+          <Button onClick={() => handleEdit(id_origem_cliente_orc)}>Editar</Button>
+          <Button onClick={() => handleDelete(id_origem_cliente_orc)}>Excluir</Button>
         </div>
       ),
     },
     {
       name: "ID",
-      selector: ({ id_origem_cliente }) => `${id_origem_cliente}`,
-      sortable: true,
-    },
-    {
-      name: "Nome",
-      selector: ({ nome_origem_cliente }) => `${nome_origem_cliente}`,
+      selector: ({ id_origem_cliente_orc }) => `${id_origem_cliente_orc}`,
       sortable: true,
     },
     {
       name: "Descrição",
-      selector: ({ descricao_origem_cliente }) => `${descricao_origem_cliente}`,
+      selector: ({ desc_origem_cliente_orc }) => `${desc_origem_cliente_orc}`,
       sortable: true,
     },
     {

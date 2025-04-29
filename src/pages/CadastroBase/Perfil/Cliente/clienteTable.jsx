@@ -49,13 +49,13 @@ export default function ClienteTable({ data = [], handleEdit, refresh }) {
       sortable: true,
     },
     {
-      name: "Documento",
-      selector: ({ documento_cliente_cli }) => `${documento_cliente_cli ?? '-'}`,
+      name: "Centro de Custo",
+      selector: ({ des_centro_custo_cco	 }) => `${des_centro_custo_cco	}`,
       sortable: true,
     },
     {
-      name: "Endereço",
-      selector: ({ endereco_cliente_cli }) => `${endereco_cliente_cli}`,
+      name: "Origem Cliente",
+      selector: ({ desc_origem_cliente_orc }) => `${desc_origem_cliente_orc}`,
       sortable: true,
     },
     {

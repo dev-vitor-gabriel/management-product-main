@@ -4,6 +4,8 @@ import PageHeader from "../../../../components/PageHeader";
 import { formatDate } from "../../../../utils/dateHelper";
 import OrigemClienteForm from "./origemClienteForm";
 import OrigemClienteTable from "./origemClienteTable";
+import { getOrigemCliente } from "../../../../services/origemCliente";
+
 
 export default function OrigemCliente() {
 
@@ -14,7 +16,9 @@ export default function OrigemCliente() {
 
     const fetchRegs = async () => {
         try {
-            // const response = await getCliente();
+            const response = await getOrigemCliente();
+            console.log(response);
+
             setRegs(response.items);
             setModalIsOpen(false)
         } catch (error) {
@@ -25,8 +29,8 @@ export default function OrigemCliente() {
         fetchRegs();
     }, []);
 
-    const handleEdit = (id_origem_cliente) => {
-        const edit = regs.filter((reg) => reg.id_origem_cliente == id_origem_cliente)[0];
+    const handleEdit = (id_origem_cliente_orc) => {
+        const edit = regs.filter((reg) => reg.id_origem_cliente_orc == id_origem_cliente_orc)[0];
         setRegEdited(edit)
         setModalIsOpen(true);
     }
@@ -41,7 +45,7 @@ export default function OrigemCliente() {
                 adicionar='Nova Origem do Cliente'
                 exportar='Exportar'
                 exportFilename='export_origem_cliente'
-                dataset={regs.map(reg=>({'ID':reg.id_origem_cliente, 'Nome': reg.nome_origem_cliente,'Descrição': reg.descricao_cliente_cli, 'Data Criação': formatDate(reg.created_at)}))}
+                dataset={regs.map(reg=>({'ID':reg.id_origem_cliente_orc, 'Descrição': reg.desc_origem_cliente_orc, 'Data Criação': formatDate(reg.created_at)}))}
             />
             <OrigemClienteTable data={regs} handleEdit={handleEdit} refresh={fetchRegs} />
             {modalIsOpen && <OrigemClienteForm reg={regEdited} onClose={() => { setModalIsOpen(false) }} visible={modalIsOpen} refresh={fetchRegs} />}

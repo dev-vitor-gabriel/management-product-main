@@ -5,10 +5,11 @@ import Modal from "../../../../components/Modal";
 import { toast } from "react-toastify";
 import ButtonSubmit from "../../../../components/Buttons/ButtonSubmit";
 import { FormGroup } from "./style";
+import { saveOrigemCliente } from "../../../../services/origemCliente";
+
 
 const schema = yup.object().shape({
-  nome_origem_cliente: yup.string().min(1).required(),
-  descricao_origem_cliente: yup.string().min(1).required(),
+  desc_origem_cliente_orc: yup.string().min(1).required(),
 });
 
 export default function OrigemClienteForm({ reg, onClose, visible, refresh }) {
@@ -27,13 +28,12 @@ export default function OrigemClienteForm({ reg, onClose, visible, refresh }) {
     setTimeout(async () => {
       try {
         await schema.validate(form);
-        // const success = await saveCliente(form);
+        const success = await saveOrigemCliente(form);
         if(success){
           await refresh();
           toast.success("Registro salvo!");
         } else {
-
-          toast.error("aaaa!");
+          toast.error("Houve um erro ao salvar o registro!");
         }
 
         setError({});
@@ -54,21 +54,13 @@ export default function OrigemClienteForm({ reg, onClose, visible, refresh }) {
   return (
     <Modal title={form.id_origem_cliente ? "Edição" : "Cadastro"} onClose={onClose} visible={visible} >
       <FormGroup>
-        <label>Nome</label>
-        <Input
-          type={'text'}
-          defaultValue={form?.nome_origem_cliente ?? ''}
-          name='nome_origem_cliente'
-          onChange={handleChangeValue}
-          error={error?.nome_origem_cliente ?? false}
-        />
         <label>Descrição</label>
         <Input
           type={'text'}
-          defaultValue={form?.descricao_origem_cliente ?? ''}
-          name='descricao_origem_cliente'
+          defaultValue={form?.desc_origem_cliente_orc ?? ''}
+          name='desc_origem_cliente_orc'
           onChange={handleChangeValue}
-          error={error?.descricao_origem_cliente ?? false}
+          error={error?.desc_origem_cliente_orc ?? false}
         />
       </FormGroup>
       <ButtonSubmit handleSubmit={handleSubmit} loading={loadingSubmit}>Salvar</ButtonSubmit>
