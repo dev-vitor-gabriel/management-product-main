@@ -12,12 +12,12 @@ const DoubleBarGraph = ({ labels, values1, values2, label1, label2, backgroundCo
                 label: label1,
                 data: values1,
                 backgroundColor: backgroundColor1,
-              },
-              {
+            },
+            {
                 label: label2,
                 data: values2,
                 backgroundColor: backgroundColor2,
-              },
+            },
         ],
     };
 
@@ -30,6 +30,9 @@ const DoubleBarGraph = ({ labels, values1, values2, label1, label2, backgroundCo
             title: {
                 display: true,
                 text: title,
+                font: {
+                    size: 20
+                }
             },
         },
     };

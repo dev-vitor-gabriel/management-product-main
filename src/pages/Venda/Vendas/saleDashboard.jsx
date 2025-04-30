@@ -7,7 +7,9 @@ import {
     getTopTenSaleMaterialsDashboard,
     getTopTenSaleValueDashboard,
     getTopFuncionariosPorVenda,
-    getTopVendasPorCentroCusto
+    getTopVendasPorCentroCusto,
+    getTopVendasPorCliente,
+    getTotalVendasPorOrigemCliente
 } from "../../../services/graphs";
 import {
     ChartContainer,
@@ -15,9 +17,11 @@ import {
     CheckboxGroup,
     DashboardContainer,
     FilterContainer,
-    SelectWrapper
+    SelectWrapper,
+    SmallChartWrapper
 } from "./style";
 import DoubleBarGraph from "../../../components/DoubleBarGraph";
+import PieChart from "../../../components/PieChart";
 import { format } from "date-fns";
 
 export default function SaleDashboard() {
@@ -26,6 +30,8 @@ export default function SaleDashboard() {
     const [topTenSalesValueGraphData, setTopTenSalesValueGraphData] = useState([]);
     const [topFuncionariosPorVenda, setTopFuncionariosPorVenda] = useState([]);
     const [topVendasPorCentroCusto, setTopVendasPorCentroCusto] = useState([]);
+    const [topVendasPorCliente, setTopVendasPorCliente] = useState([]);
+    const [totalVendasPorOrigemCliente, setTotalVendasPorOrigemCliente] = useState([]);
     const [selectedCostCenters, setSelectedCostCenters] = useState([]);
     const [dateFilter, setDateFilter] = useState(30);
 
@@ -55,6 +61,20 @@ export default function SaleDashboard() {
         pastDate.setDate(pastDate.getDate() - dateFilter);
         const response = await getTopVendasPorCentroCusto(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 23:59:59`);
         setTopVendasPorCentroCusto(response);
+    };
+
+    const fetchTopVendasPorCliente = async () => {
+        const pastDate = new Date();
+        pastDate.setDate(pastDate.getDate() - dateFilter);
+        const response = await getTopVendasPorCliente(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 23:59:59`);
+        setTopVendasPorCliente(response);
+    };
+
+    const fetchTotalVendasPorOrigemCliente = async () => {
+        const pastDate = new Date();
+        pastDate.setDate(pastDate.getDate() - dateFilter);
+        const response = await getTotalVendasPorOrigemCliente(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 23:59:59`);
+        setTotalVendasPorOrigemCliente(response);
     };
 
     const formatCostCenters = async () => {
@@ -120,7 +140,7 @@ export default function SaleDashboard() {
             values2: values2
         };
     };
-    
+
     const getTopVendasPorCentroCustoLabels = () => {
         const labels = []
         topVendasPorCentroCusto.map((data) => labels.push(data.des_centro_custo_cco));
@@ -143,6 +163,40 @@ export default function SaleDashboard() {
         };
     };
 
+    const getTopVendasPorClienteLabels = () => {
+        const labels = []
+        topVendasPorCliente.map((data) => labels.push(data.des_cliente_cli));
+        return labels;
+    };
+
+    const getTopVendasPorClienteValues = () => {
+        const values1 = []
+        const values2 = []
+        topVendasPorCliente.map((data) => {
+            const newValue1 = data.valor_total_vendido.toString().split(',')[0].replace('.', '')
+            const newValue2 = data.quantidade_vendida
+            values1.push(newValue1)
+            values2.push(newValue2)
+        });
+
+        return {
+            values1: values1,
+            values2: values2
+        };
+    };
+    
+    const getTotalVendasPorOrigemClienteLabels = () => {
+        const labels = []
+        totalVendasPorOrigemCliente.map((data) => labels.push(data.desc_origem_cliente_orc));
+        return labels;
+    };
+
+    const getTotalVendasPorOrigemClienteValues = () => {
+        const values = []
+        totalVendasPorOrigemCliente.map((data) => values.push(data.total_vendas));
+        return values;
+    };
+
     const handleChangeValue = (e) => {
         const selectedValues = e.target.value.map((option) => option.value);
         setSelectedCostCenters(selectedValues);
@@ -157,6 +211,8 @@ export default function SaleDashboard() {
         fetchSaleValueDashboard();
         fetchTopFuncionariosPorVenda();
         fetchTopVendasPorCentroCusto();
+        fetchTotalVendasPorOrigemCliente();
+        fetchTopVendasPorCliente();
     }, [selectedCostCenters, dateFilter]);
 
     return (
@@ -212,7 +268,7 @@ export default function SaleDashboard() {
                     </ChartWrapper>
                 </ChartContainer>
                 <ChartContainer>
-                    <ChartWrapper>
+                    <SmallChartWrapper>
                         <DoubleBarGraph
                             labels={getTopFuncionariosPorVendaLabels()}
                             values1={getTopFuncionariosPorVendaValues().values1}
@@ -223,8 +279,8 @@ export default function SaleDashboard() {
                             backgroundColor2="#52B6F9"
                             title="Top 3 Funcionários"
                         />
-                    </ChartWrapper>
-                    <ChartWrapper>
+                    </SmallChartWrapper>
+                    <SmallChartWrapper>
                         <DoubleBarGraph
                             labels={getTopVendasPorCentroCustoLabels()}
                             values1={getTopVendasPorCentroCustoValues().values1}
@@ -235,7 +291,29 @@ export default function SaleDashboard() {
                             backgroundColor2="#52B6F9"
                             title="Vendas por Centro de Custo"
                         />
-                    </ChartWrapper>
+                    </SmallChartWrapper>
+
+                </ChartContainer>
+                <ChartContainer>
+                    <SmallChartWrapper>
+                        <DoubleBarGraph
+                            labels={getTopVendasPorClienteLabels()}
+                            values1={getTopVendasPorClienteValues().values1}
+                            values2={getTopVendasPorClienteValues().values2}
+                            label1="Quantidade Vendida"
+                            label2="Valor Total Vendido"
+                            backgroundColor1="#9052F9"
+                            backgroundColor2="#52B6F9"
+                            title="Vendas por Cliente"
+                        />
+                    </SmallChartWrapper>
+                    <SmallChartWrapper>
+                        <PieChart
+                            labels={getTotalVendasPorOrigemClienteLabels()}
+                            dataValues={getTotalVendasPorOrigemClienteValues()}
+                            title="Origem dos Clientes"
+                        />
+                    </SmallChartWrapper>
                 </ChartContainer>
             </DashboardContainer>
         </Content>

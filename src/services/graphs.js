@@ -63,6 +63,24 @@ const getTopVendasPorCentroCusto = async (cost_center, initial_date, final_date)
     }
 };
 
+const getTopVendasPorCliente = async (cost_center, initial_date, final_date) => {
+    try {
+        const response = await api.get(`/venda/topVendasPorCliente?centros_custo=${cost_center}&data_inicio=${initial_date}&data_fim=${final_date}`);
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao buscar:", error);
+    }
+};
+
+const getTotalVendasPorOrigemCliente = async (cost_center, initial_date, final_date) => {
+    try {
+        const response = await api.get(`/venda/totalVendasPorOrigemCliente?centros_custo=${cost_center}&data_inicio=${initial_date}&data_fim=${final_date}`);
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao buscar:", error);
+    }
+};
+
 export {
     getServiceDashboard,
     getTopSevenServicesTypes,
@@ -70,5 +88,7 @@ export {
     getTopTenSaleMaterialsDashboard,
     getTopTenSaleValueDashboard,
     getTopFuncionariosPorVenda,
-    getTopVendasPorCentroCusto
+    getTopVendasPorCentroCusto,
+    getTopVendasPorCliente,
+    getTotalVendasPorOrigemCliente
 };
