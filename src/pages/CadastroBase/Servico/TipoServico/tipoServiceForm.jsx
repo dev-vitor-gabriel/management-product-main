@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import yup from "../../../../utils/yup";
 
 
@@ -10,6 +10,8 @@ import { toast } from "react-toastify";
 import ButtonSubmit from "../../../../components/Buttons/ButtonSubmit";
 import { saveServiceType } from "../../../../services/serviceType";
 import { FormGroup } from "./style";
+import { getCentroCusto } from "../../../../services/centroCusto";
+import SelectBox from "../../../../components/Select";
 
 const schema = yup.object().shape({
   vlr_servico_tipo_stp: yup.number().required().positive().integer(),
@@ -20,10 +22,29 @@ const schema = yup.object().shape({
 export default function TipoServiceForm({ reg, onClose, visible, refresh }) {
 
   const [form, setForm] = useState(reg ?? {});
+  const [formData, setFormData] = useState(reg ?? {});
   const [error, setError] = useState({});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
-
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        Promise.all([getCentroCusto()])
+          .then(([centroCusto]) => {
+            const centroCustoTypeOptions = centroCusto.items.map(({ id_centro_custo_cco, des_centro_custo_cco }) => {
+              return ({
+                value: id_centro_custo_cco,
+                label: des_centro_custo_cco
+              });
+            })
+            setFormData({ centroCusto: centroCustoTypeOptions })
+          })
+      } catch (error) {
+        console.error("Erro ao buscar:", error);
+      }
+    };
+    fetchData();
+  }, [])
 
   const handleChangeValue = (event) => {
     const inputName = event.target.name.replace(/\[|\]/g, '');
@@ -36,13 +57,12 @@ export default function TipoServiceForm({ reg, onClose, visible, refresh }) {
     setTimeout(async () => {
       try {
         await schema.validate(form);
-        console.log(JSON.stringify(form));
         const success = await saveServiceType(form);
         if(success){
-          await refresh();
           toast.success("Serviço salvo!");
+          onClose();
+          await refresh();
         } else {
-
           toast.error("Erro ao Cadastrar!");
         }
 
@@ -86,7 +106,19 @@ export default function TipoServiceForm({ reg, onClose, visible, refresh }) {
         />
       </FormGroup>
 
-      <ButtonSubmit handleSubmit={handleSubmit} loading={loadingSubmit} >Salvar</ButtonSubmit>
+      <FormGroup>
+        <label>Centro de Custo</label>
+        <SelectBox
+          options={formData?.centroCusto ?? []}
+          defaultValue={form?.id_centro_custo_stp ?? []}
+          name='id_centro_custo_stp'
+          onChange={handleChangeValue}
+          error={error?.id_centro_custo_stp ?? false}
+          limit={1}
+        />
+      </FormGroup>
+
+        <ButtonSubmit handleSubmit={handleSubmit} loading={loadingSubmit}>Salvar</ButtonSubmit>
     </Modal>
   )
 }
