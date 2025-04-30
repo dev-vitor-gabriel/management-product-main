@@ -3,15 +3,29 @@ import BarChart from '../../../components/BarGraph';
 import Content from "../../../components/Content";
 import SelectBox from "../../../components/Select";
 import TriggerButton from "../../../components/TriggerButton";
-import { getTopTenSaleMaterialsDashboard, getTopTenSaleValueDashboard } from "../../../services/graphs";
-import { ChartContainer, ChartWrapper, CheckboxGroup, DashboardContainer, FilterContainer, SelectWrapper } from "./style";
-
+import {
+    getTopTenSaleMaterialsDashboard,
+    getTopTenSaleValueDashboard,
+    getTopFuncionariosPorVenda,
+    getTopVendasPorCentroCusto
+} from "../../../services/graphs";
+import {
+    ChartContainer,
+    ChartWrapper,
+    CheckboxGroup,
+    DashboardContainer,
+    FilterContainer,
+    SelectWrapper
+} from "./style";
+import DoubleBarGraph from "../../../components/DoubleBarGraph";
 import { format } from "date-fns";
 
 export default function SaleDashboard() {
     const [costCenters, setCostCenters] = useState([]);
     const [topTenSalesGraphData, setTopTenSalesGraphData] = useState([]);
     const [topTenSalesValueGraphData, setTopTenSalesValueGraphData] = useState([]);
+    const [topFuncionariosPorVenda, setTopFuncionariosPorVenda] = useState([]);
+    const [topVendasPorCentroCusto, setTopVendasPorCentroCusto] = useState([]);
     const [selectedCostCenters, setSelectedCostCenters] = useState([]);
     const [dateFilter, setDateFilter] = useState(30);
 
@@ -27,6 +41,20 @@ export default function SaleDashboard() {
         pastDate.setDate(pastDate.getDate() - dateFilter);
         const response = await getTopTenSaleValueDashboard(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 23:59:59`);
         setTopTenSalesValueGraphData(response);
+    };
+
+    const fetchTopFuncionariosPorVenda = async () => {
+        const pastDate = new Date();
+        pastDate.setDate(pastDate.getDate() - dateFilter);
+        const response = await getTopFuncionariosPorVenda(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 23:59:59`);
+        setTopFuncionariosPorVenda(response);
+    };
+
+    const fetchTopVendasPorCentroCusto = async () => {
+        const pastDate = new Date();
+        pastDate.setDate(pastDate.getDate() - dateFilter);
+        const response = await getTopVendasPorCentroCusto(selectedCostCenters.join(","), `${format(pastDate, 'yyyy-MM-dd')} 00:00:00`, `${format(new Date(), 'yyyy-MM-dd')} 23:59:59`);
+        setTopVendasPorCentroCusto(response);
     };
 
     const formatCostCenters = async () => {
@@ -71,6 +99,49 @@ export default function SaleDashboard() {
         return values;
     };
 
+    const getTopFuncionariosPorVendaLabels = () => {
+        const labels = []
+        topFuncionariosPorVenda.map((data) => labels.push(data.nome_funcionario));
+        return labels;
+    };
+
+    const getTopFuncionariosPorVendaValues = () => {
+        const values1 = []
+        const values2 = []
+        topFuncionariosPorVenda.map((data) => {
+            const newValue1 = data.valor_total_vendido.toString().split(',')[0].replace('.', '')
+            const newValue2 = data.quantidade_vendida
+            values1.push(newValue1)
+            values2.push(newValue2)
+        });
+
+        return {
+            values1: values1,
+            values2: values2
+        };
+    };
+    
+    const getTopVendasPorCentroCustoLabels = () => {
+        const labels = []
+        topVendasPorCentroCusto.map((data) => labels.push(data.des_centro_custo_cco));
+        return labels;
+    };
+
+    const getTopVendasPorCentroCustoValues = () => {
+        const values1 = []
+        const values2 = []
+        topVendasPorCentroCusto.map((data) => {
+            const newValue1 = data.valor_total_vendido.toString().split(',')[0].replace('.', '')
+            const newValue2 = data.quantidade_vendida
+            values1.push(newValue1)
+            values2.push(newValue2)
+        });
+
+        return {
+            values1: values1,
+            values2: values2
+        };
+    };
 
     const handleChangeValue = (e) => {
         const selectedValues = e.target.value.map((option) => option.value);
@@ -84,6 +155,8 @@ export default function SaleDashboard() {
     useEffect(() => {
         fetchSaleDashboard();
         fetchSaleValueDashboard();
+        fetchTopFuncionariosPorVenda();
+        fetchTopVendasPorCentroCusto();
     }, [selectedCostCenters, dateFilter]);
 
     return (
@@ -135,6 +208,32 @@ export default function SaleDashboard() {
                             label="Valores das vendas"
                             backgroundColor="#9052F9"
                             title="Top 10 Valores por Venda"
+                        />
+                    </ChartWrapper>
+                </ChartContainer>
+                <ChartContainer>
+                    <ChartWrapper>
+                        <DoubleBarGraph
+                            labels={getTopFuncionariosPorVendaLabels()}
+                            values1={getTopFuncionariosPorVendaValues().values1}
+                            values2={getTopFuncionariosPorVendaValues().values2}
+                            label1="Quantidade Vendida"
+                            label2="Valor Total Vendido"
+                            backgroundColor1="#9052F9"
+                            backgroundColor2="#52B6F9"
+                            title="Top 3 Funcionários"
+                        />
+                    </ChartWrapper>
+                    <ChartWrapper>
+                        <DoubleBarGraph
+                            labels={getTopVendasPorCentroCustoLabels()}
+                            values1={getTopVendasPorCentroCustoValues().values1}
+                            values2={getTopVendasPorCentroCustoValues().values2}
+                            label1="Quantidade Vendida"
+                            label2="Valor Total Vendido"
+                            backgroundColor1="#9052F9"
+                            backgroundColor2="#52B6F9"
+                            title="Vendas por Centro de Custo"
                         />
                     </ChartWrapper>
                 </ChartContainer>
