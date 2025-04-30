@@ -29,8 +29,6 @@ export default function SaleDashboard() {
         setTopTenSalesValueGraphData(response);
     };
 
-
-
     const formatCostCenters = async () => {
         const userData = JSON.parse(localStorage.getItem('user'))
 
@@ -66,7 +64,10 @@ export default function SaleDashboard() {
 
     const getTopTenSalesValueValues = () => {
         const values = []
-        topTenSalesValueGraphData.map((data) => values.push(data.valor_total_vendido));
+        topTenSalesValueGraphData.map((data) => {
+            const newValue = data.valor_total_vendido.toString().split(',')[0].replace('.', '')
+            values.push(newValue)
+        });
         return values;
     };
 
@@ -122,7 +123,7 @@ export default function SaleDashboard() {
                         <BarChart
                             labels={getTopTenSalesLabels()}
                             values={getTopTenSalesValues()}
-                            label="Materiais mais vendidos" 
+                            label="Materiais mais vendidos"
                             backgroundColor="#9052F9"
                             title="Top 10 Materiais Vendidos"
                         />
