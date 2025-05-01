@@ -34,7 +34,7 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
   const getFormData = () => {
     Promise.all([
       getEmployee(),
-      getMaterial(),
+      getMaterial(true),
       getCliente(),
       getCentroCusto(),
       getStatusByOrigem(OrigemStatus.Venda),
