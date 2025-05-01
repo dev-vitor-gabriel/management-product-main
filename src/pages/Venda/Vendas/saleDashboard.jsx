@@ -188,12 +188,11 @@ export default function SaleDashboard() {
     };
     
     const getTotalVendasPorOrigemClienteLabels = () => {
-        const labels = []
-        totalVendasPorOrigemCliente.map((data) => labels.push(data.desc_origem_cliente_orc));
-        console.log(labels, 'labels');
-        
-        return labels;
+        return totalVendasPorOrigemCliente.map(
+            (data) => `${data.desc_origem_cliente_orc}: ${data.total_vendas}`
+        );
     };
+
 
     const getTotalVendasPorOrigemClienteValues = () => {
         const values = []
