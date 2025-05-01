@@ -6,7 +6,7 @@ const getCargo = async () => {
     try {
         const response = await api.get("/cargo");
 
-        return response.data;
+        return response.data.items;
     } catch (error) {
         console.error("Erro ao buscar:", error);
     }

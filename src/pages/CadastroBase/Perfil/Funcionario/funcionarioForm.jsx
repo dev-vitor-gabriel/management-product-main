@@ -12,6 +12,7 @@ import { FormGroup } from "./style";
 import { saveFuncionario } from "../../../../services/funcionario";
 import { getCargo } from "../../../../services/cargo";
 import SelectBox from "../../../../components/Select";
+import { getCentroCusto } from "../../../../services/centroCusto";
 
 const schema = yup.object().shape({
   desc_funcionario_tfu: yup.string().min(1).required(),
@@ -30,15 +31,21 @@ export default function FuncionarioForm({ reg, onClose, visible, refresh }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-          Promise.all([getCargo()])
-          .then(([cargo])=>{
+          Promise.all([getCargo(), getCentroCusto()])
+          .then(([cargo, centroCusto])=>{
             const cargoOptions = cargo.map(({ id_cargo_tcg, desc_cargo_tcg })=>{
               return ({
                 value: id_cargo_tcg,
                 label: desc_cargo_tcg
               });
             })
-            setFormData({cargoOptions})
+            const centroCustoOptions = centroCusto.items.map(({ id_centro_custo_cco, des_centro_custo_cco }) => {
+              return ({
+                value: id_centro_custo_cco,
+                label: des_centro_custo_cco
+              });
+            })
+            setFormData({cargoOptions, centroCustoOptions})
           })
       } catch (error) {
           console.error("Erro ao buscar:", error);
@@ -94,6 +101,17 @@ export default function FuncionarioForm({ reg, onClose, visible, refresh }) {
           name='id_funcionario_cargo_tfu[]'
           onChange={handleChangeValue}
           error={error?.id_funcionario_cargo_tfu ?? false}
+          limit={1}
+        />
+      </FormGroup>
+      <FormGroup>
+        <label>Centro de Custo</label>
+        <SelectBox
+          options={formData.centroCustoOptions ?? []}
+          defaultValue={form?.id_centro_custo_tfu ?? []}
+          name='id_centro_custo_tfu[]'
+          onChange={handleChangeValue}
+          error={error?.id_centro_custo_tfu ?? false}
           limit={1}
         />
       </FormGroup>
