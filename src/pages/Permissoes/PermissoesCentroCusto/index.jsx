@@ -3,9 +3,13 @@ import SelectBoxV2 from "../../../components/SelectV2";
 import { SaveButton, FormGroup } from "./style";
 import { getCompanyUsers, getUsers } from "../../../services/usuario.js";
 import { getCentroCusto } from "../../../services/centroCusto.js";
-import { getCentroCustoUsuario, createCentroCustoUsuario } from "../../../services/centroCustoUsuario.js";
+import {
+  getCentroCustoUsuario,
+  createCentroCustoUsuario,
+} from "../../../services/centroCustoUsuario.js";
 import { useDebounce } from "../../../utils/customHooks.js";
 import CentroCustoTable from "./centroCustoTable.jsx";
+import { toast } from "react-toastify";
 
 export default function PermissoesCentroCusto() {
   const [usuarios, setUsuarios] = useState([]);
@@ -13,6 +17,7 @@ export default function PermissoesCentroCusto() {
   const [filtroUsuario, setFiltroUsuario] = useState("");
   const [cache, setCache] = useState({});
   const [grantedPermissions, setGrantedPermissions] = useState([]);
+  const [isSaving, setIsSaving] = useState(false); // Estado para controlar o botão
   const [selectedUserId, setSelectedUserId] = useState(null);
   const debouncedSearch = useDebounce(filtroUsuario, 500);
 
@@ -94,16 +99,25 @@ export default function PermissoesCentroCusto() {
 
   const handleSave = async () => {
     if (!selectedUserId) {
-      return
+      return;
     }
+    setIsSaving(true);
     const createCentroCustoUsuarioRequest = {
       id_user: selectedUserId,
       id_centro_custo_ccu: grantedPermissions,
     };
-    
-    await createCentroCustoUsuario(createCentroCustoUsuarioRequest)
-    setCache({});
-  }
+
+    try {
+      await createCentroCustoUsuario(createCentroCustoUsuarioRequest);
+      setCache({});
+      toast.success("Permissões salvas com sucesso!");
+    } catch (error) {
+      console.error("Erro ao salvar permissões:", error);
+      toast.error("Erro ao salvar permissões.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <>
@@ -119,7 +133,9 @@ export default function PermissoesCentroCusto() {
             error={null ?? false}
             limit={1}
           />
-          <SaveButton onClick={handleSave}>Salvar</SaveButton>
+          <SaveButton onClick={handleSave} disabled={isSaving}>
+            {isSaving ? "Salvando..." : "Salvar"}
+          </SaveButton>
         </FormGroup>
         <CentroCustoTable
           data={centroCustos}

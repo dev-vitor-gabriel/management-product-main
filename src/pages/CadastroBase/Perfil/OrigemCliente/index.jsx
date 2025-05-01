@@ -17,7 +17,6 @@ export default function OrigemCliente() {
     const fetchRegs = async () => {
         try {
             const response = await getOrigemCliente();
-            console.log(response);
 
             setRegs(response.items);
             setModalIsOpen(false)

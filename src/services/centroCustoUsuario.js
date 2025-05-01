@@ -11,7 +11,6 @@ export async function getCentroCustoUsuario(userId) {
 export async function createCentroCustoUsuario(usuarioCentroCusto) {
     try {
         const response = await api.post(`/usuarioCentroCusto`, usuarioCentroCusto);
-        console.log(response)
         return response.data;
     } catch (error) {
         console.error("Erro ao buscar:", error);

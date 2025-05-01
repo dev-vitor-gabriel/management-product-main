@@ -162,7 +162,6 @@ export default function SaleDashboard() {
             values2: values2
         };
     };
-    console.log(getTopVendasPorCentroCustoValues());
     
 
     const getTopVendasPorClienteLabels = () => {

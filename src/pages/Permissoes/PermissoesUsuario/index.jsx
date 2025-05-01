@@ -12,16 +12,22 @@ import {
   Checkbox,
   IconSeparator,
   ListContainer,
-  FormGroup
+  FormGroup,
 } from "./style.js";
 import { getCompanies } from "../../../services/empresa.js";
-import { getMenus, getUsuarioMenu, salvarUsuarioMenu, getMenusEmpresa } from "../../../services/menu.js";
+import {
+  getMenus,
+  getUsuarioMenu,
+  salvarUsuarioMenu,
+  getMenusEmpresa,
+} from "../../../services/menu.js";
 import { getCompanyUsers } from "../../../services/usuario.js";
-import Icon from '../../../components/Icons.jsx'
+import Icon from "../../../components/Icons.jsx";
 import { FloppyDisk } from "@phosphor-icons/react";
-import './style.css'
+import "./style.css";
 import Input from "../../../components/Input/index.jsx";
-import { useDebounce } from '../../../utils/customHooks.js';
+import { useDebounce } from "../../../utils/customHooks.js";
+import { toast } from "react-toastify";
 
 export default function PermissoesUsuario() {
   const [empresas, setUsuario] = useState([]);
@@ -29,7 +35,8 @@ export default function PermissoesUsuario() {
   const [usuarioSelecionado, setUsuarioSelecionada] = useState(null);
   const [permissoesUsuario, setPermissoesUsuario] = useState([]);
   const [cachedMenuUsuarios, setCachedMenuUsuarios] = useState({});
-  const [filtroUsuario, setFiltroUsuario] = useState("");  
+  const [isSaving, setIsSaving] = useState(false);
+  const [filtroUsuario, setFiltroUsuario] = useState("");
   const debouncedSearch = useDebounce(filtroUsuario, 500);
 
   useEffect(() => {
@@ -42,7 +49,6 @@ export default function PermissoesUsuario() {
       }
       const response = await getMenusEmpresa();
       setMenus(response);
-
     };
     fetchCompanies();
   }, [debouncedSearch]);
@@ -51,67 +57,75 @@ export default function PermissoesUsuario() {
     if (user.id == usuarioSelecionado?.id) return;
 
     setUsuarioSelecionada(user);
-    let menusUsuario = []
-    if (cachedMenuUsuarios[user.id]) 
-    {
-      menusUsuario = cachedMenuUsuarios[user.id]
+    let menusUsuario = [];
+    if (cachedMenuUsuarios[user.id]) {
+      menusUsuario = cachedMenuUsuarios[user.id];
     } else {
       menusUsuario = await getUsuarioMenu(user.id);
       setCachedMenuUsuarios((prev) => {
-        let newCachedMenuUsuarios = {...prev}
-  
+        let newCachedMenuUsuarios = { ...prev };
+
         newCachedMenuUsuarios[user.id] = menusUsuario;
 
         return newCachedMenuUsuarios;
-      })
+      });
     }
-    setPermissoesUsuario([])
-    menusUsuario.forEach(menu => {
-      togglePermission(menu, false)
-    })
+    setPermissoesUsuario([]);
+    menusUsuario.forEach((menu) => {
+      togglePermission(menu, false);
+    });
   };
 
   const togglePermission = (menu, removeMenu) => {
     setPermissoesUsuario((permissoesUsuario) => {
-      let updatedPermissions = [...permissoesUsuario]; 
+      let updatedPermissions = [...permissoesUsuario];
 
       const menusToModify = getAllMenuIds(menu);
       if (menu.id_father_mnu && !removeMenu) {
-        menusToModify.push(menu.id_father_mnu)
+        menusToModify.push(menu.id_father_mnu);
       }
       if (removeMenu) {
-        updatedPermissions = updatedPermissions.filter(l => !menusToModify.includes(l));
+        updatedPermissions = updatedPermissions.filter(
+          (l) => !menusToModify.includes(l)
+        );
       } else {
         updatedPermissions.push(...menusToModify);
       }
-  
+
       return updatedPermissions;
     });
   };
 
   const getAllMenuIds = (menu) => {
-    const ids = [menu.id_menu_mnu]
-    if (menu.children) 
-    {
-      menu.children.forEach(children => {
-        ids.push(...getAllMenuIds(children))
+    const ids = [menu.id_menu_mnu];
+    if (menu.children) {
+      menu.children.forEach((children) => {
+        ids.push(...getAllMenuIds(children));
       });
     }
     return ids;
-  }
+  };
 
   const renderTree = (menus) => {
     return menus.map((menu) => (
-      <TreeView treeViewClassName={menu.children ? "" : "hide-arrow"} key={menu.id_menu_mnu} nodeLabel={
-        <label>
-          <Checkbox
-            checked={ permissoesUsuario.includes(menu.id_menu_mnu) }
-            onChange={() => togglePermission(menu, permissoesUsuario.includes(menu.id_menu_mnu))}
-          />
-          {menu.des_menu_mnu}
-        </label>
-      } 
-      defaultCollapsed={true}
+      <TreeView
+        treeViewClassName={menu.children ? "" : "hide-arrow"}
+        key={menu.id_menu_mnu}
+        nodeLabel={
+          <label>
+            <Checkbox
+              checked={permissoesUsuario.includes(menu.id_menu_mnu)}
+              onChange={() =>
+                togglePermission(
+                  menu,
+                  permissoesUsuario.includes(menu.id_menu_mnu)
+                )
+              }
+            />
+            {menu.des_menu_mnu}
+          </label>
+        }
+        defaultCollapsed={true}
       >
         {menu.children ? renderTree(menu.children, menu.id_menu_mnu) : null}
       </TreeView>
@@ -121,35 +135,41 @@ export default function PermissoesUsuario() {
   const savePermissions = async () => {
     const usuario = {
       id_user: usuarioSelecionado.id,
-      id_menu_usm: permissoesUsuario ?? []
+      id_menu_usm: permissoesUsuario ?? [],
+    };
+
+    try {
+      setIsSaving(true);
+      await salvarUsuarioMenu(usuario);
+      toast.success("Permissões salvas com sucesso!");
+    } catch (error) {
+      console.error("Erro ao salvar permissões:", error);
+      toast.error("Erro ao salvar permissões.");
+    } finally {
+      setIsSaving(false);
     }
-    
-    await salvarUsuarioMenu(usuario)
     setCachedMenuUsuarios((prev) => {
       const newCache = { ...prev };
       delete newCache[usuarioSelecionado.id];
       return newCache;
     });
-  }
+  };
 
   const handleCompanyNameChanged = (event) => {
-    if (!event.target)
-    {
+    if (!event.target) {
       return;
     }
 
-    setFiltroUsuario(event.target.value)
+    setFiltroUsuario(event.target.value);
   };
 
   return (
     <Container>
       <Header>
-        <Button onClick={savePermissions}>
-          <h4 style={{ fontWeight: "600" }}>Salvar</h4>
-          <IconSeparator>
-            <span style={ { fontSize: '18px', fontWeight: 'lighter' } }>|</span>
-            <FloppyDisk size={25} />
-          </IconSeparator>
+        <Button onClick={savePermissions} disabled={isSaving}>
+          <h4 style={{ fontWeight: "600" }}>
+            {isSaving ? "Salvando..." : "Salvar"}
+          </h4>
         </Button>
       </Header>
       <SidebarContainer>
@@ -166,25 +186,21 @@ export default function PermissoesUsuario() {
                 error={""}
               />
             </FormGroup>
-              {empresas.map((company) => (
-                  <CompanyItem
-                    key={company.id}
-                    active={
-                      usuarioSelecionado?.id === company.id
-                    }
-                    onClick={() => handleUserClick(company)}
-                  >
-                    {company.name}
-                  </CompanyItem>
-                ))}
+            {empresas.map((company) => (
+              <CompanyItem
+                key={company.id}
+                active={usuarioSelecionado?.id === company.id}
+                onClick={() => handleUserClick(company)}
+              >
+                {company.name}
+              </CompanyItem>
+            ))}
           </ListContainer>
         </Sidebar>
         {usuarioSelecionado ? (
           <Content>
             <h1>Permissões</h1>
-            <ListContainer>
-              {renderTree(menus)}
-            </ListContainer>
+            <ListContainer>{renderTree(menus)}</ListContainer>
           </Content>
         ) : null}
       </SidebarContainer>

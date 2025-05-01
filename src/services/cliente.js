@@ -21,7 +21,6 @@ const deleteCliente = async (id) => {
     }
 };
 const saveCliente = async (obj) => {
-    console.log(obj,'obj');
     
     try {
         if(obj.id_cliente_cli){

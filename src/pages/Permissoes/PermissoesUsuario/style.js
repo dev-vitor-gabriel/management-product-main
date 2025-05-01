@@ -16,19 +16,42 @@ export const Header = styled.div`
     padding-block: 10px;
 `
 
-export const Button = styled.div`
-    padding-block: 7.5px;
-    padding-inline: 15px;
-    width: 130px;
-    background-color:rgb(40, 188, 24);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    color: white;
-    border-radius: 4px;
-    text-align: center;
-    cursor: pointer;
-`
+export const Button = styled.button`
+  background-color: #4CAF50;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+
+  &:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    background-color: #3e8e41;
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+`;
 
 export const SidebarContainer = styled.div`
     display: flex;

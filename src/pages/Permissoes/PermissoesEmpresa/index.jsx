@@ -12,23 +12,29 @@ import {
   Checkbox,
   IconSeparator,
   ListContainer,
-  FormGroup
+  FormGroup,
 } from "./style.js";
 import { getCompanies } from "../../../services/empresa.js";
-import { getMenus, getEmpresaMenu, salvarEmpresaMenu } from "../../../services/menu.js";
-import Icon from '../../../components/Icons.jsx'
+import {
+  getMenus,
+  getEmpresaMenu,
+  salvarEmpresaMenu,
+} from "../../../services/menu.js";
+import Icon from "../../../components/Icons.jsx";
 import { FloppyDisk } from "@phosphor-icons/react";
-import './style.css'
+import "./style.css";
 import Input from "../../../components/Input";
-import { useDebounce } from '../../../utils/customHooks.js';
+import { useDebounce } from "../../../utils/customHooks.js";
+import { toast } from "react-toastify";
 
 export default function PermissoesEmpresa() {
   const [empresas, setEmpresa] = useState([]);
   const [menus, setMenus] = useState();
   const [empresaSelecionada, setEmpresaSelecionada] = useState(null);
   const [permissoesEmpresa, setPermissoesEmpresa] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
   const [cachedMenuEmpresas, setCachedMenuEmpresas] = useState({});
-  const [filtroEmpresa, setFiltroEmpresa] = useState("");  
+  const [filtroEmpresa, setFiltroEmpresa] = useState("");
   const debouncedSearch = useDebounce(filtroEmpresa, 500);
 
   useEffect(() => {
@@ -41,7 +47,6 @@ export default function PermissoesEmpresa() {
       }
       const response = await getMenus();
       setMenus(response);
-
     };
     fetchCompanies();
   }, [debouncedSearch]);
@@ -50,67 +55,75 @@ export default function PermissoesEmpresa() {
     if (company.id_empresa_emp == empresaSelecionada?.id_empresa_emp) return;
 
     setEmpresaSelecionada(company);
-    let menusEmpresa = []
-    if (cachedMenuEmpresas[company.id_empresa_emp]) 
-    {
-      menusEmpresa = cachedMenuEmpresas[company.id_empresa_emp]
+    let menusEmpresa = [];
+    if (cachedMenuEmpresas[company.id_empresa_emp]) {
+      menusEmpresa = cachedMenuEmpresas[company.id_empresa_emp];
     } else {
       menusEmpresa = await getEmpresaMenu(company.id_empresa_emp);
       setCachedMenuEmpresas((prev) => {
-        let newCachedMenuEmpresas = {...prev}
-  
+        let newCachedMenuEmpresas = { ...prev };
+
         newCachedMenuEmpresas[company.id_empresa_emp] = menusEmpresa;
 
         return newCachedMenuEmpresas;
-      })
+      });
     }
-    setPermissoesEmpresa([])
-    menusEmpresa.forEach(menu => {
-      togglePermission(menu, false)
-    })
+    setPermissoesEmpresa([]);
+    menusEmpresa.forEach((menu) => {
+      togglePermission(menu, false);
+    });
   };
 
   const togglePermission = (menu, removeMenu) => {
     setPermissoesEmpresa((permissoesEmpresa) => {
-      let updatedPermissions = [...permissoesEmpresa]; 
+      let updatedPermissions = [...permissoesEmpresa];
 
       const menusToModify = getAllMenuIds(menu);
       if (menu.id_father_mnu && !removeMenu) {
-        menusToModify.push(menu.id_father_mnu)
+        menusToModify.push(menu.id_father_mnu);
       }
       if (removeMenu) {
-        updatedPermissions = updatedPermissions.filter(l => !menusToModify.includes(l));
+        updatedPermissions = updatedPermissions.filter(
+          (l) => !menusToModify.includes(l)
+        );
       } else {
         updatedPermissions.push(...menusToModify);
       }
-  
+
       return updatedPermissions;
     });
   };
 
   const getAllMenuIds = (menu) => {
-    const ids = [menu.id_menu_mnu]
-    if (menu.children) 
-    {
-      menu.children.forEach(children => {
-        ids.push(...getAllMenuIds(children))
+    const ids = [menu.id_menu_mnu];
+    if (menu.children) {
+      menu.children.forEach((children) => {
+        ids.push(...getAllMenuIds(children));
       });
     }
     return ids;
-  }
+  };
 
   const renderTree = (menus) => {
     return menus.map((menu) => (
-      <TreeView treeViewClassName={menu.children ? "" : "hide-arrow"} key={menu.id_menu_mnu} nodeLabel={
-        <label>
-          <Checkbox
-            checked={ permissoesEmpresa.includes(menu.id_menu_mnu) }
-            onChange={() => togglePermission(menu, permissoesEmpresa.includes(menu.id_menu_mnu))}
-          />
-          {menu.des_menu_mnu}
-        </label>
-      } 
-      defaultCollapsed={true}
+      <TreeView
+        treeViewClassName={menu.children ? "" : "hide-arrow"}
+        key={menu.id_menu_mnu}
+        nodeLabel={
+          <label>
+            <Checkbox
+              checked={permissoesEmpresa.includes(menu.id_menu_mnu)}
+              onChange={() =>
+                togglePermission(
+                  menu,
+                  permissoesEmpresa.includes(menu.id_menu_mnu)
+                )
+              }
+            />
+            {menu.des_menu_mnu}
+          </label>
+        }
+        defaultCollapsed={true}
       >
         {menu.children ? renderTree(menu.children, menu.id_menu_mnu) : null}
       </TreeView>
@@ -118,39 +131,46 @@ export default function PermissoesEmpresa() {
   };
 
   const savePermissions = async () => {
-    const empresas = [{
-      id_empresa_emn: empresaSelecionada.id_empresa_emp,
-      id_menu_emn: permissoesEmpresa
-    }]
-    
-    await salvarEmpresaMenu(empresas)
+    const empresas = [
+      {
+        id_empresa_emn: empresaSelecionada.id_empresa_emp,
+        id_menu_emn: permissoesEmpresa,
+      },
+    ];
+    try {
+      setIsSaving(true);
+      await salvarEmpresaMenu(empresas);
+      toast.success("Permissões salvas com sucesso!");
+    } catch (error) {
+      console.error("Erro ao salvar permissões:", error);
+      toast.error("Erro ao salvar permissões.");
+    } finally {
+      setIsSaving(false);
+    }
     setCachedMenuEmpresas((prev) => {
-      let newCachedMenuEmpresas = {...prev}
-  
+      let newCachedMenuEmpresas = { ...prev };
+
       newCachedMenuEmpresas[empresaSelecionada.id_empresa_emp] = null;
 
       return newCachedMenuEmpresas;
-    })
-  }
+    });
+  };
 
   const handleCompanyNameChanged = (event) => {
-    if (!event.target)
-    {
+    if (!event.target) {
       return;
     }
 
-    setFiltroEmpresa(event.target.value)
+    setFiltroEmpresa(event.target.value);
   };
 
   return (
     <Container>
       <Header>
-        <Button onClick={savePermissions}>
-          <h4 style={{ fontWeight: "600" }}>Salvar</h4>
-          <IconSeparator>
-            <span style={ { fontSize: '18px', fontWeight: 'lighter' } }>|</span>
-            <FloppyDisk size={25} />
-          </IconSeparator>
+        <Button onClick={savePermissions} disabled={isSaving}>
+          <h4 style={{ fontWeight: "600" }}>
+            {isSaving ? "Salvando..." : "Salvar"}
+          </h4>
         </Button>
       </Header>
       <SidebarContainer>
@@ -167,25 +187,23 @@ export default function PermissoesEmpresa() {
                 error={""}
               />
             </FormGroup>
-              {empresas.map((company) => (
-                  <CompanyItem
-                    key={company.id_empresa_emp}
-                    active={
-                      empresaSelecionada?.id_empresa_emp === company.id_empresa_emp
-                    }
-                    onClick={() => handleCompanyClick(company)}
-                  >
-                    {company.des_empresa_emp}
-                  </CompanyItem>
-                ))}
+            {empresas.map((company) => (
+              <CompanyItem
+                key={company.id_empresa_emp}
+                active={
+                  empresaSelecionada?.id_empresa_emp === company.id_empresa_emp
+                }
+                onClick={() => handleCompanyClick(company)}
+              >
+                {company.des_empresa_emp}
+              </CompanyItem>
+            ))}
           </ListContainer>
         </Sidebar>
         {empresaSelecionada ? (
           <Content>
             <h1>Permissões</h1>
-            <ListContainer>
-              {renderTree(menus)}
-            </ListContainer>
+            <ListContainer>{renderTree(menus)}</ListContainer>
           </Content>
         ) : null}
       </SidebarContainer>

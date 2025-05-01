@@ -21,7 +21,6 @@ const deleteOrigemCliente = async (id) => {
     }
 };
 const saveOrigemCliente = async (obj) => {
-    console.log(obj,'obj');
     
     try {
         if(obj.id_origem_cliente_orc){
