@@ -64,13 +64,18 @@ export default function SaleTable({ data = [], handleEdit, refresh, totalRows })
       ),
     },
     {
-      name: "Identificador",
+      name: "ID",
       selector: ({ id_venda_vda }) => `${id_venda_vda}`,
       sortable: true,
     },
     {
       name: "Funcionário",
       selector: ({ desc_funcionario_tfu }) => `${desc_funcionario_tfu}`,
+      sortable: true,
+    },
+    {
+      name: "Cliente",
+      selector: ({ des_cliente_cli }) => `${des_cliente_cli}`,
       sortable: true,
     },
     {
@@ -81,6 +86,11 @@ export default function SaleTable({ data = [], handleEdit, refresh, totalRows })
     {
       name: "Status",
       selector: ({ des_status_sts }) => `${des_status_sts}`,
+      sortable: true,
+    },
+    {
+      name: "Observação",
+      selector: ({ desc_venda_vda }) => `${desc_venda_vda ?? '-'}`,
       sortable: true,
     },
     {

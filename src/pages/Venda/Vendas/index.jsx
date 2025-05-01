@@ -24,6 +24,7 @@ export default function Sale({ reg = null, tela }) {
     const fetchSales = async (filter, pageNumber, totalSize) => {
         try {
             const response = await getSales(filter, pageNumber, totalSize);
+
             setSales(response.items);
             setTotalRows(response.total);
         } catch (error) {
