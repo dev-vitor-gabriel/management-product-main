@@ -13,9 +13,8 @@ const getMaterial = async () => {
 };
 const deleteMaterial = async (id) => {
     try {
-        // const response = await api.get("/service");
-        const response = {};
-        return response;
+        await api.delete(`/material/${id}`)
+        return true
     } catch (error) {
         console.error("Erro ao buscar:", error);
     }
