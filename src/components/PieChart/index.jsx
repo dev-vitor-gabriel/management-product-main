@@ -56,11 +56,9 @@ const PieChart = ({
         },
     };
 
-    console.log(data);
-
     return (
         <CenteredChartContainer>
-            <Pie data={data} options={options} />;
+            <Pie data={data} options={options} />
         </CenteredChartContainer>
     )
 };

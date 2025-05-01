@@ -129,8 +129,8 @@ export default function SaleDashboard() {
         const values1 = []
         const values2 = []
         topFuncionariosPorVenda.map((data) => {
-            const newValue1 = data.valor_total_vendido.toString().split(',')[0].replace('.', '')
-            const newValue2 = data.quantidade_vendida
+            const newValue1 = data.quantidade_vendida
+            const newValue2 = data.valor_total_vendido.toString().split(',')[0].replace('.', '')
             values1.push(newValue1)
             values2.push(newValue2)
         });
@@ -151,8 +151,8 @@ export default function SaleDashboard() {
         const values1 = []
         const values2 = []
         topVendasPorCentroCusto.map((data) => {
-            const newValue1 = data.valor_total_vendido.toString().split(',')[0].replace('.', '')
-            const newValue2 = data.quantidade_vendida
+            const newValue1 = data.quantidade_vendida
+            const newValue2 = data.valor_total_vendido.toString().split(',')[0].replace('.', '')
             values1.push(newValue1)
             values2.push(newValue2)
         });
@@ -162,6 +162,8 @@ export default function SaleDashboard() {
             values2: values2
         };
     };
+    console.log(getTopVendasPorCentroCustoValues());
+    
 
     const getTopVendasPorClienteLabels = () => {
         const labels = []
@@ -173,8 +175,8 @@ export default function SaleDashboard() {
         const values1 = []
         const values2 = []
         topVendasPorCliente.map((data) => {
-            const newValue1 = data.valor_total_vendido.toString().split(',')[0].replace('.', '')
-            const newValue2 = data.quantidade_vendida
+            const newValue1 = data.quantidade_vendida
+            const newValue2 = data.valor_total_vendido.toString().split(',')[0].replace('.', '')
             values1.push(newValue1)
             values2.push(newValue2)
         });
@@ -188,12 +190,15 @@ export default function SaleDashboard() {
     const getTotalVendasPorOrigemClienteLabels = () => {
         const labels = []
         totalVendasPorOrigemCliente.map((data) => labels.push(data.desc_origem_cliente_orc));
+        console.log(labels, 'labels');
+        
         return labels;
     };
 
     const getTotalVendasPorOrigemClienteValues = () => {
         const values = []
         totalVendasPorOrigemCliente.map((data) => values.push(data.total_vendas));
+
         return values;
     };
 
