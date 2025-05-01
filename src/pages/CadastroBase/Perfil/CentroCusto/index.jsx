@@ -22,7 +22,7 @@ export default function CentroCusto() {
     // Chamada da API - Lista todos os materiais
     const fetchRegs = async () => {
         try {
-            const response = await getCentroCusto();
+            const response = await getCentroCusto(true);
             setRegs(response.items);
             setModalIsOpen(false)
         } catch (error) {
