@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import BarChart from '../../../components/BarGraph';
 import Content from "../../../components/Content";
 import SelectBox from "../../../components/Select";
+import { formatCurrency } from "../../../utils/format.js";
+
 import TriggerButton from "../../../components/TriggerButton";
 import {
     getTopTenSaleMaterialsDashboard,
@@ -251,7 +253,7 @@ export default function SaleDashboard() {
                     </CheckboxGroup>
                 </FilterContainer>
                 <ChartContainer>
-                    <ChartWrapper>
+                    <SmallChartWrapper>
                         <BarChart
                             labels={getTopTenSalesLabels()}
                             values={getTopTenSalesValues()}
@@ -259,8 +261,8 @@ export default function SaleDashboard() {
                             backgroundColor="#9052F9"
                             title="Top 10 Materiais Vendidos"
                         />
-                    </ChartWrapper>
-                    <ChartWrapper>
+                    </SmallChartWrapper>
+                    <SmallChartWrapper>
                         <BarChart
                             labels={getTopTenSalesValueLabels()}
                             values={getTopTenSalesValueValues()}
@@ -268,7 +270,7 @@ export default function SaleDashboard() {
                             backgroundColor="#9052F9"
                             title="Top 10 Valores por Venda"
                         />
-                    </ChartWrapper>
+                    </SmallChartWrapper>
                 </ChartContainer>
                 <ChartContainer>
                     <SmallChartWrapper>

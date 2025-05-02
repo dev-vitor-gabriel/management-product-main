@@ -1,7 +1,7 @@
 import React from "react";
 
 import Table from "../../../../components/Table";
-import { deleteServiceType } from "../../../../services/serviceType";
+import { formatCurrency } from "../../../../utils/format";
 import { formatDate } from "../../../../utils/dateHelper";
 import { Button } from './style';
 import { deleteMaterial } from "../../../../services/material";
@@ -47,7 +47,7 @@ export default function UnidadeTable({ data = [], handleEdit, refresh }) {
       name: "Valor",
       selector: ({ vlr_material_mte }) => `${vlr_material_mte}`,
       sortable: true,
-      cell: (row) => `R$ ${parseFloat(row.vlr_material_mte).toFixed(2)}`
+      cell: (row) => `R$ ${formatCurrency(row.vlr_material_mte)}`
     },
     {
       name: "Data de Cadastro",

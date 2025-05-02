@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
-import yup from "../../../../utils/yup";
-
-
+import yup from "../../../../utils/yup"; 
 import Input from "../../../../components/Input";
 import Modal from "../../../../components/Modal";
-
 import { toast } from "react-toastify";
-
 import ButtonSubmit from "../../../../components/Buttons/ButtonSubmit";
+import { formatCurrencyString, parseCurrencyToInt } from "../../../../utils/format";
 import SelectBox from "../../../../components/Select";
 import { saveMaterial } from "../../../../services/material";
 import { getUnidade } from "../../../../services/unidade";
@@ -23,6 +20,7 @@ const schema = yup.object().shape({
 export default function MaterialForm({ reg, onClose, visible, refresh }) {
 
   const [form, setForm] = useState(reg ?? {});
+  const [materialValue, setMaterialValue] = useState();
   const [formData, setFormData] = useState(reg ??{});
   const [error, setError] = useState({});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
@@ -53,11 +51,12 @@ export default function MaterialForm({ reg, onClose, visible, refresh }) {
     fetchData();
   }, []);
 
-
-
   const handleChangeValue = (event) => {
+    if (event.target.name === ('vlr_material_mte').replace(/\[|\]/g, '')) {
+      setMaterialValue(formatCurrencyString(event.target.value));
+    }
     const inputName = event.target.name.replace(/\[|\]/g, '');
-    const value = event.target.value;
+    const value = inputName === ('vlr_material_mte').replace(/\[|\]/g, '') ? parseCurrencyToInt(event.target.value) : event.target.value;
     setForm(prev => ({ ...prev, [inputName]: value }))
   }
 
@@ -89,15 +88,14 @@ export default function MaterialForm({ reg, onClose, visible, refresh }) {
       }
     }, 1000);
   }
-
-
+console.log('form', form)
   return (
     <Modal title={form.id_material_mte ? "Edição" : "Cadastro"} onClose={onClose} visible={visible} >
       <FormGroup>
         <label>Descrição</label>
         <Input
           type={'text'}
-          defaultValue={form?.des_material_mte ?? ''}
+          value={form?.des_material_mte ?? ''}
           name='des_material_mte'
           onChange={handleChangeValue}
           error={error?.des_material_mte ?? false}
@@ -106,8 +104,9 @@ export default function MaterialForm({ reg, onClose, visible, refresh }) {
       <FormGroup>
         <label>Valor</label>
         <Input
-          type={'number'}
-          defaultValue={form?.vlr_material_mte ?? ''}
+          placeholder="R$ 0,00"
+          maxLength={16}
+          value={materialValue ?? ''}
           name='vlr_material_mte'
           onChange={handleChangeValue}
           error={error?.vlr_material_mte ?? false}
@@ -135,7 +134,6 @@ export default function MaterialForm({ reg, onClose, visible, refresh }) {
           limit={1}
         />
       </FormGroup>
-
 
       <ButtonSubmit handleSubmit={handleSubmit} loading={loadingSubmit} >Salvar</ButtonSubmit>
     </Modal>

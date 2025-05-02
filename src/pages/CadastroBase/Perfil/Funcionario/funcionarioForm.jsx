@@ -6,7 +6,7 @@ import Input from "../../../../components/Input";
 import Modal from "../../../../components/Modal";
 
 import { toast } from "react-toastify";
-
+import { formatCPFandCNPJ, removeNonNumeric, formatPhoneNumber } from "../../../../utils/format";
 import ButtonSubmit from "../../../../components/Buttons/ButtonSubmit";
 import { FormGroup } from "./style";
 import { saveFuncionario } from "../../../../services/funcionario";
@@ -24,6 +24,8 @@ const schema = yup.object().shape({
 export default function FuncionarioForm({ reg, onClose, visible, refresh }) {
 
   const [form, setForm] = useState(reg ?? {});
+  const [docValue, setDocValue] = useState();
+  const [numberValue, setNumberValue] = useState();
   const [formData, setFormData] = useState({});
   const [error, setError] = useState({});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
@@ -56,8 +58,15 @@ export default function FuncionarioForm({ reg, onClose, visible, refresh }) {
 
 
   const handleChangeValue = (event) => {
+    if (event.target.name === ('documento_funcionario_tfu').replace(/\[|\]/g)) {
+      setDocValue(formatCPFandCNPJ(event.target.value));
+    } else if (event.target.name === ('telefone_funcionario_tfu').replace(/\[|\]/g)) {
+      setNumberValue(formatPhoneNumber(event.target.value));
+    }
     const inputName = event.target.name.replace(/\[|\]/g, '');
-    const value = event.target.value;
+    const value = (inputName === ('documento_funcionario_tfu').replace(/\[|\]/g) || inputName === ('telefone_funcionario_tfu').replace(/\[|\]/g)) 
+      ? removeNonNumeric(event.target.value) 
+      : event.target.value;
     setForm(prev => ({ ...prev, [inputName]: value }))
   }
 
@@ -90,7 +99,7 @@ export default function FuncionarioForm({ reg, onClose, visible, refresh }) {
     }, 1000);
   }
 
-
+console.log('form', form, docValue )
   return (
     <Modal title={form.id_funcionario_tfu ? "Edição" : "Cadastro"} onClose={onClose} visible={visible} >
       <FormGroup>
@@ -130,15 +139,21 @@ export default function FuncionarioForm({ reg, onClose, visible, refresh }) {
         <Input
           type={'text'}
           defaultValue={form?.telefone_funcionario_tfu ?? ''}
+          value={numberValue ?? ''}
+          maxLength={15}
+          placeholder="(00) 00000-0000"
           name='telefone_funcionario_tfu'
           onChange={handleChangeValue}
           error={error?.telefone_funcionario_tfu ?? false}
         />
       </FormGroup>
       <FormGroup>
-        <label>Documento</label>
+        <label>CPF/CNPJ</label>
         <Input
           type={'text'}
+          maxLength={14}
+          placeholder="000.000.000-00"
+          value={docValue ?? ''}
           defaultValue={form?.documento_funcionario_tfu ?? ''}
           name='documento_funcionario_tfu'
           onChange={handleChangeValue}
