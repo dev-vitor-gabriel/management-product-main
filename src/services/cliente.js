@@ -24,19 +24,18 @@ const saveCliente = async (obj) => {
     
     try {
         if(obj.id_cliente_cli){
-            await api.put(`/cliente/${obj.id_cliente_cli}`, obj, {
+            return await api.put(`/cliente/${obj.id_cliente_cli}`, obj, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
         }else{
-            await api.post("/cliente", obj, {
+            return await api.post("/cliente", obj, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
         }
-        return true;
     } catch (error) {
         console.error("Erro ao buscar:", error);
         return false;

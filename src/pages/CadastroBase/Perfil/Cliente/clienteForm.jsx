@@ -25,7 +25,7 @@ const schema = yup.object().shape({
 });
 
 
-export default function ClienteForm({ reg, onClose, visible, refresh }) {
+export default function ClienteForm({ reg, onClose, visible, refresh, callback }) {
 
   const [form, setForm] = useState(reg ?? {});
   const [formData, setFormData] = useState(reg ?? {});
@@ -73,14 +73,17 @@ export default function ClienteForm({ reg, onClose, visible, refresh }) {
         const success = await saveCliente(form);
         if(success){
           await refresh();
+          if(callback) {
+            callback(success.data)
+          }
           toast.success("Registro salvo!");
         } else {
-
           toast.error("Houve um erro ao salvar o registro!");
         }
 
         setError({});
       } catch (err) {
+        console.log(err)
         let objError = {};
         err.errors.forEach(e => {
           const [inputError, ...error] = e.split(' ');
