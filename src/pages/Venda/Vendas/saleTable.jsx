@@ -76,6 +76,7 @@ export default function SaleTable({ data = [], handleEdit, refresh, totalRows })
     {
       name: "Cliente",
       selector: ({ des_cliente_cli }) => `${des_cliente_cli}`,
+      cell: ({ des_cliente_cli }) => des_cliente_cli || '',
       sortable: true,
     },
     {
