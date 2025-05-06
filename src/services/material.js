@@ -2,9 +2,9 @@
 import api from "./api";
 
 
-const getMaterial = async () => {
+const getMaterial = async (verificarEstoque = false) => {
     try {
-        const response = await api.get("/material");
+        const response = await api.get("/material?verificarEstoque=" + verificarEstoque);
 
         return response.data;
     } catch (error) {
