@@ -22,6 +22,7 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
   const [form, setForm] = useState(saleEditing);
   const [inputData, setInputData] = useState(saleEditing ?? {});
   const [formData, setFormData] = useState({});
+  const [formChanged, setFormChanged] = useState({});
   const [materiaisOriginais, setMateriaisOriginais] = useState([]);
   const [error, setError] = useState({});
   const [modalCreateClientOpen, setModalCreateClientOpen] = useState(false);
@@ -227,10 +228,11 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
       inputData.materiaisAtualizar = materiaisAtualizar;
       inputData.materiaisInserir = materiaisInserir;
     }
+    setFormChanged(!formChanged)
   };
 
   const handleSubmit = async () => {
-    console.log(inputData)
+    console.log(inputData);
     setLoadingSubmit(true);
     try {
       if (!isEditing) {
@@ -264,11 +266,11 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
               : novoCliente.telefone_cliente_cli
           }`,
         },
-      ]
+      ];
 
       return formData;
     });
-  
+
     inputData.id_cliente_vda = novoCliente.id;
   }
 
@@ -313,9 +315,11 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
           limit={1}
           setDefaultValue={true}
         />
-        <ButtonSubmit handleSubmit={() => setModalCreateClientOpen(true)}>
-          Novo Cliente
-        </ButtonSubmit>
+        {!inputData?.id_cliente_vda && (
+          <ButtonSubmit handleSubmit={() => setModalCreateClientOpen(true)}>
+            Novo Cliente
+          </ButtonSubmit>
+        )}
       </FormGroup>
 
       <FormGroup>
