@@ -179,7 +179,7 @@ export const CheckboxGroup = styled.div`
 
 export const SmallChartWrapper = styled.div`
   width: 300px;
-  height: 500px;
+  height: 420px;
   margin: 0 auto;
   flex: 1;
   padding: 20px;
