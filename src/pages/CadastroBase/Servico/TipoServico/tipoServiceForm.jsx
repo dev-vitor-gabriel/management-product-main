@@ -12,6 +12,8 @@ import { saveServiceType } from "../../../../services/serviceType";
 import { FormGroup } from "./style";
 import { getCentroCusto } from "../../../../services/centroCusto";
 import SelectBox from "../../../../components/Select";
+import { formatCurrencyString, parseCurrencyToInt } from "../../../../utils/format";
+
 
 const schema = yup.object().shape({
   vlr_servico_tipo_stp: yup.number().required().positive().integer(),
@@ -25,6 +27,7 @@ export default function TipoServiceForm({ reg, onClose, visible, refresh }) {
   const [formData, setFormData] = useState(reg ?? {});
   const [error, setError] = useState({});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [tipoServicoValue, setTipoServicoValue] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,8 +50,11 @@ export default function TipoServiceForm({ reg, onClose, visible, refresh }) {
   }, [])
 
   const handleChangeValue = (event) => {
+    if (event.target.name === ('vlr_servico_tipo_stp').replace(/\[|\]/g, '')) {
+      setTipoServicoValue(formatCurrencyString(event.target.value));
+    }
     const inputName = event.target.name.replace(/\[|\]/g, '');
-    const value = event.target.value;
+    const value = inputName === ('vlr_servico_tipo_stp').replace(/\[|\]/g, '') ? parseCurrencyToInt(event.target.value) : event.target.value;
     setForm(prev => ({ ...prev, [inputName]: value }))
   }
 
@@ -59,9 +65,9 @@ export default function TipoServiceForm({ reg, onClose, visible, refresh }) {
         await schema.validate(form);
         const success = await saveServiceType(form);
         if(success){
-          toast.success("Serviço salvo!");
-          onClose();
           await refresh();
+          toast.success("Tipo de Serviço criado com sucesso!");
+          onClose();
         } else {
           toast.error("Erro ao Cadastrar!");
         }
@@ -98,8 +104,9 @@ export default function TipoServiceForm({ reg, onClose, visible, refresh }) {
       <FormGroup>
         <label>Valor</label>
         <Input
-          type={'number'}
-          defaultValue={form?.vlr_servico_tipo_stp ?? ''}
+          placeholder="R$ 0,00"
+          maxLength={16}
+          value={tipoServicoValue ?? ''}
           name='vlr_servico_tipo_stp'
           onChange={handleChangeValue}
           error={error?.vlr_servico_tipo_stp ?? false}

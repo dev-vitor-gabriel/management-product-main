@@ -2,6 +2,7 @@ import React from "react";
 
 import Table from "../../../../components/Table";
 import { formatDate } from "../../../../utils/dateHelper";
+import { formatCurrency } from "../../../../utils/format";
 import { Button } from './style';
 import { deleteServiceType } from "../../../../services/serviceType";
 import { confirmAlert } from "../../../../utils/alert";
@@ -40,7 +41,7 @@ export default function TipoServiceTable({ data = [], handleEdit, refresh }) {
       name: "Valor",
       selector: ({ vlr_servico_tipo_stp }) => `${vlr_servico_tipo_stp}`,
       sortable: true,
-      cell: (row) => (`R$ ${parseFloat(row.vlr_servico_tipo_stp).toFixed(2)}`)
+      cell: (row) => `R$ ${formatCurrency(row.vlr_servico_tipo_stp)}`
     },
     {
       name: "Data de Cadastro",
