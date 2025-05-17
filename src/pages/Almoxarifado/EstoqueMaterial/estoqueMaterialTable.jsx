@@ -41,7 +41,7 @@ export default function EstoqueMaterialTable({ data = [] }) {
     },
     {
       name: "Descrição do Estoque",
-      selector: ({ des_estoque_item_eti }) => `${des_estoque_item_eti}`,
+      selector: ({ des_estoque_est }) => `${des_estoque_est}`,
       sortable: true,
     },
   ];
