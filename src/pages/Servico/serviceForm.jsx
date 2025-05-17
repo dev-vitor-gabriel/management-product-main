@@ -16,6 +16,7 @@ import { getEmployee } from "../../services/employee";
 import { saveServices } from "../../services/service";
 import { getServiceType } from "../../services/serviceType";
 import { Expand, FormGroup } from "./style";
+import { getMetodoPagamento } from "../../services/metodoPagamento";
 
 const schema = yup.object().shape({
   id_cliente_ser: yup.number().required().positive().integer(),
@@ -34,8 +35,8 @@ export default function ServiceForm({ service, onClose, visible }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        Promise.all([getEmployee(), getServiceType(), getCliente(), getCentroCusto()])
-          .then(([employees, servicesType, cliente, centroCusto]) => {
+        Promise.all([getEmployee(), getServiceType(), getCliente(), getCentroCusto(), getMetodoPagamento()])
+          .then(([employees, servicesType, cliente, centroCusto, metodosPagamento]) => {
             const funcionarioTypeOptions = employees.items.map(({ id_funcionario_tfu, desc_funcionario_tfu }) => {
               return ({
                 value: id_funcionario_tfu,
@@ -67,7 +68,16 @@ export default function ServiceForm({ service, onClose, visible }) {
                 label: des_centro_custo_cco
               });
             })
-            setFormData({ employees: funcionarioTypeOptions, servicesType: serviceTypeOptions, clientes: clienteOptions, centroCusto: centroCustoTypeOptions })
+            const metodosPagamentoOptions = metodosPagamento.map(
+              ({ id_metodo_pagamento_tmp, desc_metodo_pagamento_tmp }) => {
+                return {
+                  value: id_metodo_pagamento_tmp,
+                  label: desc_metodo_pagamento_tmp,
+                };
+              }
+            ); 
+        
+            setFormData({ employees: funcionarioTypeOptions, servicesType: serviceTypeOptions, clientes: clienteOptions, centroCusto: centroCustoTypeOptions, metodosPagamento: metodosPagamentoOptions });
           })
       } catch (error) {
         console.error("Erro ao buscar:", error);
@@ -168,6 +178,18 @@ export default function ServiceForm({ service, onClose, visible }) {
           name='id_cliente_ser'
           onChange={handleChangeValue}
           error={error?.id_cliente_ser ?? false}
+          limit={1}
+        />
+      </FormGroup>
+
+      <FormGroup>
+        <label>Método de pagamento</label>
+        <SelectBox
+          options={formData.metodosPagamento ?? []}
+          defaultValue={form?.id_metodo_pagamento_vda ?? []}
+          name="id_metodo_pagamento_ser"
+          onChange={handleChangeValue}
+          error={""}
           limit={1}
         />
       </FormGroup>

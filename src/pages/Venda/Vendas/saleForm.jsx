@@ -18,6 +18,7 @@ import api from "../../../services/api";
 import { getEstoque } from "../../../services/estoque";
 import { getStatusByOrigem, OrigemStatus } from "../../../services/status";
 import ClienteForm from "../../CadastroBase/Perfil/Cliente/clienteForm";
+import { getMetodoPagamento } from "../../../services/metodoPagamento";
 
 export default function SaleForm({ saleEditing, onClose, visible }) {
   const [form, setForm] = useState(saleEditing);
@@ -45,15 +46,15 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
       getCliente(),
       getCentroCusto(),
       getStatusByOrigem(OrigemStatus.Venda),
-      getEstoque("", 0, 999),
-    ]).then(([employees, materiais, clientes, centrosCusto, status, estoques]) => {
+      getMetodoPagamento()
+    ]).then(([employees, materiais, clientes, centrosCusto, status, metodosPagamento]) => {
       setSaleFormInfos(
         employees.items,
         materiais,
         clientes.items,
         centrosCusto,
         status,
-        estoques
+        metodosPagamento
       );
     });
   };
@@ -64,7 +65,7 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
     clientes,
     centrosCusto,
     status,
-    estoques
+    metodosPagamento
   ) => {
     const funcionarioTypeOptions = employees.map(
       ({ id_funcionario_tfu, desc_funcionario_tfu }) => {
@@ -178,6 +179,15 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
 
     const estoquesOptions = []
 
+    const metodosPagamentoOptions = metodosPagamento.map(
+      ({ id_metodo_pagamento_tmp, desc_metodo_pagamento_tmp }) => {
+        return {
+          value: id_metodo_pagamento_tmp,
+          label: desc_metodo_pagamento_tmp,
+        };
+      }
+    ); 
+
     setFormData({
       employees: funcionarioTypeOptions,
       materiais: materialOptions,
@@ -185,6 +195,7 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
       centroCusto: centroCustoTypeOptions,
       status: statusOption,
       estoques: estoquesOptions,
+      metodosPagamento: metodosPagamentoOptions,
     });
   };
 
@@ -379,6 +390,18 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
           options={formData.status ?? []}
           defaultValue={form?.id_status_vda ?? []}
           name="id_status_vda"
+          onChange={handleChangeValue}
+          error={""}
+          limit={1}
+        />
+      </FormGroup>
+
+      <FormGroup>
+        <label>Método de pagamento</label>
+        <SelectBox
+          options={formData.metodosPagamento ?? []}
+          defaultValue={form?.id_metodo_pagamento_vda ?? []}
+          name="id_metodo_pagamento_vda"
           onChange={handleChangeValue}
           error={""}
           limit={1}
