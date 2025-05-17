@@ -16,7 +16,7 @@ export default function TableV2({ columns, fetchData, totalRows, data = [], filt
   if (!setFilter) {
     [filter, setFilter] = useState('');
   }
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [perPage, setPerPage] = useState(10);
 
   const [debouncedFilter, setDebouncedFilter] = useState(filter); 

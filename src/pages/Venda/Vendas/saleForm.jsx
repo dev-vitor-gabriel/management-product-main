@@ -15,6 +15,7 @@ import { getCentroCusto } from "../../../services/centroCusto";
 import { getCliente } from "../../../services/cliente";
 import { getMaterial } from "../../../services/material";
 import api from "../../../services/api";
+import { getEstoque } from "../../../services/estoque";
 import { getStatusByOrigem, OrigemStatus } from "../../../services/status";
 import ClienteForm from "../../CadastroBase/Perfil/Cliente/clienteForm";
 
@@ -34,6 +35,9 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
     getFormData();
   }, []);
 
+  useEffect(() => {
+  }, [formChanged]);
+
   const getFormData = () => {
     Promise.all([
       getEmployee(),
@@ -41,13 +45,15 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
       getCliente(),
       getCentroCusto(),
       getStatusByOrigem(OrigemStatus.Venda),
-    ]).then(([employees, materiais, clientes, centrosCusto, status]) => {
+      getEstoque("", 0, 999),
+    ]).then(([employees, materiais, clientes, centrosCusto, status, estoques]) => {
       setSaleFormInfos(
         employees.items,
         materiais,
         clientes.items,
         centrosCusto,
-        status
+        status,
+        estoques
       );
     });
   };
@@ -57,7 +63,8 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
     materiais,
     clientes,
     centrosCusto,
-    status
+    status,
+    estoques
   ) => {
     const funcionarioTypeOptions = employees.map(
       ({ id_funcionario_tfu, desc_funcionario_tfu }) => {
@@ -168,12 +175,16 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
         });
       setForm(form);
     }
+
+    const estoquesOptions = []
+
     setFormData({
       employees: funcionarioTypeOptions,
       materiais: materialOptions,
       clientes: clienteOptions,
       centroCusto: centroCustoTypeOptions,
       status: statusOption,
+      estoques: estoquesOptions,
     });
   };
 
@@ -228,11 +239,28 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
       inputData.materiaisAtualizar = materiaisAtualizar;
       inputData.materiaisInserir = materiaisInserir;
     }
+
+    if (eventName == "id_centro_custo_vda") {
+      getEstoque('', 0, 999, eventValue).then(estoques => {
+        const estoqueOptions = estoques.items.map(
+          ({ id_estoque_est, des_estoque_est }) => {
+            return {
+              value: id_estoque_est,
+              label: des_estoque_est,
+            };
+          }
+        );
+        setFormData((currentForm) => ({
+          ...currentForm,
+          estoques: estoqueOptions,
+        }));
+      })
+    }
+    console.log(eventName, eventValue);
     setFormChanged(!formChanged)
   };
 
   const handleSubmit = async () => {
-    console.log(inputData);
     setLoadingSubmit(true);
     try {
       if (!isEditing) {
@@ -320,6 +348,18 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
             Novo Cliente
           </ButtonSubmit>
         )}
+      </FormGroup>
+
+      <FormGroup>
+        <label>Estoque</label>
+        <SelectBox
+          options={formData.estoques ?? []}
+          defaultValue={form?.estoques ?? []}
+          name="id_estoque_est"
+          onChange={handleChangeValue}
+          limit={1}
+          error={""}
+        />
       </FormGroup>
 
       <FormGroup>
