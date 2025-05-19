@@ -2,9 +2,9 @@
 import api from "./api";
 
 
-const getFinanceiro = async () => {
+const getFinanceiro = async (tipo_transacao) => {
     try {
-        const response = await api.get(`/financeiro`, );
+        const response = await api.get(`/financeiro/${tipo_transacao}`, );
 
         return response.data;
     } catch (error) {

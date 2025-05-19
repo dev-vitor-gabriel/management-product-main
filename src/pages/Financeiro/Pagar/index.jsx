@@ -4,10 +4,10 @@ import Content from "../../../components/Content";
 import PageHeader from "../../../components/PageHeader";
 import { getFinanceiro } from "../../../services/financeiro";
 import { formatDate } from "../../../utils/dateHelper";
-import ReceberForm from "./receberForm";
-import ReceberTable from "./receberTable";
+import PagarForm from "./pagarForm";
+import PagarTable from "./pagarTable";
 
-export default function FinanceiroReceber({ reg = null, tela }) {
+export default function FinanceiroPagar({ reg = null, tela }) {
     const [financeiro, setFinanceiro] = useState([]);
     const [shouldReload, setShouldReload] = useState(false);
 
@@ -18,7 +18,7 @@ export default function FinanceiroReceber({ reg = null, tela }) {
 
     const fetchFinanceiro = async () => {
         try {
-            const response = await getFinanceiro(0);
+            const response = await getFinanceiro(1);
             setFinanceiro(response.items);
         } catch (error) {
             console.error("Erro ao buscar:", error);
@@ -94,8 +94,8 @@ export default function FinanceiroReceber({ reg = null, tela }) {
                 exportFilename='export_a_pagar'
                 dataset={financeiro.map(reg => ({ 'ID': reg.id_financeiro_fin, 'Valor': `R$ ${(parseFloat(reg.vlr_financeiro_fin) / 100).toFixed(2).replace('.', ',')}`,'Origem': reg.tipo_referencia_text, 'Observação': reg.desc_financeiro_fin,'Tipo de Transação': reg.tipo_transacao_text,'Centro de Custo': reg.des_centro_custo_cco, 'Método de Pagamento': reg.desc_metodo_pagamento_tmp, 'Data Criação': formatDate(reg.created_at) }))}
             />
-            <ReceberTable data={financeiro} handleEdit={handleEdit} refresh={fetchFinanceiro} tela={tela}/>
-            {modalIsOpen && <ReceberForm reg={financeiroEdited} onClose={() => { setModalIsOpen(false); setShouldReload(true); }} visible={modalIsOpen} />}
+            <PagarTable data={financeiro} handleEdit={handleEdit} refresh={fetchFinanceiro} tela={tela}/>
+            {modalIsOpen && <PagarForm reg={financeiroEdited} onClose={() => { setModalIsOpen(false); setShouldReload(true); }} visible={modalIsOpen} />}
         </Content>
     )
 }
