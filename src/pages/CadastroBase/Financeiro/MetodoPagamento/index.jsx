@@ -23,7 +23,7 @@ export default function MetodoPagamento() {
     const fetchRegs = async () => {
         try {
             const response = await getMetodoPagamento();
-            setRegs(response);
+            setRegs(response.items);
             setModalIsOpen(false)
         } catch (error) {
             console.error("Erro ao buscar:", error);
