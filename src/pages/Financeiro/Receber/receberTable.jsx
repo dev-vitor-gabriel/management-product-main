@@ -2,13 +2,13 @@ import React from "react";
 
 import { Button } from './style';
 
-import Table from "../../../components/Table";
 import { formatDate } from "../../../utils/dateHelper";
-import { deleteService, finalizarService } from "../../../services/service";
+import { deleteService } from "../../../services/service";
 import { confirmAlert } from "../../../utils/alert";
+import TableV2 from "../../../components/TableV2";
 
 // eslint-disable-next-line react/prop-types
-export default function ReceberTable({ data = [], handleEdit, refresh, tela = ''}) {
+export default function ReceberTable({ data = [], handleEdit, refresh, totalRows, filter, setFilter }) {
 
   const handleDelete = async (id) => {
     confirmAlert({
@@ -63,9 +63,13 @@ export default function ReceberTable({ data = [], handleEdit, refresh, tela = ''
     },
   ];
   return (
-    <Table
+    <TableV2
       columns={columns}
       data={data}
+      totalRows={totalRows}
+      fetchData={refresh}
+      filter={filter}
+      setFilter={setFilter}
     />
   )
 }

@@ -6,20 +6,27 @@ import { getFinanceiro } from "../../../services/financeiro";
 import { formatDate } from "../../../utils/dateHelper";
 import ReceberForm from "./receberForm";
 import ReceberTable from "./receberTable";
+import { useLocation } from 'react-router-dom';
+import { useMemo } from 'react';
 
 export default function FinanceiroReceber({ reg = null, tela }) {
     const [financeiro, setFinanceiro] = useState([]);
     const [shouldReload, setShouldReload] = useState(false);
+    const [totalRows, setTotalRows] = useState(0);
+    const [type, setType] = useState(window.location.pathname.includes('receber') ? 0 : 1);
 
     const { title, breadItens } = useContext(PaginationContext);
 
     const [financeiroEdited, setFinanceiroEdited] = useState({});
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
-    const fetchFinanceiro = async () => {
+    const location = useLocation();
+
+    const fetchFinanceiro = async (filter, pageNumber, perPage) => {
         try {
-            const response = await getFinanceiro(0);
+            const response = await getFinanceiro(type, pageNumber, perPage);
             setFinanceiro(response.items);
+            setTotalRows(response.total);
         } catch (error) {
             console.error("Erro ao buscar:", error);
         }
@@ -32,7 +39,11 @@ export default function FinanceiroReceber({ reg = null, tela }) {
             fetchFinanceiro();
             setShouldReload(false);
         }
-    }, [shouldReload]);
+    }, [shouldReload, type]);
+
+    useEffect(() => {
+        setType(location.pathname.includes('receber') ? 0 : 1)
+    }, [window.location.pathname]);
 
     useEffect(() => {
         if (reg != null) {
@@ -94,8 +105,17 @@ export default function FinanceiroReceber({ reg = null, tela }) {
                 exportFilename='export_a_pagar'
                 dataset={financeiro.map(reg => ({ 'ID': reg.id_financeiro_fin, 'Valor': `R$ ${(parseFloat(reg.vlr_financeiro_fin) / 100).toFixed(2).replace('.', ',')}`,'Origem': reg.tipo_referencia_text, 'Observação': reg.desc_financeiro_fin,'Tipo de Transação': reg.tipo_transacao_text,'Centro de Custo': reg.des_centro_custo_cco, 'Método de Pagamento': reg.desc_metodo_pagamento_tmp, 'Data Criação': formatDate(reg.created_at) }))}
             />
-            <ReceberTable data={financeiro} handleEdit={handleEdit} refresh={fetchFinanceiro} tela={tela}/>
-            {modalIsOpen && <ReceberForm reg={financeiroEdited} onClose={() => { setModalIsOpen(false); setShouldReload(true); }} visible={modalIsOpen} />}
+            <ReceberTable 
+                totalRows={totalRows} 
+                data={financeiro} 
+                handleEdit={handleEdit} 
+                refresh={fetchFinanceiro} 
+                tela={tela}
+            />
+            {modalIsOpen && <ReceberForm 
+            reg={financeiroEdited} onClose={() => { setModalIsOpen(false); setShouldReload(true); }} 
+            tipoTransacao ={type}
+            visible={modalIsOpen} />}
         </Content>
     )
 }

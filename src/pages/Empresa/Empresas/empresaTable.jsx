@@ -42,8 +42,8 @@ export default function  EmpresaTable({ data = [], handleEdit, refresh, totalRow
   return (
     <TableV2
       columns={columns}
-      totalRows={totalRows}
       data={data}
+      totalRows={totalRows}
       fetchData={refresh}
       filter={filter}
       setFilter={setFilter}

@@ -1,10 +1,17 @@
 
 import api from "./api";
 
+let cachedPageNumber = 1;
+let cachedPerPage = 10;
+let cachedType = '';
 
-const getFinanceiro = async (tipo_transacao) => {
+const getFinanceiro = async (type, pageNumber, perPage) => {
+    cachedType = type ?? cachedType
+    cachedPageNumber = pageNumber ?? cachedPageNumber;
+    cachedPerPage = perPage ?? cachedPerPage;
+
     try {
-        const response = await api.get(`/financeiro/${tipo_transacao}`, );
+        const response = await api.get(`/financeiro?&type=${type}&per_page=${cachedPerPage}&page_number=${cachedPageNumber}`);
 
         return response.data;
     } catch (error) {
