@@ -112,7 +112,10 @@ export default function FinanceiroReceber({ reg = null, tela }) {
                 refresh={fetchFinanceiro} 
                 tela={tela}
             />
-            {modalIsOpen && <ReceberForm reg={financeiroEdited} onClose={() => { setModalIsOpen(false); setShouldReload(true); }} visible={modalIsOpen} />}
+            {modalIsOpen && <ReceberForm 
+            reg={financeiroEdited} onClose={() => { setModalIsOpen(false); setShouldReload(true); }} 
+            tipoTransacao ={type}
+            visible={modalIsOpen} />}
         </Content>
     )
 }

@@ -23,14 +23,14 @@ const schema = yup.object().shape({
   vlr_financeiro_fin: yup.number().required().positive().integer(),
 });
 
-export default function ReceberForm({ financeiro, onClose, visible, refresh }) {
+export default function ReceberForm({ financeiro, onClose, visible, refresh, tipoTransacao = 0 }) {
 
   const [form, setForm] = useState(financeiro ?? {});
   const [formData, setFormData] = useState(financeiro ?? {});
   const [error, setError] = useState({});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [financeiroValue, setFinanceiroValue] = useState();
-
+  console.log(tipoTransacao)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -126,7 +126,7 @@ export default function ReceberForm({ financeiro, onClose, visible, refresh }) {
         <label>Tipo de Transação</label>
         <SelectBox
           options={[
-            { value: 0, label: "Entrada" }
+            { value: tipoTransacao, label: tipoTransacao == 0 ? "Entrada" : "Saída" }
           ]}
           value={form?.tipo_transacao_fin ?? 0}
           name="tipo_transacao_fin"
