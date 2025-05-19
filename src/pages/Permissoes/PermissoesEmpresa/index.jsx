@@ -29,7 +29,7 @@ import { toast } from "react-toastify";
 
 export default function PermissoesEmpresa() {
   const [empresas, setEmpresa] = useState([]);
-  const [menus, setMenus] = useState();
+  const [menus, setMenus] = useState([]);
   const [empresaSelecionada, setEmpresaSelecionada] = useState(null);
   const [permissoesEmpresa, setPermissoesEmpresa] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -42,7 +42,7 @@ export default function PermissoesEmpresa() {
       const empresas = await getCompanies(filtroEmpresa, 1, 5);
       setEmpresa(empresas.items);
 
-      if (menus) {
+      if (menus.length > 0) {
         return;
       }
       const response = await getMenus();
@@ -125,7 +125,7 @@ export default function PermissoesEmpresa() {
         }
         defaultCollapsed={true}
       >
-        {menu.children ? renderTree(menu.children, menu.id_menu_mnu) : null}
+        {menu.children != undefined ? renderTree(menu.children ?? []) : null}
       </TreeView>
     ));
   };

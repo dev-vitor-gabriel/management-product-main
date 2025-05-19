@@ -31,7 +31,7 @@ import { toast } from "react-toastify";
 
 export default function PermissoesUsuario() {
   const [empresas, setUsuario] = useState([]);
-  const [menus, setMenus] = useState();
+  const [menus, setMenus] = useState([]);
   const [usuarioSelecionado, setUsuarioSelecionada] = useState(null);
   const [permissoesUsuario, setPermissoesUsuario] = useState([]);
   const [cachedMenuUsuarios, setCachedMenuUsuarios] = useState({});
@@ -44,7 +44,7 @@ export default function PermissoesUsuario() {
       const empresas = await getCompanyUsers(filtroUsuario, 1, 5);
       setUsuario(empresas.items);
 
-      if (menus) {
+      if (menus.length > 0) {
         return;
       }
       const response = await getMenusEmpresa();
@@ -127,7 +127,7 @@ export default function PermissoesUsuario() {
         }
         defaultCollapsed={true}
       >
-        {menu.children ? renderTree(menu.children, menu.id_menu_mnu) : null}
+        {menu.children ? renderTree(menu.children) : null}
       </TreeView>
     ));
   };
