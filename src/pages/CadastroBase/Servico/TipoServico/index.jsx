@@ -16,7 +16,6 @@ export default function TipoServico() {
     const fetchRegs = async () => {
         try {
             const response = await getServiceType();
-            console.log(response);
 
             setRegs(response);
         } catch (error) {

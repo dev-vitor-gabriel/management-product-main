@@ -23,7 +23,6 @@ export default function Baixa( { tipoMovimentacao } ) {
     // Chamada da API - Lista todos os materiais
     const fetchRegs = async () => {
         try {
-            console.log("tipoMovimentacao", tipoMovimentacao);
             const response = await getBaixas(tipoMovimentacao);
             setRegs(response);
         } catch (error) {

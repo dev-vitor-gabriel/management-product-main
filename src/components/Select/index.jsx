@@ -23,8 +23,13 @@ const SelectBox = ({ options, defaultValue, name, onChange, error, limit = 0, se
   // console.log(selectedOptions)
   useEffect(() => {
     // preenche quando existir um unico registro
-    if(options?.length == 1 && setDefaultValue){
-      handleSelectChange(options);
+    if (options?.length == 1 && setDefaultValue) {
+      const alreadySelected = selectedOptions.map(o => o.value);
+      const newValues = options.map(o => o.value);
+
+      if (JSON.stringify(alreadySelected) !== JSON.stringify(newValues)) {
+        handleSelectChange(options);
+      }
       return;
     }
 

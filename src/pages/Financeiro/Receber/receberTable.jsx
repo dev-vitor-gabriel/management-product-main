@@ -8,7 +8,7 @@ import { deleteService, finalizarService } from "../../../services/service";
 import { confirmAlert } from "../../../utils/alert";
 
 // eslint-disable-next-line react/prop-types
-export default function PagarTable({ data = [], handleEdit, refresh, tela = ''}) {
+export default function ReceberTable({ data = [], handleEdit, refresh, tela = ''}) {
 
   const handleDelete = async (id) => {
     confirmAlert({
@@ -17,32 +17,43 @@ export default function PagarTable({ data = [], handleEdit, refresh, tela = ''})
       handleFunction: async () => {await deleteService(id); await refresh()}
     })
   }
-  
-  const handleFinalizar = async (id) => {
-    confirmAlert({
-      title: 'Tem certeza disso?',
-      text: "O serviço será finalizado!",
-      handleFunction: async () => {await finalizarService(id); await refresh()}
-    })
-  }
 
   const columns = [
     {
       name: "ID",
-      selector: ({ id_servico_ser }) => `${id_servico_ser}`,
+      selector: ({ id_financeiro_fin }) => `${id_financeiro_fin}`,
       sortable: true,
     },
     {
       name: "Valor",
-      selector: ({ vlr_servico_ser }) => `${vlr_servico_ser}`,
+      selector: ({ vlr_financeiro_fin }) => `${vlr_financeiro_fin}`,
       sortable: true,
-      cell: (row) => `R$ ${(parseFloat(row.vlr_servico_ser) / 100).toFixed(2).replace('.', ',')}`
+      cell: (row) => `R$ ${(parseFloat(row.vlr_financeiro_fin) / 100).toFixed(2).replace('.', ',')}`
     },
     {
       name: "Origem",
-      selector: ({ created_at }) => `${created_at}`,
+      selector: ({ tipo_referencia_text }) => `${tipo_referencia_text}`,
       sortable: true,
-      format: ({ created_at }) => formatDate(created_at),
+    },
+    {
+      name: "Observação",
+      selector: ({ desc_financeiro_fin }) => `${desc_financeiro_fin}`,
+      sortable: true,
+    },
+    {
+      name: "Tipo de Transação",
+      selector: ({ tipo_transacao_text }) => `${tipo_transacao_text}`,
+      sortable: true,
+    },
+    {
+      name: "Centro de Custo",
+      selector: ({ des_centro_custo_cco }) => `${des_centro_custo_cco}`,
+      sortable: true,
+    },
+    {
+      name: "Método de Pagamento",
+      selector: ({ desc_metodo_pagamento_tmp }) => `${desc_metodo_pagamento_tmp}`,
+      sortable: true,
     },
     {
       name: "Data",

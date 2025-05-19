@@ -5,7 +5,7 @@ import api from "./api";
 const getMetodoPagamento = async () => {
     try {
         const response = await api.get("/metodoPagamento");
-        return response.data.items;
+        return response.data;
     } catch (error) {
         console.error("Erro ao buscar:", error);
     }
