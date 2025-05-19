@@ -15,8 +15,10 @@ import { getCentroCusto } from "../../../services/centroCusto";
 import { getCliente } from "../../../services/cliente";
 import { getMaterial } from "../../../services/material";
 import api from "../../../services/api";
+import { getEstoque } from "../../../services/estoque";
 import { getStatusByOrigem, OrigemStatus } from "../../../services/status";
 import ClienteForm from "../../CadastroBase/Perfil/Cliente/clienteForm";
+import { getMetodoPagamento } from "../../../services/metodoPagamento";
 
 export default function SaleForm({ saleEditing, onClose, visible }) {
   const [form, setForm] = useState(saleEditing);
@@ -34,6 +36,9 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
     getFormData();
   }, []);
 
+  useEffect(() => {
+  }, [formChanged]);
+
   const getFormData = () => {
     Promise.all([
       getEmployee(),
@@ -41,13 +46,15 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
       getCliente(),
       getCentroCusto(),
       getStatusByOrigem(OrigemStatus.Venda),
-    ]).then(([employees, materiais, clientes, centrosCusto, status]) => {
+      getMetodoPagamento()
+    ]).then(([employees, materiais, clientes, centrosCusto, status, metodosPagamento]) => {
       setSaleFormInfos(
         employees.items,
         materiais,
         clientes.items,
         centrosCusto,
-        status
+        status,
+        metodosPagamento
       );
     });
   };
@@ -57,7 +64,8 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
     materiais,
     clientes,
     centrosCusto,
-    status
+    status,
+    metodosPagamento
   ) => {
     const funcionarioTypeOptions = employees.map(
       ({ id_funcionario_tfu, desc_funcionario_tfu }) => {
@@ -168,12 +176,26 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
         });
       setForm(form);
     }
+
+    const estoquesOptions = []
+
+    const metodosPagamentoOptions = metodosPagamento.map(
+      ({ id_metodo_pagamento_tmp, desc_metodo_pagamento_tmp }) => {
+        return {
+          value: id_metodo_pagamento_tmp,
+          label: desc_metodo_pagamento_tmp,
+        };
+      }
+    ); 
+
     setFormData({
       employees: funcionarioTypeOptions,
       materiais: materialOptions,
       clientes: clienteOptions,
       centroCusto: centroCustoTypeOptions,
       status: statusOption,
+      estoques: estoquesOptions,
+      metodosPagamento: metodosPagamentoOptions,
     });
   };
 
@@ -228,11 +250,28 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
       inputData.materiaisAtualizar = materiaisAtualizar;
       inputData.materiaisInserir = materiaisInserir;
     }
+
+    if (eventName == "id_centro_custo_vda") {
+      getEstoque('', 0, 999, eventValue).then(estoques => {
+        const estoqueOptions = estoques.items.map(
+          ({ id_estoque_est, des_estoque_est }) => {
+            return {
+              value: id_estoque_est,
+              label: des_estoque_est,
+            };
+          }
+        );
+        setFormData((currentForm) => ({
+          ...currentForm,
+          estoques: estoqueOptions,
+        }));
+      })
+    }
+    console.log(eventName, eventValue);
     setFormChanged(!formChanged)
   };
 
   const handleSubmit = async () => {
-    console.log(inputData);
     setLoadingSubmit(true);
     try {
       if (!isEditing) {
@@ -323,6 +362,18 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
       </FormGroup>
 
       <FormGroup>
+        <label>Estoque</label>
+        <SelectBox
+          options={formData.estoques ?? []}
+          defaultValue={form?.estoques ?? []}
+          name="id_estoque_est"
+          onChange={handleChangeValue}
+          limit={1}
+          error={""}
+        />
+      </FormGroup>
+
+      <FormGroup>
         <label>Materiais</label>
         <SelectBox
           options={formData.materiais ?? []}
@@ -339,6 +390,18 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
           options={formData.status ?? []}
           defaultValue={form?.id_status_vda ?? []}
           name="id_status_vda"
+          onChange={handleChangeValue}
+          error={""}
+          limit={1}
+        />
+      </FormGroup>
+
+      <FormGroup>
+        <label>Método de pagamento</label>
+        <SelectBox
+          options={formData.metodosPagamento ?? []}
+          defaultValue={form?.id_metodo_pagamento_vda ?? []}
+          name="id_metodo_pagamento_vda"
           onChange={handleChangeValue}
           error={""}
           limit={1}

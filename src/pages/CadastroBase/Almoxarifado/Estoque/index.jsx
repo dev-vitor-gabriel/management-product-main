@@ -21,7 +21,7 @@ export default function Estoque() {
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
     // Chamada da API - Lista todos os materiais
-    const fetchServices = async (pageNumber, totalSize) => {
+    const fetchServices = async (filter, pageNumber, totalSize) => {
         try {
             const response = await getEstoque('', pageNumber, totalSize);
             setRegs(response.items);
