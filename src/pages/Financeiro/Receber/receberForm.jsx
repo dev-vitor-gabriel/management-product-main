@@ -74,7 +74,7 @@ export default function ReceberForm({ financeiro, onClose, visible, refresh }) {
         await schema.validate(form);
         const success = await saveFinanceiro(form);
         if(success){
-          toast.success("Baixa de entrada realizada com sucesso!");
+          toast.success("Registro inserido com sucesso!");
           onClose();
           refresh();
         } else {

@@ -68,6 +68,7 @@ function RoutesApp() {
                 <Route path="/cadastro-base/permissoes/permissoes-empresa" element={<CompanyPermissions />} />
                 <Route path="/cadastro-base/permissoes/permissoes-centro-custo" element={<PermissoesCentroCusto />} />
                 <Route path="/financeiro/a-receber" element={<FinanceiroReceber />} />
+                <Route path="/financeiro/a-pagar" element={<FinanceiroReceber />} />
             </Route>
 
             <Route path="/login" element={<Login />} />
