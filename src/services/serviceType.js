@@ -10,9 +10,9 @@ const GetServiceTypeQuery = () => {
         });
   };
   
-const getServiceType = async () => {
+const getServiceType = async (id_centro_custo = null) => {
     try {
-        const response = await api.get("/servicoTipo");
+        const response = await api.get(`/servicoTipo?id_centro_custo_stp=${id_centro_custo}`);
 
         return response.data;
     } catch (error) {

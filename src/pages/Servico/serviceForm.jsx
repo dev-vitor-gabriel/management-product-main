@@ -34,31 +34,9 @@ export default function ServiceForm({ service, onClose, visible }) {
     const fetchData = async () => {
       try {
         Promise.all([
-          getServiceType(),
           getCentroCusto(),
           getMetodoPagamento(),
-        ]).then(([servicesType, centroCusto, metodosPagamento]) => {
-          const serviceTypeOptions = servicesType.map(
-            ({
-              id_servico_tipo_stp,
-              des_servico_tipo_stp,
-              vlr_servico_tipo_stp,
-            }) => {
-              return {
-                value: id_servico_tipo_stp,
-                label: des_servico_tipo_stp,
-                custom: [
-                  {
-                    label: "Valor",
-                    column: "vlr_servico_tipo_stp",
-                    value: vlr_servico_tipo_stp,
-                    type: "number",
-                    mask: "currency",
-                  },
-                ],
-              };
-            }
-          );
+        ]).then(([centroCusto, metodosPagamento]) => {
           const centroCustoTypeOptions = centroCusto.items.map(
             ({ id_centro_custo_cco, des_centro_custo_cco }) => {
               return {
@@ -78,7 +56,7 @@ export default function ServiceForm({ service, onClose, visible }) {
 
           setFormData({
             employees: [],
-            servicesType: serviceTypeOptions,
+            servicesType: [],
             clientes: [],
             centroCusto: centroCustoTypeOptions,
             metodosPagamento: metodosPagamentoOptions,
@@ -120,8 +98,29 @@ export default function ServiceForm({ service, onClose, visible }) {
     setForm((prev) => ({ ...prev, [inputName]: value }));
 
     if (event.target.name === "id_centro_custo_ser") {
-      Promise.all([getEmployee(value), getCliente(value)]).then(
-        ([employees, clientes]) => {
+          Promise.all([getServiceType(value), getEmployee(value), getCliente(value)]).then(
+        ([servicesType, employees, clientes]) => {
+          const serviceTypeOptions = servicesType.map(
+            ({
+              id_servico_tipo_stp,
+              des_servico_tipo_stp,
+              vlr_servico_tipo_stp,
+            }) => {
+              return {
+                value: id_servico_tipo_stp,
+                label: des_servico_tipo_stp,
+                custom: [
+                  {
+                    label: "Valor",
+                    column: "vlr_servico_tipo_stp",
+                    value: vlr_servico_tipo_stp,
+                    type: "number",
+                    mask: "currency",
+                  },
+                ],
+              };
+            }
+          );
           const funcionarioTypeOptions = employees.items.map(
             ({ id_funcionario_tfu, desc_funcionario_tfu }) => {
               return {
@@ -149,6 +148,7 @@ export default function ServiceForm({ service, onClose, visible }) {
           );
           setFormData(form => ({
             ...form,
+            servicesType: serviceTypeOptions,
             employees: funcionarioTypeOptions,
             clientes: clienteOptions,
           }))
