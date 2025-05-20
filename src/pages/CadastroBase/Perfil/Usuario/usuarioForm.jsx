@@ -44,7 +44,9 @@ export default function UsuarioForm({ reg, onClose, visible, refresh }) {
         const result = await saveUsuario(formData);
 
         if (result.success) {
-            toast.success("Registro salvo!");
+          toast.success("Usuário salvo com sucesso!");
+          onClose();
+          refresh();
         } else {
             if (result.errors) {
                 Object.values(result.errors).forEach(errorMessages => {
