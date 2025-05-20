@@ -189,9 +189,9 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
     ); 
 
     setFormData({
-      employees: funcionarioTypeOptions,
+      employees: [],
       materiais: materialOptions,
-      clientes: clienteOptions,
+      clientes: [],
       centroCusto: centroCustoTypeOptions,
       status: statusOption,
       estoques: estoquesOptions,
@@ -252,22 +252,50 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
     }
 
     if (eventName == "id_centro_custo_vda") {
-      getEstoque('', 0, 999, eventValue).then(estoques => {
-        const estoqueOptions = estoques.items.map(
-          ({ id_estoque_est, des_estoque_est }) => {
-            return {
-              value: id_estoque_est,
-              label: des_estoque_est,
-            };
-          }
-        );
-        setFormData((currentForm) => ({
-          ...currentForm,
-          estoques: estoqueOptions,
-        }));
-      })
+      Promise.all([getEmployee(eventValue), getCliente(eventValue), getEstoque('', 0, 999, eventValue)]).then(
+        ([employees, clientes, estoques]) => {
+          const funcionarioTypeOptions = employees.items.map(
+            ({ id_funcionario_tfu, desc_funcionario_tfu }) => {
+              return {
+                value: id_funcionario_tfu,
+                label: desc_funcionario_tfu,
+              };
+            }
+          );
+          const clienteOptions = clientes.items.map(
+            ({
+              id_cliente_cli,
+              des_cliente_cli,
+              documento_cliente_cli,
+              telefone_cliente_cli,
+            }) => {
+              return {
+                value: id_cliente_cli,
+                label: `${des_cliente_cli} - ${
+                  telefone_cliente_cli == ""
+                    ? documento_cliente_cli
+                    : telefone_cliente_cli
+                }`,
+              };
+            }
+          );
+          const estoqueOptions = estoques.items.map(
+            ({ id_estoque_est, des_estoque_est }) => {
+              return {
+                value: id_estoque_est,
+                label: des_estoque_est,
+              };
+            }
+          );
+          setFormData(form => ({
+            ...form,
+            employees: funcionarioTypeOptions,
+            clientes: clienteOptions,
+            estoques: estoqueOptions,
+          }))
+        }
+      );
     }
-    console.log(eventName, eventValue);
     setFormChanged(!formChanged)
   };
 

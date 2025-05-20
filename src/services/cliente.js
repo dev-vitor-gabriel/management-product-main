@@ -2,9 +2,9 @@
 import api from "./api";
 
 
-const getCliente = async () => {
+const getCliente = async (id_centro_custo = null) => {
     try {
-        const response = await api.get("/cliente");
+        const response = await api.get(`/cliente?id_centro_custo_cli=${id_centro_custo}`);
 
         return response.data;
     } catch (error) {
