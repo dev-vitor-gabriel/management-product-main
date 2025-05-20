@@ -36,92 +36,23 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
     getFormData();
   }, []);
 
-  useEffect(() => {
-  }, [formChanged]);
+  useEffect(() => {}, [formChanged]);
 
   const getFormData = () => {
     Promise.all([
-      getEmployee(),
-      getMaterial(true),
-      getCliente(),
       getCentroCusto(),
       getStatusByOrigem(OrigemStatus.Venda),
-      getMetodoPagamento()
-    ]).then(([employees, materiais, clientes, centrosCusto, status, metodosPagamento]) => {
-      setSaleFormInfos(
-        employees.items,
-        materiais,
-        clientes.items,
-        centrosCusto,
-        status,
-        metodosPagamento
-      );
+      getMetodoPagamento(),
+    ]).then(([centrosCusto, status, metodosPagamento]) => {
+      setSaleFormInfos(centrosCusto, status, metodosPagamento);
     });
   };
 
   const setSaleFormInfos = async (
-    employees,
-    materiais,
-    clientes,
     centrosCusto,
     status,
     metodosPagamento
   ) => {
-    const funcionarioTypeOptions = employees.map(
-      ({ id_funcionario_tfu, desc_funcionario_tfu }) => {
-        return {
-          value: id_funcionario_tfu,
-          label: desc_funcionario_tfu,
-        };
-      }
-    );
-    const materialOptions = materiais
-      .map((item) => {
-        return {
-          id_material_rvm: item.id_material_mte,
-          des_material_mte: item.des_material_mte,
-          des_reduz_unidade_und: item.des_reduz_unidade_und,
-          vlr_material_mte: item.vlr_material_mte ?? item.vlr_unit_material_mte,
-        };
-      })
-      .map((item) => {
-        return {
-          value: { id_material_rvm: item.id_material_rvm },
-          label: `${item.des_material_mte} - ${item.des_reduz_unidade_und}`,
-          custom: [
-            {
-              prefixDefault: item.des_reduz_unidade_und,
-              label: "Quantidade",
-              column: "qtd_material_rvm",
-              value: 1,
-              type: "number",
-            },
-            {
-              label: "Valor Unitário",
-              column: "vlr_unit_material_rvm",
-              value: item.vlr_material_mte,
-              type: "number",
-              mask: "currency",
-            },
-          ],
-        };
-      });
-
-    const clienteOptions = clientes.map(
-      ({
-        id_cliente_cli,
-        des_cliente_cli,
-        documento_cliente_cli,
-        telefone_cliente_cli,
-      }) => {
-        return {
-          value: id_cliente_cli,
-          label: `${des_cliente_cli} - ${
-            !telefone_cliente_cli ? documento_cliente_cli : telefone_cliente_cli
-          }`,
-        };
-      }
-    );
     const centroCustoTypeOptions = centrosCusto.items.map(
       ({ id_centro_custo_cco, des_centro_custo_cco }) => {
         return {
@@ -177,7 +108,7 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
       setForm(form);
     }
 
-    const estoquesOptions = []
+    const estoquesOptions = [];
 
     const metodosPagamentoOptions = metodosPagamento.items.map(
       ({ id_metodo_pagamento_tmp, desc_metodo_pagamento_tmp }) => {
@@ -186,11 +117,11 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
           label: desc_metodo_pagamento_tmp,
         };
       }
-    ); 
+    );
 
     setFormData({
       employees: [],
-      materiais: materialOptions,
+      materiais: [],
       clientes: [],
       centroCusto: centroCustoTypeOptions,
       status: statusOption,
@@ -252,51 +183,89 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
     }
 
     if (eventName == "id_centro_custo_vda") {
-      Promise.all([getEmployee(eventValue), getCliente(eventValue), getEstoque('', 0, 999, eventValue)]).then(
-        ([employees, clientes, estoques]) => {
-          const funcionarioTypeOptions = employees.items.map(
-            ({ id_funcionario_tfu, desc_funcionario_tfu }) => {
-              return {
-                value: id_funcionario_tfu,
-                label: desc_funcionario_tfu,
-              };
-            }
-          );
-          const clienteOptions = clientes.items.map(
-            ({
-              id_cliente_cli,
-              des_cliente_cli,
-              documento_cliente_cli,
-              telefone_cliente_cli,
-            }) => {
-              return {
-                value: id_cliente_cli,
-                label: `${des_cliente_cli} - ${
-                  telefone_cliente_cli == ""
-                    ? documento_cliente_cli
-                    : telefone_cliente_cli
-                }`,
-              };
-            }
-          );
-          const estoqueOptions = estoques.items.map(
-            ({ id_estoque_est, des_estoque_est }) => {
-              return {
-                value: id_estoque_est,
-                label: des_estoque_est,
-              };
-            }
-          );
-          setFormData(form => ({
-            ...form,
-            employees: funcionarioTypeOptions,
-            clientes: clienteOptions,
-            estoques: estoqueOptions,
-          }))
-        }
-      );
+      Promise.all([
+        getMaterial(true, eventValue),
+        getEmployee(eventValue),
+        getCliente(eventValue),
+        getEstoque("", 0, 999, eventValue),
+      ]).then(([materiais, employees, clientes, estoques]) => {
+        const funcionarioTypeOptions = employees.items.map(
+          ({ id_funcionario_tfu, desc_funcionario_tfu }) => {
+            return {
+              value: id_funcionario_tfu,
+              label: desc_funcionario_tfu,
+            };
+          }
+        );
+        const clienteOptions = clientes.items.map(
+          ({
+            id_cliente_cli,
+            des_cliente_cli,
+            documento_cliente_cli,
+            telefone_cliente_cli,
+          }) => {
+            return {
+              value: id_cliente_cli,
+              label: `${des_cliente_cli} - ${
+                telefone_cliente_cli == ""
+                  ? documento_cliente_cli
+                  : telefone_cliente_cli
+              }`,
+            };
+          }
+        );
+        const estoqueOptions = estoques.items.map(
+          ({ id_estoque_est, des_estoque_est }) => {
+            return {
+              value: id_estoque_est,
+              label: des_estoque_est,
+            };
+          }
+        );
+
+        const materialOptions = materiais
+        .map((item) => {
+          return {
+            id_material_rvm: item.id_material_mte,
+            des_material_mte: item.des_material_mte,
+            des_reduz_unidade_und: item.des_reduz_unidade_und,
+            vlr_material_mte:
+              item.vlr_material_mte ?? item.vlr_unit_material_mte,
+          };
+        })
+        .map((item) => {
+          return {
+            value: { id_material_rvm: item.id_material_rvm },
+            label: `${item.des_material_mte} - ${item.des_reduz_unidade_und}`,
+            custom: [
+              {
+                prefixDefault: item.des_reduz_unidade_und,
+                label: "Quantidade",
+                column: "qtd_material_rvm",
+                value: 1,
+                type: "number",
+              },
+              {
+                label: "Valor Unitário",
+                column: "vlr_unit_material_rvm",
+                value: item.vlr_material_mte,
+                type: "number",
+                mask: "currency",
+              },
+            ],
+          };
+        });
+
+        setFormData((form) => ({
+          ...form,
+          employees: funcionarioTypeOptions,
+          materiais: materialOptions,
+          clientes: clienteOptions,
+          estoques: estoqueOptions,
+        }));
+      });
     }
-    setFormChanged(!formChanged)
+    setFormChanged(!formChanged);
   };
 
   const handleSubmit = async () => {

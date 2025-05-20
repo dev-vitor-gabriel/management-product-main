@@ -2,9 +2,9 @@
 import api from "./api";
 
 
-const getMaterial = async (verificarEstoque = false) => {
+const getMaterial = async (verificarEstoque = false, id_centro_custo = null) => {
     try {
-        const response = await api.get("/material?verificarEstoque=" + verificarEstoque);
+        const response = await api.get(`/material?verificarEstoque=$verificarEstoque${verificarEstoque}&id_centro_custo_mte=${id_centro_custo}` );
 
         return response.data;
     } catch (error) {
