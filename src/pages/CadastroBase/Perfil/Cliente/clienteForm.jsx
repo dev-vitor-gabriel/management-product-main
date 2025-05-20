@@ -17,7 +17,7 @@ import { getCentroCusto } from "../../../../services/centroCusto";
 const schema = yup.object().shape({
   des_cliente_cli: yup.string().min(1).required(),
   telefone_cliente_cli: yup.string().min(1).required(),
-  email_cliente_cli: yup.string(),
+  email_cliente_cli: yup.string().nullable().email(),
   documento_cliente_cli: yup.string(),
   endereco_cliente_cli: yup.string(),
   id_centro_custo_cli: yup.number().required().positive(),

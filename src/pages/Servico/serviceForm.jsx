@@ -15,6 +15,7 @@ import { getCliente } from "../../services/cliente";
 import { getEmployee } from "../../services/employee";
 import { saveServices } from "../../services/service";
 import { getServiceType } from "../../services/serviceType";
+import ClienteForm from "../CadastroBase/Perfil/Cliente/clienteForm";
 import { Expand, FormGroup } from "./style";
 import { getMetodoPagamento } from "../../services/metodoPagamento";
 
@@ -31,6 +32,7 @@ export default function ServiceForm({ service, onClose, visible }) {
   const [formData, setFormData] = useState(service ?? {});
   const [error, setError] = useState({});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [modalCreateClientOpen, setModalCreateClientOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,7 +70,7 @@ export default function ServiceForm({ service, onClose, visible }) {
                 label: des_centro_custo_cco
               });
             })
-            const metodosPagamentoOptions = metodosPagamento.map(
+            const metodosPagamentoOptions = metodosPagamento.items.map(
               ({ id_metodo_pagamento_tmp, desc_metodo_pagamento_tmp }) => {
                 return {
                   value: id_metodo_pagamento_tmp,
@@ -86,6 +88,30 @@ export default function ServiceForm({ service, onClose, visible }) {
     fetchData();
   }, [])
 
+  function handleClienteCriado(novoCliente) {
+    setModalCreateClientOpen(false);
+    if (!novoCliente) {
+      return;
+    }
+    setFormData((currentForm) => {
+      const formData = currentForm;
+
+      formData.clientes = [
+        {
+          value: novoCliente.id,
+          label: `${novoCliente.des_cliente_cli} - ${
+            !novoCliente.telefone_cliente_cli
+              ? novoCliente.documento_cliente_cli
+              : novoCliente.telefone_cliente_cli
+          }`,
+        },
+      ];
+
+      return formData;
+    });
+
+  }
+  
   const handleChangeValue = (event) => {
     const inputName = event.target.name.replace(/\[|\]/g, '');
     const value = event.target.value;
@@ -180,6 +206,11 @@ export default function ServiceForm({ service, onClose, visible }) {
           error={error?.id_cliente_ser ?? false}
           limit={1}
         />
+        {!formData?.id_cliente_ser && (
+          <ButtonSubmit handleSubmit={() => setModalCreateClientOpen(true)}>
+            Novo Cliente
+          </ButtonSubmit>
+        )}
       </FormGroup>
 
       <FormGroup>
@@ -217,6 +248,16 @@ export default function ServiceForm({ service, onClose, visible }) {
         />
       </FormGroup>
 
+      {modalCreateClientOpen && (
+        <ClienteForm
+          onClose={() => {
+            setModalCreateClientOpen(false);
+          }}
+          visible={modalCreateClientOpen}
+          refresh={function () {}}
+          callback={handleClienteCriado}
+        />
+      )}
       <Expand>
         <ButtonSubmit handleSubmit={handleSubmit} loading={loadingSubmit}>Salvar</ButtonSubmit>
       </Expand>

@@ -179,7 +179,7 @@ export default function SaleForm({ saleEditing, onClose, visible }) {
 
     const estoquesOptions = []
 
-    const metodosPagamentoOptions = metodosPagamento.map(
+    const metodosPagamentoOptions = metodosPagamento.items.map(
       ({ id_metodo_pagamento_tmp, desc_metodo_pagamento_tmp }) => {
         return {
           value: id_metodo_pagamento_tmp,
