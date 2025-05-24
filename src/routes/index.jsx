@@ -34,6 +34,7 @@ import ServiceDashboard from '../pages/Servico/serviceDashboard';
 import SaleDashboard from '../pages/Venda/Vendas/saleDashboard';
 import FinanceiroReceber from '../pages/Financeiro/Receber';
 import FinanceiroPagar from '../pages/Financeiro/Pagar';
+import PermissoesEstoque from '../pages/Permissoes/PermissoesEstoque';
 
 function RoutesApp() {
     return (
@@ -68,6 +69,7 @@ function RoutesApp() {
                 <Route path="/cadastro-base/permissoes/permissoes-usuario" element={<UserPermissions />} />
                 <Route path="/cadastro-base/permissoes/permissoes-empresa" element={<CompanyPermissions />} />
                 <Route path="/cadastro-base/permissoes/permissoes-centro-custo" element={<PermissoesCentroCusto />} />
+                <Route path="/cadastro-base/permissoes/permissoes-estoque" element={<PermissoesEstoque />} />
                 <Route path="/financeiro/a-receber" element={<FinanceiroReceber />} />
                 <Route path="/financeiro/a-pagar" element={<FinanceiroReceber />} />
             </Route>

@@ -4,12 +4,12 @@ import api from "./api";
 let cachedPageNumber = 1;
 let cachedPerPage = 10;
 
-const getEstoque = async (filter, pageNumber, perPage, id_centro_custo = null) => {
+const getEstoque = async (filter, pageNumber, perPage, id_centro_custo = null, getByCompany = false) => {
     cachedPageNumber = pageNumber ?? cachedPageNumber;
     cachedPerPage = perPage ?? cachedPerPage;
 
     try {
-        const response = await api.get(`/estoque?filter=${filter}&per_page=${cachedPerPage}&page_number=${cachedPageNumber}&id_centro_custo=${id_centro_custo}`);
+        const response = await api.get(`/estoque?filter=${filter}&per_page=${cachedPerPage}&page_number=${cachedPageNumber}&id_centro_custo=${id_centro_custo}&getByCompany=${getByCompany}`);
         return response.data;
     } catch (error) {
         console.error("Erro ao buscar:", error);

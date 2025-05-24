@@ -24,6 +24,7 @@ export default function Estoque() {
     const fetchServices = async (filter, pageNumber, totalSize) => {
         try {
             const response = await getEstoque('', pageNumber, totalSize);
+            console.log(response)
             setRegs(response.items);
             setTotalRows(response.total)
             setModalIsOpen(false)
